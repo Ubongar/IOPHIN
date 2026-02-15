@@ -184,7 +184,7 @@ function App() {
             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
               theme === 'dark' 
                 ? 'bg-blue-600 text-white hover:bg-blue-500' 
-                : 'bg-white/[0.06] text-white/50 hover:bg-white/[0.1]'
+                : 'theme-toggle-inactive'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,7 +197,7 @@ function App() {
             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
               theme === 'light' 
                 ? 'bg-blue-600 text-white hover:bg-blue-500' 
-                : 'bg-white/[0.06] text-white/50 hover:bg-white/[0.1]'
+                : 'theme-toggle-inactive'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

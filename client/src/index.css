@@ -265,6 +265,16 @@
   font-weight: 800;
 }
 
+/* Theme toggle button inactive state */
+.theme-toggle-inactive {
+  background: var(--bg-panel);
+  color: var(--text-tertiary);
+}
+
+.theme-toggle-inactive:hover {
+  background: var(--bg-panel-hover);
+}
+
 /* ── Body ── */
 body {
   margin: 0;
