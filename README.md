@@ -1,13 +1,15 @@
 "# IOPHIN - Nigeria Poverty Hotspot Identifier
 
-A geospatial machine learning system for identifying poverty hotspots across Nigeria's 774 Local Government Areas (LGAs) using nighttime satellite imagery and multidimensional poverty indicators.
+A geospatial machine learning system for identifying poverty hotspots across Nigeria's Local Government Areas (LGAs) using nighttime satellite imagery and multidimensional poverty indicators.
+
+**Note:** Nigeria has 774 official LGAs, but the current dataset contains 720 LGAs with complete data for analysis.
 
 ## Overview
 
 This system combines:
 - **VIIRS Nighttime Lights Data** (10.8GB GeoTIFF) - Proxy for economic activity
 - **State-level MPI Data** - Multidimensional Poverty Index indicators
-- **LGA Boundary Shapefiles** - Geospatial boundaries for all 774 LGAs
+- **LGA Boundary Shapefiles** - Geospatial boundaries (720 LGAs with complete data)
 
 The analytical engine uses unsupervised machine learning to classify LGAs into 4 risk categories:
 - **High Risk - Severe Poverty**: Low nightlights + High poverty indicators
@@ -18,7 +20,7 @@ The analytical engine uses unsupervised machine learning to classify LGAs into 4
 ## Project Structure
 
 ```
-nigeria-poverty-identifier/
+IOPHIN/
 ├── data/
 │   ├── raw/
 │   │   ├── viirs_2024.tif                    (10.8GB - Not in repo, local only)
@@ -29,13 +31,28 @@ nigeria-poverty-identifier/
 │       ├── processed_hotspots.csv             (Input: LGA coordinates)
 │       ├── final_model_output.csv             (Output: Model results)
 │       └── hotspots.geojson                   (Output: GeoJSON for frontend)
-├── src/
+├── src/                                       (Python ML Engine)
 │   ├── config.py                              (Configuration & paths)
 │   ├── data_loader.py                         (Data loading utilities)
 │   ├── feature_extraction.py                  (Memory-safe raster processing)
 │   ├── model_engine.py                        (ML pipeline: KNN, PCA, K-means)
 │   └── main.py                                (Main orchestration script)
-└── requirements.txt
+├── server/                                    (Node.js Backend API)
+│   ├── index.js                               (Express server with endpoints)
+│   ├── package.json                           (Dependencies)
+│   └── .env                                   (Configuration)
+├── client/                                    (React Frontend Dashboard)
+│   ├── src/
+│   │   ├── components/                        (React components)
+│   │   │   ├── MapComponent.tsx               (Interactive Leaflet map)
+│   │   │   ├── Sidebar.tsx                    (Analytics panel)
+│   │   │   └── Legend.tsx                     (Risk level legend)
+│   │   ├── App.tsx                            (Main layout)
+│   │   ├── types.ts                           (TypeScript definitions)
+│   │   └── index.css                          (Tailwind styles)
+│   ├── package.json                           (Dependencies)
+│   └── .env                                   (Configuration)
+└── requirements.txt                           (Python dependencies)
 ```
 
 ## Installation
@@ -127,6 +144,7 @@ Note: The actual score varies depending on the data and clustering iteration.
 
 ## Dependencies
 
+### Python (ML Engine)
 - **numpy** - Numerical computations
 - **pandas** - Data manipulation
 - **scikit-learn** - Machine learning (KNN, PCA, K-Means)
@@ -135,6 +153,60 @@ Note: The actual score varies depending on the data and clustering iteration.
 - **shapely** - Geometric operations
 - **fiona** - Vector file I/O
 - **pyproj** - CRS transformations
+
+### Node.js (Backend API)
+- **express** - Web server framework
+- **cors** - Cross-origin resource sharing
+- **compression** - GZIP compression for large files
+- **dotenv** - Environment variable management
+
+### React (Frontend Dashboard)
+- **react** & **react-dom** - UI framework
+- **typescript** - Type safety
+- **vite** - Build tool
+- **tailwindcss** - Utility-first CSS
+- **react-leaflet** & **leaflet** - Interactive maps
+- **recharts** - Chart library
+- **axios** - HTTP client
+
+## Web Dashboard
+
+The IOPHIN system now includes a production-grade web dashboard for visualizing poverty hotspots.
+
+### Quick Start
+
+1. **Start the Backend API**:
+```bash
+cd server
+npm install
+npm start
+```
+
+2. **Start the Frontend Dashboard**:
+```bash
+cd client
+npm install
+npm run dev
+```
+
+3. **Access the Dashboard**:
+Open http://localhost:5173 in your browser
+
+### Features
+
+- 🗺️ Interactive map with 720 LGAs color-coded by risk level
+- 📊 National statistics dashboard with pie charts
+- 🔍 Click any LGA to view detailed analytics
+- 💾 Poverty probability gauge and comparative analysis
+- 🎨 Modern glassmorphism UI design
+
+### Screenshots
+
+**National Overview**
+![Dashboard](https://github.com/user-attachments/assets/7d11dbbb-6c3f-4dc3-a1f9-34ee8b877f7f)
+
+**LGA Detail View**
+![LGA Detail](https://github.com/user-attachments/assets/d24b580a-db24-4d4a-89a1-53779ca1ac0a)
 
 ## Notes
 

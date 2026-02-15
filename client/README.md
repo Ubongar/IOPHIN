@@ -1,73 +1,99 @@
-# React + TypeScript + Vite
+# IOPHIN Web Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Production-grade React + TypeScript dashboard for visualizing poverty hotspots across Nigeria's 720 LGAs.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🗺️ **Interactive Map** - React-Leaflet with color-coded risk levels
+- 📊 **Analytics Dashboard** - National overview and LGA-specific insights
+- 🎨 **Modern UI** - Glassmorphism design with Tailwind CSS
+- 📈 **Data Visualization** - Recharts pie charts and progress bars
+- ⚡ **Fast & Responsive** - Built with Vite and optimized for performance
 
-## React Compiler
+## Installation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd client
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Configuration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+VITE_API_URL=http://localhost:5000/api
+```
+
+## Running
+
+```bash
+# Development
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Technology Stack
+
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling with glassmorphism effects
+- **React-Leaflet** - Interactive maps
+- **Recharts** - Data visualization
+- **Axios** - HTTP client
+
+## Components
+
+### MapComponent
+Renders Nigeria's 720 LGAs with color-coded risk levels:
+- **Red (#EF4444)** - High Risk
+- **Amber (#F59E0B)** - Medium Risk  
+- **Green (#10B981)** - Low Risk
+- **Blue (#3B82F6)** - Minimal Risk
+
+Features:
+- Hover tooltips with LGA details
+- Click to zoom and view detailed analytics
+- Auto-fit bounds to Nigeria
+
+### Sidebar
+Displays analytics in two modes:
+
+**National Overview**:
+- Total LGAs and states
+- Average MPI and nightlight
+- Risk distribution pie chart
+- Detailed breakdown
+
+**LGA Profile** (when clicked):
+- MPI score and nightlight intensity
+- Poverty probability gauge
+- Comparative analysis vs national averages
+- Download report button
+
+### Legend
+Floating legend explaining the risk level color codes.
+
+## Browser Support
+
+Modern browsers with ES6+ support:
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+
+## Development
+
+The app uses hot module replacement (HMR) for instant updates during development.
+
+Key files:
+- `src/App.tsx` - Main layout
+- `src/components/MapComponent.tsx` - Interactive map
+- `src/components/Sidebar.tsx` - Analytics panel
+- `src/components/Legend.tsx` - Risk level legend
+- `src/types.ts` - TypeScript definitions

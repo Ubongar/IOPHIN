@@ -3,7 +3,7 @@
  * Main Application Component
  * 
  * A production-grade dashboard for visualizing geospatial poverty data
- * across Nigeria's 774 Local Government Areas (LGAs)
+ * across Nigeria's 720 Local Government Areas (LGAs)
  */
 
 import { useState, useEffect } from 'react';
