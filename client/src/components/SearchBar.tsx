@@ -2,7 +2,7 @@
  * SearchBar - Component for searching and filtering LGAs
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import type { HotspotFeature } from '../types';
 
 interface SearchBarProps {
@@ -12,26 +12,22 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredResults, setFilteredResults] = useState<HotspotFeature[]>([]);
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const filteredResults = useMemo(() => {
     if (!searchTerm || !data) {
-      setFilteredResults([]);
-      setShowResults(false);
-      return;
+      return [];
     }
 
     const term = searchTerm.toLowerCase();
-    const results = data.filter(feature => 
+    return data.filter(feature => 
       feature.properties.LGA_Name.toLowerCase().includes(term) ||
       feature.properties.State.toLowerCase().includes(term)
     ).slice(0, 10); // Limit to 10 results
-
-    setFilteredResults(results);
-    setShowResults(results.length > 0);
   }, [searchTerm, data]);
+
+  const hasResults = filteredResults.length > 0 && searchTerm.length > 0;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,6 +52,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
     onSelectLGA(null);
   };
 
+  const handleFocus = () => {
+    if (hasResults) {
+      setShowResults(true);
+    }
+  };
+
   return (
     <div ref={searchRef} className="relative w-full max-w-md">
       <div className="relative">
@@ -66,8 +68,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onFocus={() => filteredResults.length > 0 && setShowResults(true)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              if (e.target.value) {
+                setShowResults(true);
+              }
+            }}
+            onFocus={handleFocus}
             placeholder="Search LGAs or States..."
             className="search-input"
           />
