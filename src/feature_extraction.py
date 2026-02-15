@@ -93,13 +93,16 @@ def extract_nightlight_features_from_raster(gdf, raster_path):
     
     Args:
         gdf: GeoDataFrame with LGA boundaries
-        raster_path: Path to VIIRS raster file (10.8GB)
+        raster_path: Path to VIIRS raster file (10.8GB) - can be string or Path object
     
     Returns:
         GeoDataFrame: Input GDF with added 'mean_nightlight_intensity' column
     """
     logger.info(f"Starting nightlight extraction from {raster_path}")
     logger.info("Using memory-safe windowed reading to prevent Memory Error")
+    
+    # Ensure raster_path is a Path object for consistent handling
+    raster_path = Path(raster_path)
     
     if not raster_path.exists():
         logger.error(f"VIIRS raster file not found: {raster_path}")
@@ -113,7 +116,7 @@ def extract_nightlight_features_from_raster(gdf, raster_path):
     
     if file_size_gb < 0.1:  # Less than 100 MB
         logger.warning(f"VIIRS file size is unusually small ({file_size_gb:.2f} GB)")
-        logger.warning("Expected ~10GB for full VIIRS dataset. File may be corrupted or incomplete.")
+        logger.warning("Expected ~10-11 GB for full VIIRS dataset. File may be corrupted or incomplete.")
     
     # Open the raster file
     with rasterio.open(raster_path) as src:

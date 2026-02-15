@@ -177,7 +177,7 @@ Look for axis order issues in EPSG:4326. Sometimes rasters use (lat, lon) while 
 ## Expected Output
 
 For a successful run, you should see:
-- ✓ File size: ~10 GB
+- ✓ File size: ~10-11 GB
 - ✓ Bounds overlap confirmed
 - ✓ Sample pixels show valid data
 - ✓ Valid values: 650-750 out of 774 LGAs
