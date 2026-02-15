@@ -148,7 +148,7 @@ with rasterio.open('path/to/viirs_2024.tif') as src:
 
 **Diagnosis:**
 - This is expected behavior for the "median_masked" VIIRS version
-- Masked files set dark pixels to NaN/0
+- Masked files set dark pixels to 0
 
 **Solution:**
 - No fix needed - system now returns 0.0 instead of NaN
