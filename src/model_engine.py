@@ -41,27 +41,53 @@ def prepare_poverty_features(df, state_mpi_df=None, senatorial_mpi_df=None):
         
         # Clean state names
         state_mpi_clean = state_mpi_df.copy()
+        
+        # Handle different column naming conventions
+        state_col = None
         if 'Admin 1 Name' in state_mpi_clean.columns:
-            state_mpi_clean['State_Clean'] = state_mpi_clean['Admin 1 Name'].str.strip()
-        result['State_Clean'] = result['State'].str.strip()
+            state_col = 'Admin 1 Name'
+        elif '#adm1+name' in state_mpi_clean.columns:
+            state_col = '#adm1+name'
         
-        # Select relevant columns
-        mpi_cols = ['State_Clean']
-        for col in ['MPI', 'Headcount Ratio', 'Intensity of Deprivation', 
-                   'Vulnerable to Poverty', 'In Severe Poverty']:
-            if col in state_mpi_clean.columns:
-                mpi_cols.append(col)
-        
-        # Merge
-        result = result.merge(
-            state_mpi_clean[mpi_cols],
-            on='State_Clean',
-            how='left',
-            suffixes=('', '_state')
-        )
-        
-        result.drop(columns=['State_Clean'], inplace=True, errors='ignore')
-        logger.info(f"Merged state MPI data: {len(mpi_cols)-1} columns added")
+        if state_col:
+            state_mpi_clean['State_Clean'] = state_mpi_clean[state_col].str.strip()
+            result['State_Clean'] = result['State'].str.strip()
+            
+            # Select relevant columns - handle hashtag names
+            mpi_cols = ['State_Clean']
+            
+            # Map user-friendly names to actual column names
+            col_mapping = {
+                'MPI': ['MPI', '#indicator+mpi'],
+                'Headcount_Ratio': ['Headcount Ratio', '#indicator+headcount_ratio'],
+                'Intensity_of_Deprivation': ['Intensity of Deprivation', '#indicator+intensity_of_deprivation'],
+                'Vulnerable_to_Poverty': ['Vulnerable to Poverty', '#indicator+vulnerable_to_poverty'],
+                'In_Severe_Poverty': ['In Severe Poverty', '#indicator+in_severe_poverty']
+            }
+            
+            rename_dict = {}
+            for friendly_name, possible_cols in col_mapping.items():
+                for col in possible_cols:
+                    if col in state_mpi_clean.columns:
+                        mpi_cols.append(col)
+                        rename_dict[col] = friendly_name
+                        break
+            
+            # Merge
+            if len(mpi_cols) > 1:  # More than just State_Clean
+                merge_df = state_mpi_clean[mpi_cols].rename(columns=rename_dict)
+                result = result.merge(
+                    merge_df,
+                    on='State_Clean',
+                    how='left',
+                    suffixes=('', '_state')
+                )
+                result.drop(columns=['State_Clean'], inplace=True, errors='ignore')
+                logger.info(f"Merged state MPI data: {len(mpi_cols)-1} columns added")
+            else:
+                logger.warning("No valid MPI columns found to merge")
+        else:
+            logger.warning("Could not find state name column in MPI data")
     
     return result
 

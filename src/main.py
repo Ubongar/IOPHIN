@@ -73,7 +73,7 @@ def save_geojson_output(df, gdf, output_path):
     
     # Find LGA name column in shapefile
     lga_col = None
-    for col in ['LGA_NAME', 'ADM2_EN', 'LGAName', 'Name']:
+    for col in ['lganame', 'LGA_NAME', 'ADM2_EN', 'LGAName', 'Name']:
         if col in gdf.columns:
             lga_col = col
             break
@@ -96,10 +96,10 @@ def save_geojson_output(df, gdf, output_path):
         
         # Prepare merge
         gdf_copy = gdf[[lga_col, 'geometry']].copy()
-        gdf_copy['LGA_Name_merge'] = gdf_copy[lga_col].str.strip()
+        gdf_copy['LGA_Name_merge'] = gdf_copy[lga_col].str.strip().str.lower()
         
         df_copy = df.copy()
-        df_copy['LGA_Name_merge'] = df_copy['LGA_Name'].str.strip()
+        df_copy['LGA_Name_merge'] = df_copy['LGA_Name'].str.strip().str.lower()
         
         # Merge
         geo_df = gdf_copy.merge(df_copy, on='LGA_Name_merge', how='inner')
