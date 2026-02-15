@@ -481,26 +481,38 @@ body {
 /* ============================================================
    Theme-aware text colors
    ============================================================ */
-[data-theme='light'] .text-white {
+html[data-theme='light'] .text-white,
+body[data-theme='light'] .text-white {
   color: var(--text-primary) !important;
 }
 
-[data-theme='light'] .text-white\/70,
-[data-theme='light'] .text-white\/60,
-[data-theme='light'] .text-white\/50,
-[data-theme='light'] .text-white\/45,
-[data-theme='light'] .text-white\/40,
-[data-theme='light'] .text-white\/35,
-[data-theme='light'] .text-white\/30,
-[data-theme='light'] .text-white\/25 {
+html[data-theme='light'] .text-white\/70,
+body[data-theme='light'] .text-white\/70,
+html[data-theme='light'] .text-white\/60,
+body[data-theme='light'] .text-white\/60,
+html[data-theme='light'] .text-white\/50,
+body[data-theme='light'] .text-white\/50,
+html[data-theme='light'] .text-white\/45,
+body[data-theme='light'] .text-white\/45,
+html[data-theme='light'] .text-white\/40,
+body[data-theme='light'] .text-white\/40,
+html[data-theme='light'] .text-white\/35,
+body[data-theme='light'] .text-white\/35,
+html[data-theme='light'] .text-white\/30,
+body[data-theme='light'] .text-white\/30,
+html[data-theme='light'] .text-white\/25,
+body[data-theme='light'] .text-white\/25 {
   color: var(--text-tertiary) !important;
 }
 
-[data-theme='light'] .bg-white\/\[0\.06\],
-[data-theme='light'] .bg-white\/\[0\.04\] {
+html[data-theme='light'] .bg-white\/\[0\.06\],
+body[data-theme='light'] .bg-white\/\[0\.06\],
+html[data-theme='light'] .bg-white\/\[0\.04\],
+body[data-theme='light'] .bg-white\/\[0\.04\] {
   background: var(--bg-panel) !important;
 }
 
-[data-theme='light'] .border-white\/\[0\.06\] {
+html[data-theme='light'] .border-white\/\[0\.06\],
+body[data-theme='light'] .border-white\/\[0\.06\] {
   border-color: var(--border) !important;
 }
