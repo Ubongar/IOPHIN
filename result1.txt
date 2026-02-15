@@ -1,0 +1,119 @@
+C:\Users\Michael\IOPHIN>python -m src.main
+2026-02-15 14:10:44,291 - INFO - ====================================================================================================
+2026-02-15 14:10:44,292 - INFO - NIGERIA POVERTY HOTSPOT IDENTIFIER - ANALYTICAL ENGINE
+2026-02-15 14:10:44,292 - INFO - ====================================================================================================
+2026-02-15 14:10:44,292 - INFO -
+2026-02-15 14:10:44,292 - INFO - PHASE 1: BIG DATA FEATURE EXTRACTION
+2026-02-15 14:10:44,292 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:10:44,292 - INFO - Step 1.1: Loading LGA boundaries
+2026-02-15 14:10:44,293 - INFO - Loading LGA shapefile from C:\Users\Michael\IOPHIN\data\raw\NGA_LGA_Boundaries_2_-5383648833805565856\grid3_nga_boundary_vacclgas.shp
+2026-02-15 14:10:44,579 - INFO - Loaded 774 LGA boundaries
+2026-02-15 14:10:44,579 - INFO - Shapefile CRS: EPSG:4326
+2026-02-15 14:10:44,579 - INFO - Columns: ['globalid', 'uniq_id', 'timestamp', 'editor', 'lganame', 'lgacode', 'statename', 'statecode', 'source', 'amapcode', 'geometry']
+2026-02-15 14:10:44,580 - INFO - Step 1.2: Loading processed hotspots data
+2026-02-15 14:10:44,580 - INFO - Loading processed hotspots from C:\Users\Michael\IOPHIN\data\processed\processed_hotspots.csv
+2026-02-15 14:10:44,588 - INFO - Loaded 774 LGA records
+2026-02-15 14:10:44,588 - INFO - Columns: ['LGA_Name', 'State', 'Latitude', 'Longitude', 'Cluster_Label', 'Risk_Level']
+2026-02-15 14:10:44,588 - INFO - Step 1.3: Extracting nightlight intensity (Memory-Safe Windowed Reading)
+2026-02-15 14:10:44,588 - INFO - Extracting nightlight features for processed hotspots CSV
+2026-02-15 14:10:44,589 - INFO - VIIRS file not found, using synthetic nightlight data
+2026-02-15 14:10:44,591 - INFO - Nightlight extraction complete for 774 LGAs
+2026-02-15 14:10:44,592 - INFO - Phase 1 complete: 774 LGAs with nightlight data
+2026-02-15 14:10:44,592 - INFO -
+2026-02-15 14:10:44,592 - INFO - PHASE 2: DATA FUSION & HARMONIZATION
+2026-02-15 14:10:44,592 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:10:44,592 - INFO - Step 2.1: Loading poverty indicators
+2026-02-15 14:10:44,592 - INFO - Loading state MPI data from C:\Users\Michael\IOPHIN\data\raw\nga_mpi(3).csv
+2026-02-15 14:10:44,595 - INFO - Loaded 38 state records
+2026-02-15 14:10:44,595 - INFO - Loading senatorial MPI data from C:\Users\Michael\IOPHIN\data\raw\Nigeria MPI by Senatorial District.csv
+2026-02-15 14:10:44,599 - INFO - Loaded 110 senatorial district records
+2026-02-15 14:10:44,601 - INFO - Columns: ['Senatorial District', 'MPI Value', 'Incidence (H, %)', 'Intensity (A, %)', 'Number of Poor (Thousand)']
+2026-02-15 14:10:44,602 - INFO - Step 2.2: Merging poverty data
+2026-02-15 14:10:44,603 - INFO - Preparing poverty features
+2026-02-15 14:10:44,604 - INFO - Merging state-level MPI data
+2026-02-15 14:10:44,611 - INFO - Merged state MPI data: 5 columns added
+2026-02-15 14:10:44,611 - INFO - Phase 2 complete: 774 LGAs with enriched features
+2026-02-15 14:10:44,611 - INFO -
+2026-02-15 14:10:44,611 - INFO - PHASE 3: UNSUPERVISED MACHINE LEARNING
+2026-02-15 14:10:44,611 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:10:44,611 - INFO - ================================================================================
+2026-02-15 14:10:44,611 - INFO - BUILDING ANALYTICAL ENGINE - PHASE 2 & 3
+2026-02-15 14:10:44,612 - INFO - ================================================================================
+2026-02-15 14:10:44,612 - INFO - Feature columns identified: ['mean_nightlight_intensity', 'MPI', 'Headcount_Ratio', 'Intensity_of_Deprivation', 'Vulnerable_to_Poverty', 'In_Severe_Poverty']
+2026-02-15 14:10:44,613 - INFO - Imputing missing values using KNN (k=5)
+2026-02-15 14:10:44,619 - INFO - Missing values before imputation:
+MPI                         6
+Headcount_Ratio             6
+Intensity_of_Deprivation    6
+Vulnerable_to_Poverty       6
+In_Severe_Poverty           6
+dtype: int64
+2026-02-15 14:10:44,634 - INFO - Missing values after imputation: 0
+2026-02-15 14:10:44,635 - INFO - Standardizing features using StandardScaler
+2026-02-15 14:10:44,635 - INFO - This normalizes Survey Poverty Scores and Nightlights to comparable scales
+2026-02-15 14:10:44,640 - INFO - Standardized 6 features
+2026-02-15 14:10:44,641 - INFO - Applying PCA to reduce dimensionality (keeping 95.0% variance)
+2026-02-15 14:10:44,645 - INFO - PCA reduced 6 features to 3 components
+2026-02-15 14:10:44,645 - INFO - Explained variance ratio: [0.76068927 0.16920678 0.05500054]
+2026-02-15 14:10:44,646 - INFO - Total variance explained: 0.9849
+2026-02-15 14:10:44,646 - INFO - Performing K-Means clustering with k=4
+2026-02-15 14:10:47,365 - INFO - Clustering complete
+2026-02-15 14:10:47,366 - INFO - Silhouette Score: 0.4350
+2026-02-15 14:10:47,368 - INFO - Assigning meaningful labels to clusters
+2026-02-15 14:10:47,390 - INFO - Cluster statistics:
+   cluster  mean_nightlight  mean_poverty  count
+0        0        19.453727      6.120621    260
+1        1         8.090885     19.344405    161
+2        2        18.685266      9.868635    186
+3        3        11.319076     14.275150    167
+2026-02-15 14:10:47,394 - INFO - Cluster label distribution:
+cluster_label
+Minimal Risk - Wealthy        260
+Low Risk - Vulnerable         186
+Medium Risk - Poor            167
+High Risk - Severe Poverty    161
+Name: count, dtype: int64
+2026-02-15 14:10:47,396 - INFO - Cluster distribution:
+cluster
+0    260
+1    161
+2    186
+3    167
+Name: count, dtype: int64
+2026-02-15 14:10:47,397 - INFO - ================================================================================
+2026-02-15 14:10:47,397 - INFO - ANALYTICAL ENGINE COMPLETE - Silhouette Score: 0.4350
+2026-02-15 14:10:47,397 - INFO - ================================================================================
+2026-02-15 14:10:47,397 - INFO -
+2026-02-15 14:10:47,398 - INFO - ====================================================================================================
+2026-02-15 14:10:47,398 - INFO - MODEL VALIDATION METRICS
+2026-02-15 14:10:47,398 - INFO - ====================================================================================================
+2026-02-15 14:10:47,398 - INFO - Silhouette Score: 0.4350
+2026-02-15 14:10:47,399 - INFO - Interpretation: Scores > 0.5 indicate good cluster separation
+2026-02-15 14:10:47,399 - INFO -
+2026-02-15 14:10:47,399 - INFO - GENERATING OUTPUTS
+2026-02-15 14:10:47,400 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:10:47,400 - INFO - Saving CSV output to C:\Users\Michael\IOPHIN\data\processed\final_model_output.csv
+2026-02-15 14:10:47,421 - INFO - Saved 774 records to C:\Users\Michael\IOPHIN\data\processed\final_model_output.csv
+2026-02-15 14:10:47,421 - INFO - Saving GeoJSON output to C:\Users\Michael\IOPHIN\data\processed\hotspots.geojson
+2026-02-15 14:10:47,421 - INFO - Merging results with geometries using column: lganame
+2026-02-15 14:10:47,430 - INFO - Merged 720 LGAs with geometries
+2026-02-15 14:10:48,719 - INFO - Created 720 records
+2026-02-15 14:10:48,720 - INFO - Saved GeoJSON with 720 features to C:\Users\Michael\IOPHIN\data\processed\hotspots.geojson
+2026-02-15 14:10:48,720 - INFO -
+2026-02-15 14:10:48,720 - INFO - ====================================================================================================
+2026-02-15 14:10:48,720 - INFO - ANALYTICAL ENGINE EXECUTION COMPLETE
+2026-02-15 14:10:48,720 - INFO - ====================================================================================================
+2026-02-15 14:10:48,720 - INFO - CSV Output: C:\Users\Michael\IOPHIN\data\processed\final_model_output.csv
+2026-02-15 14:10:48,721 - INFO - GeoJSON Output: C:\Users\Michael\IOPHIN\data\processed\hotspots.geojson
+2026-02-15 14:10:48,721 - INFO -
+2026-02-15 14:10:48,721 - INFO - SUMMARY STATISTICS
+2026-02-15 14:10:48,721 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:10:48,721 - INFO - Total LGAs processed: 774
+2026-02-15 14:10:48,721 - INFO -
+Cluster Distribution:
+2026-02-15 14:10:48,722 - INFO -   Minimal Risk - Wealthy: 260 LGAs (33.6%)
+2026-02-15 14:10:48,722 - INFO -   Low Risk - Vulnerable: 186 LGAs (24.0%)
+2026-02-15 14:10:48,722 - INFO -   Medium Risk - Poor: 167 LGAs (21.6%)
+2026-02-15 14:10:48,722 - INFO -   High Risk - Severe Poverty: 161 LGAs (20.8%)
+2026-02-15 14:10:48,722 - INFO -
+Nightlight Intensity: 15.15 (mean)

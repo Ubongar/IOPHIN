@@ -1,0 +1,195 @@
+C:\Users\Michael\IOPHIN>python -m src.main
+2026-02-15 14:19:00,059 - INFO - ====================================================================================================
+2026-02-15 14:19:00,059 - INFO - NIGERIA POVERTY HOTSPOT IDENTIFIER - ANALYTICAL ENGINE
+2026-02-15 14:19:00,059 - INFO - ====================================================================================================
+2026-02-15 14:19:00,060 - INFO -
+2026-02-15 14:19:00,060 - INFO - PHASE 1: BIG DATA FEATURE EXTRACTION
+2026-02-15 14:19:00,060 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:19:00,060 - INFO - Step 1.1: Loading LGA boundaries
+2026-02-15 14:19:00,060 - INFO - Loading LGA shapefile from C:\Users\Michael\IOPHIN\data\raw\NGA_LGA_Boundaries_2_-5383648833805565856\grid3_nga_boundary_vacclgas.shp
+2026-02-15 14:19:00,317 - INFO - Loaded 774 LGA boundaries
+2026-02-15 14:19:00,318 - INFO - Shapefile CRS: EPSG:4326
+2026-02-15 14:19:00,319 - INFO - Columns: ['globalid', 'uniq_id', 'timestamp', 'editor', 'lganame', 'lgacode', 'statename', 'statecode', 'source', 'amapcode', 'geometry']
+2026-02-15 14:19:00,319 - INFO - Step 1.2: Loading processed hotspots data
+2026-02-15 14:19:00,319 - INFO - Loading processed hotspots from C:\Users\Michael\IOPHIN\data\processed\processed_hotspots.csv
+2026-02-15 14:19:00,324 - INFO - Loaded 774 LGA records
+2026-02-15 14:19:00,325 - INFO - Columns: ['LGA_Name', 'State', 'Latitude', 'Longitude', 'Cluster_Label', 'Risk_Level']
+2026-02-15 14:19:00,325 - INFO - Step 1.3: Extracting nightlight intensity (Memory-Safe Windowed Reading)
+2026-02-15 14:19:00,325 - INFO - Extracting nightlight features for processed hotspots CSV
+2026-02-15 14:19:00,326 - INFO - Starting nightlight extraction from C:\Users\Michael\IOPHIN\data\raw\viirs_2024.tif
+2026-02-15 14:19:00,326 - INFO - Using memory-safe windowed reading to prevent Memory Error
+2026-02-15 14:19:00,459 - INFO - Raster opened successfully
+2026-02-15 14:19:00,460 - INFO - Raster dimensions: 86401 x 33601
+2026-02-15 14:19:00,460 - INFO - Raster CRS: EPSG:4326
+2026-02-15 14:19:00,460 - INFO - Raster bounds: BoundingBox(left=-180.00208333335, bottom=-65.00208445335001, right=180.00208621335, top=75.00208333335)
+2026-02-15 14:19:00,460 - INFO - Shapefile CRS: EPSG:4326
+2026-02-15 14:19:00,461 - INFO - Raster CRS: EPSG:4326
+2026-02-15 14:19:00,463 - INFO - CRS match confirmed - no reprojection needed
+2026-02-15 14:19:00,464 - INFO - Processing LGA 1/774
+2026-02-15 14:19:00,547 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,123 - INFO - Processing LGA 51/774
+2026-02-15 14:19:01,176 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,366 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,652 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,661 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,662 - INFO - Processing LGA 101/774
+2026-02-15 14:19:01,664 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,688 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,733 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,839 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,931 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:01,983 - INFO - Processing LGA 151/774
+2026-02-15 14:19:01,989 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,037 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,109 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,146 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,155 - INFO - Processing LGA 201/774
+2026-02-15 14:19:02,172 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,232 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,324 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,332 - INFO - Processing LGA 251/774
+2026-02-15 14:19:02,507 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,530 - INFO - Processing LGA 301/774
+2026-02-15 14:19:02,564 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,578 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,627 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,657 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,684 - INFO - Processing LGA 351/774
+2026-02-15 14:19:02,774 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,828 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,831 - INFO - Processing LGA 401/774
+2026-02-15 14:19:02,946 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:02,984 - INFO - Processing LGA 451/774
+2026-02-15 14:19:03,110 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,129 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,132 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,138 - INFO - Processing LGA 501/774
+2026-02-15 14:19:03,141 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,146 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,205 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,234 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,243 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,247 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,263 - INFO - Processing LGA 551/774
+2026-02-15 14:19:03,326 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,339 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,361 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,374 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,382 - INFO - Processing LGA 601/774
+2026-02-15 14:19:03,425 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,429 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,431 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,472 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,488 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,491 - INFO - Processing LGA 651/774
+2026-02-15 14:19:03,573 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,595 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,623 - INFO - Processing LGA 701/774
+2026-02-15 14:19:03,681 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,726 - WARNING - No valid pixels found for geometry
+2026-02-15 14:19:03,765 - INFO - Processing LGA 751/774
+2026-02-15 14:19:03,886 - INFO - Nightlight extraction complete
+2026-02-15 14:19:03,887 - INFO - Valid values: 727/774
+2026-02-15 14:19:03,888 - INFO - Mean nightlight intensity: 2.13
+2026-02-15 14:19:03,888 - INFO - Range: 0.36 - 30.54
+2026-02-15 14:19:04,219 - INFO - Nightlight extraction complete for 784 LGAs
+2026-02-15 14:19:04,220 - INFO - Phase 1 complete: 784 LGAs with nightlight data
+2026-02-15 14:19:04,220 - INFO -
+2026-02-15 14:19:04,220 - INFO - PHASE 2: DATA FUSION & HARMONIZATION
+2026-02-15 14:19:04,220 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:19:04,221 - INFO - Step 2.1: Loading poverty indicators
+2026-02-15 14:19:04,221 - INFO - Loading state MPI data from C:\Users\Michael\IOPHIN\data\raw\nga_mpi(3).csv
+2026-02-15 14:19:04,226 - INFO - Loaded 38 state records
+2026-02-15 14:19:04,226 - INFO - Loading senatorial MPI data from C:\Users\Michael\IOPHIN\data\raw\Nigeria MPI by Senatorial District.csv
+2026-02-15 14:19:04,230 - INFO - Loaded 110 senatorial district records
+2026-02-15 14:19:04,230 - INFO - Columns: ['Senatorial District', 'MPI Value', 'Incidence (H, %)', 'Intensity (A, %)', 'Number of Poor (Thousand)']
+2026-02-15 14:19:04,231 - INFO - Step 2.2: Merging poverty data
+2026-02-15 14:19:04,231 - INFO - Preparing poverty features
+2026-02-15 14:19:04,232 - INFO - Merging state-level MPI data
+2026-02-15 14:19:04,242 - INFO - Merged state MPI data: 5 columns added
+2026-02-15 14:19:04,243 - INFO - Phase 2 complete: 784 LGAs with enriched features
+2026-02-15 14:19:04,243 - INFO -
+2026-02-15 14:19:04,243 - INFO - PHASE 3: UNSUPERVISED MACHINE LEARNING
+2026-02-15 14:19:04,244 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:19:04,244 - INFO - ================================================================================
+2026-02-15 14:19:04,244 - INFO - BUILDING ANALYTICAL ENGINE - PHASE 2 & 3
+2026-02-15 14:19:04,245 - INFO - ================================================================================
+2026-02-15 14:19:04,246 - INFO - Feature columns identified: ['mean_nightlight_intensity', 'MPI', 'Headcount_Ratio', 'Intensity_of_Deprivation', 'Vulnerable_to_Poverty', 'In_Severe_Poverty']
+2026-02-15 14:19:04,248 - INFO - Imputing missing values using KNN (k=5)
+2026-02-15 14:19:04,250 - INFO - Missing values before imputation:
+mean_nightlight_intensity    112
+MPI                            6
+Headcount_Ratio                6
+Intensity_of_Deprivation       6
+Vulnerable_to_Poverty          6
+In_Severe_Poverty              6
+dtype: int64
+2026-02-15 14:19:04,435 - INFO - Missing values after imputation: 0
+2026-02-15 14:19:04,435 - INFO - Standardizing features using StandardScaler
+2026-02-15 14:19:04,436 - INFO - This normalizes Survey Poverty Scores and Nightlights to comparable scales
+2026-02-15 14:19:04,444 - INFO - Standardized 6 features
+2026-02-15 14:19:04,444 - INFO - Applying PCA to reduce dimensionality (keeping 95.0% variance)
+2026-02-15 14:19:04,462 - INFO - PCA reduced 6 features to 3 components
+2026-02-15 14:19:04,463 - INFO - Explained variance ratio: [0.66639435 0.21085385 0.10756643]
+2026-02-15 14:19:04,463 - INFO - Total variance explained: 0.9848
+2026-02-15 14:19:04,463 - INFO - Performing K-Means clustering with k=4
+2026-02-15 14:19:07,561 - INFO - Clustering complete
+2026-02-15 14:19:07,562 - INFO - Silhouette Score: 0.4946
+2026-02-15 14:19:07,562 - INFO - Assigning meaningful labels to clusters
+2026-02-15 14:19:07,579 - INFO - Cluster statistics:
+   cluster  mean_nightlight  mean_poverty  count
+0        0         1.793413      6.345004    226
+1        1         0.938559     18.144936    235
+2        2         1.226911     10.995876    274
+3        3        14.268125      6.013899     49
+2026-02-15 14:19:07,590 - INFO - Cluster label distribution:
+cluster_label
+Medium Risk - Poor            274
+High Risk - Severe Poverty    235
+Low Risk - Vulnerable         226
+Minimal Risk - Wealthy         49
+Name: count, dtype: int64
+2026-02-15 14:19:07,592 - INFO - Cluster distribution:
+cluster
+0    226
+1    235
+2    274
+3     49
+Name: count, dtype: int64
+2026-02-15 14:19:07,592 - INFO - ================================================================================
+2026-02-15 14:19:07,592 - INFO - ANALYTICAL ENGINE COMPLETE - Silhouette Score: 0.4946
+2026-02-15 14:19:07,592 - INFO - ================================================================================
+2026-02-15 14:19:07,592 - INFO -
+2026-02-15 14:19:07,592 - INFO - ====================================================================================================
+2026-02-15 14:19:07,592 - INFO - MODEL VALIDATION METRICS
+2026-02-15 14:19:07,593 - INFO - ====================================================================================================
+2026-02-15 14:19:07,593 - INFO - Silhouette Score: 0.4946
+2026-02-15 14:19:07,593 - INFO - Interpretation: Scores > 0.5 indicate good cluster separation
+2026-02-15 14:19:07,593 - INFO -
+2026-02-15 14:19:07,593 - INFO - GENERATING OUTPUTS
+2026-02-15 14:19:07,593 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:19:07,593 - INFO - Saving CSV output to C:\Users\Michael\IOPHIN\data\processed\final_model_output.csv
+2026-02-15 14:19:07,607 - INFO - Saved 784 records to C:\Users\Michael\IOPHIN\data\processed\final_model_output.csv
+2026-02-15 14:19:07,607 - INFO - Saving GeoJSON output to C:\Users\Michael\IOPHIN\data\processed\hotspots.geojson
+2026-02-15 14:19:07,607 - INFO - Merging results with geometries using column: lganame
+2026-02-15 14:19:07,614 - INFO - Merged 740 LGAs with geometries
+2026-02-15 14:19:08,530 - INFO - Created 740 records
+2026-02-15 14:19:08,531 - INFO - Saved GeoJSON with 740 features to C:\Users\Michael\IOPHIN\data\processed\hotspots.geojson
+2026-02-15 14:19:08,532 - INFO -
+2026-02-15 14:19:08,532 - INFO - ====================================================================================================
+2026-02-15 14:19:08,532 - INFO - ANALYTICAL ENGINE EXECUTION COMPLETE
+2026-02-15 14:19:08,533 - INFO - ====================================================================================================
+2026-02-15 14:19:08,533 - INFO - CSV Output: C:\Users\Michael\IOPHIN\data\processed\final_model_output.csv
+2026-02-15 14:19:08,533 - INFO - GeoJSON Output: C:\Users\Michael\IOPHIN\data\processed\hotspots.geojson
+2026-02-15 14:19:08,533 - INFO -
+2026-02-15 14:19:08,533 - INFO - SUMMARY STATISTICS
+2026-02-15 14:19:08,533 - INFO - ----------------------------------------------------------------------------------------------------
+2026-02-15 14:19:08,534 - INFO - Total LGAs processed: 784
+2026-02-15 14:19:08,534 - INFO -
+Cluster Distribution:
+2026-02-15 14:19:08,535 - INFO -   Medium Risk - Poor: 274 LGAs (34.9%)
+2026-02-15 14:19:08,536 - INFO -   High Risk - Severe Poverty: 235 LGAs (30.0%)
+2026-02-15 14:19:08,536 - INFO -   Low Risk - Vulnerable: 226 LGAs (28.8%)
+2026-02-15 14:19:08,536 - INFO -   Minimal Risk - Wealthy: 49 LGAs (6.2%)
+2026-02-15 14:19:08,537 - INFO -
+Nightlight Intensity: 2.12 (mean)

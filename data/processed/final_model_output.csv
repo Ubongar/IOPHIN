@@ -1,775 +1,785 @@
-LGA_Name,State,Latitude,Longitude,mean_nightlight_intensity,MPI,cluster,cluster_label,risk_level
-Aba North,Abia,5.33333333,7.31666667,23.356809139033697,0.0419,0,Minimal Risk - Wealthy,Minimal
-Aba South,Abia,5.1,7.35,21.918540436486445,0.0419,0,Minimal Risk - Wealthy,Minimal
-Arochukwu,Abia,5.38333333,7.91666667,23.70973229430208,0.0419,0,Minimal Risk - Wealthy,Minimal
-Bende,Abia,5.56666667,7.63333333,25.969089569224074,0.0419,0,Minimal Risk - Wealthy,Minimal
-Ikwuano,Abia,5.43333333,7.56666667,20.96420655582999,0.0419,0,Minimal Risk - Wealthy,Minimal
-Isiala Ngwa North,Abia,5.388966,7.446948,21.052990469152455,0.0419,0,Minimal Risk - Wealthy,Minimal
-Isiala Ngwa South,Abia,5.36241,7.39998,26.546151786522174,0.0419,0,Minimal Risk - Wealthy,Minimal
-Isuikwuato,Abia,5.533333,7.483333,23.768971527458728,0.0419,0,Minimal Risk - Wealthy,Minimal
-Obi Ngwa,Abia,5.155402,7.457067,20.814106182195147,0.0419,0,Minimal Risk - Wealthy,Minimal
-Ohafia,Abia,5.61666667,7.83333333,22.927680130757892,0.0419,0,Minimal Risk - Wealthy,Minimal
-Osisioma,Abia,5.14972222,7.33027778,20.84363582156261,0.0419,0,Minimal Risk - Wealthy,Minimal
-Ugwunagbo,Abia,4.984474,7.325783,21.16719607928923,0.0419,0,Minimal Risk - Wealthy,Minimal
-Ukwa East,Abia,4.8872,7.3572,23.4848201546981,0.0419,0,Minimal Risk - Wealthy,Minimal
-Ukwa West,Abia,4.9884,7.2425,16.816692606026606,0.0419,0,Minimal Risk - Wealthy,Minimal
-Umu-Nneochi,Abia,5.985662,7.469005,15.3872558424609,0.0419,0,Minimal Risk - Wealthy,Minimal
-Umuahia North,Abia,5.5333,7.4833,19.77987075227708,0.0419,0,Minimal Risk - Wealthy,Minimal
-Umuahia South,Abia,5.515311,7.447314,18.464217978996725,0.0419,0,Minimal Risk - Wealthy,Minimal
-Demsa,Adamawa,9.41666667,12.13333333,14.642741997785821,0.182,2,Low Risk - Vulnerable,Low
-Fufore,Adamawa,9.21666667,12.65,11.375927773436365,0.182,2,Low Risk - Vulnerable,Low
-Ganye,Adamawa,8.43333,12.0667,11.429762235994126,0.182,2,Low Risk - Vulnerable,Low
-Girei,Adamawa,9.36667,12.55,18.196939646764662,0.182,2,Low Risk - Vulnerable,Low
-Gombi,Adamawa,10.16222222,12.74,11.531559998540391,0.182,2,Low Risk - Vulnerable,Low
-Guyuk,Adamawa,9.90555556,11.92833333,12.92480683406377,0.182,2,Low Risk - Vulnerable,Low
-Hong,Adamawa,10.23166667,12.93027778,7.7957554413596295,0.182,3,Medium Risk - Poor,Medium
-Jada,Adamawa,8.76666667,12.15,13.366851826424451,0.182,2,Low Risk - Vulnerable,Low
-Lamurde,Adamawa,9.6,11.78333333,13.666101109129597,0.182,2,Low Risk - Vulnerable,Low
-Madagali,Adamawa,10.74611111,13.41583333,7.5881303877330915,0.182,3,Medium Risk - Poor,Medium
-Maiha,Adamawa,9.99555556,13.21805556,13.669316275037016,0.182,2,Low Risk - Vulnerable,Low
-Mayo Belwa,Adamawa,9.05,12.05,12.631417270243581,0.182,2,Low Risk - Vulnerable,Low
-Michika,Adamawa,10.61666667,13.38333333,10.424918750620167,0.182,3,Medium Risk - Poor,Medium
-Mubi North,Adamawa,10.26666667,13.26666667,10.19488016331181,0.182,3,Medium Risk - Poor,Medium
-Mubi South,Adamawa,10.1874,13.39576,17.71536789352681,0.182,2,Low Risk - Vulnerable,Low
-Numan,Adamawa,9.46694444,12.03277778,13.558952785786197,0.182,2,Low Risk - Vulnerable,Low
-Shelleng,Adamawa,9.88472222,12.00888889,9.590756113132297,0.182,3,Medium Risk - Poor,Medium
-Song,Adamawa,9.82444444,12.625,15.352079196309564,0.182,2,Low Risk - Vulnerable,Low
-Toungo,Adamawa,8.11666667,12.05,12.637469050086931,0.182,2,Low Risk - Vulnerable,Low
-Yola North,Adamawa,9.188528,12.393866,14.782868125014264,0.182,2,Low Risk - Vulnerable,Low
-Yola South,Adamawa,9.249949,12.412618,8.15442496836067,0.182,3,Medium Risk - Poor,Medium
-Abak,Akwa Ibom,4.98333333,7.78333333,18.582108533304705,0.0446,2,Low Risk - Vulnerable,Low
-Eastern Obolo,Akwa Ibom,4.533333,7.7,24.057251047607373,0.0446,2,Low Risk - Vulnerable,Low
-Eket,Akwa Ibom,4.65,7.93333333,25.44873307998623,0.0446,2,Low Risk - Vulnerable,Low
-Esit Eket,Akwa Ibom,4.66055556,8.06666667,23.72632706356991,0.0446,2,Low Risk - Vulnerable,Low
-Essien Udim,Akwa Ibom,5.13333333,7.68333333,21.91972183283528,0.0446,2,Low Risk - Vulnerable,Low
-Etim Ekpo,Akwa Ibom,5.01666667,7.61666667,21.596688913232136,0.0446,2,Low Risk - Vulnerable,Low
-Etinan,Akwa Ibom,4.85,7.83333333,18.397767368897718,0.0446,2,Low Risk - Vulnerable,Low
-Ibeno,Akwa Ibom,4.568693,7.976396,21.236414714815872,0.0446,2,Low Risk - Vulnerable,Low
-Ibesikpo Asutan,Akwa Ibom,4.76666667,7.95,21.618083687120638,0.0446,2,Low Risk - Vulnerable,Low
-Ibiono Ibom,Akwa Ibom,5.23333333,7.88333333,25.238033358656743,0.0446,2,Low Risk - Vulnerable,Low
-Ika,Akwa Ibom,5.01666667,7.53333333,23.530854868705383,0.0446,2,Low Risk - Vulnerable,Low
-Ikono,Akwa Ibom,5.210278,7.793889,16.8236568739118,0.0446,2,Low Risk - Vulnerable,Low
-Ikot Abasi,Akwa Ibom,4.633333,7.65,24.23891924818438,0.0446,2,Low Risk - Vulnerable,Low
-Ikot Ekpene,Akwa Ibom,5.18333333,7.71666667,21.01141983875105,0.0446,2,Low Risk - Vulnerable,Low
-Ini,Akwa Ibom,5.4,7.733333,19.702567339082123,0.0446,2,Low Risk - Vulnerable,Low
-Itu,Akwa Ibom,5.16666667,7.98333333,24.0350288665226,0.0446,2,Low Risk - Vulnerable,Low
-Mbo,Akwa Ibom,4.65,8.23333333,26.32633190748785,0.0446,2,Low Risk - Vulnerable,Low
-Mkpat Enin,Akwa Ibom,4.73361111,7.74861111,25.859951477348595,0.0446,2,Low Risk - Vulnerable,Low
-Nsit Atai,Akwa Ibom,4.85,8.01666667,20.315680770332083,0.0446,2,Low Risk - Vulnerable,Low
-Nsit Ibom,Akwa Ibom,4.88333333,7.9,21.839029552446355,0.0446,2,Low Risk - Vulnerable,Low
-Nsit Ubium,Akwa Ibom,4.76666667,7.93333333,23.99379029421069,0.0446,2,Low Risk - Vulnerable,Low
-Obot Akara,Akwa Ibom,5.26667,7.6,24.926628721367074,0.0446,2,Low Risk - Vulnerable,Low
-Okobo,Akwa Ibom,4.83333333,8.13333333,21.429143966464128,0.0446,2,Low Risk - Vulnerable,Low
-Onna,Akwa Ibom,4.65,7.86666667,22.676356410008545,0.0446,2,Low Risk - Vulnerable,Low
-Oron,Akwa Ibom,4.82583333,8.23388889,19.562661757981914,0.0446,2,Low Risk - Vulnerable,Low
-Oruk Anam,Akwa Ibom,4.81666667,7.65,19.311380127757985,0.0446,2,Low Risk - Vulnerable,Low
-Udung Uko,Akwa Ibom,4.76666667,8.23333333,25.437577467182592,0.0446,2,Low Risk - Vulnerable,Low
-Ukanafun,Akwa Ibom,4.9,7.6,26.802053425712465,0.0446,2,Low Risk - Vulnerable,Low
-Uruan,Akwa Ibom,5.03333333,8.05,22.250636315258998,0.0446,2,Low Risk - Vulnerable,Low
-Urue Offong/Oruko,Akwa Ibom,4.71667,8.15,26.11059203367607,0.0446,2,Low Risk - Vulnerable,Low
-Uyo,Akwa Ibom,5.03333333,7.91666667,23.5515747551429,0.0446,2,Low Risk - Vulnerable,Low
-Aguata,Anambra,6.01666667,7.08333333,18.564640736184625,0.0089,0,Minimal Risk - Wealthy,Minimal
-Anambra East,Anambra,6.333333,6.866667,20.950854156525242,0.0089,0,Minimal Risk - Wealthy,Minimal
-Anambra West,Anambra,6.416667,6.683333,24.314109039397906,0.0089,0,Minimal Risk - Wealthy,Minimal
-Anaocha,Anambra,6.15,7.05,20.125855222670143,0.0089,0,Minimal Risk - Wealthy,Minimal
-Awka North,Anambra,6.233333,7.133333,24.760598307442017,0.0089,0,Minimal Risk - Wealthy,Minimal
-Awka South,Anambra,6.16666667,7.06666667,12.340764687730767,0.0089,0,Minimal Risk - Wealthy,Minimal
-Ayamelum,Anambra,6.6,6.966667,21.79904085312567,0.0089,0,Minimal Risk - Wealthy,Minimal
-Dunukofia,Anambra,6.271944,6.976667,20.250586544714512,0.0089,0,Minimal Risk - Wealthy,Minimal
-Ekwusigo,Anambra,6.054662,6.82859,19.526987288602395,0.0089,0,Minimal Risk - Wealthy,Minimal
-Idemili North,Anambra,6.097069,6.984745,20.614477669606504,0.0089,0,Minimal Risk - Wealthy,Minimal
-Idemili South,Anambra,6.100683,6.898364,14.36926059619732,0.0089,0,Minimal Risk - Wealthy,Minimal
-Ihiala,Anambra,5.85388889,6.86,20.166539896487464,0.0089,0,Minimal Risk - Wealthy,Minimal
-Njikoka,Anambra,6.183846,6.99191,21.23697905453524,0.0089,0,Minimal Risk - Wealthy,Minimal
-Nnewi North,Anambra,5.938767,5.938767,25.089481474224545,0.0089,0,Minimal Risk - Wealthy,Minimal
-Nnewi South,Anambra,5.938383,6.921821,19.101756685179055,0.0089,0,Minimal Risk - Wealthy,Minimal
-Ogbaru,Anambra,5.960656,6.731678,18.186540531320436,0.0089,0,Minimal Risk - Wealthy,Minimal
-Onitsha North,Anambra,6.189277,6.805853,18.649508209246388,0.0089,0,Minimal Risk - Wealthy,Minimal
-Onitsha South,Anambra,6.135818,6.788542,23.007903693106222,0.0089,0,Minimal Risk - Wealthy,Minimal
-Orumba North,Anambra,6.042599,7.213103,21.434388668979054,0.0089,0,Minimal Risk - Wealthy,Minimal
-Orumba South,Anambra,5.990942,5.990942,18.96216872869888,0.0089,0,Minimal Risk - Wealthy,Minimal
-Oyi,Anambra,5.25,6.21666667,23.573135639340066,0.0089,0,Minimal Risk - Wealthy,Minimal
-Alkaleri,Bauchi,9.88333333,10.5,13.057899328044122,0.4411,1,High Risk - Severe Poverty,High
-Bauchi,Bauchi,10.31583333,9.84416667,14.807601651598667,0.4411,1,High Risk - Severe Poverty,High
-Bogoro,Bauchi,9.66852,9.60395,11.090134058367944,0.4411,1,High Risk - Severe Poverty,High
-Damban,Bauchi,11.62592,10.78622,8.298506900206693,0.4411,1,High Risk - Severe Poverty,High
-Darazo,Bauchi,11.0,10.41,9.357008880603527,0.4411,1,High Risk - Severe Poverty,High
-Dass,Bauchi,10.126111,9.484704,7.890566495603643,0.4411,1,High Risk - Severe Poverty,High
-Gamawa,Bauchi,12.133333,10.533333,9.155028171193726,0.4411,1,High Risk - Severe Poverty,High
-Ganjuwa,Bauchi,10.868124,10.165283,11.580251156539667,0.4411,1,High Risk - Severe Poverty,High
-Giade,Bauchi,11.390251,10.199128,9.768171709927383,0.4411,1,High Risk - Severe Poverty,High
-Itas/Gadau,Bauchi,11.86666667,9.96666667,8.096238599874557,0.4411,1,High Risk - Severe Poverty,High
-Jama'are,Bauchi,11.669111,9.928958,4.948999113848758,0.4411,1,High Risk - Severe Poverty,High
-Katagum,Bauchi,12.28333333,10.35,6.704730711703922,0.4411,1,High Risk - Severe Poverty,High
-Kirfi,Bauchi,10.4,10.4,10.70518979041969,0.4411,1,High Risk - Severe Poverty,High
-Misau,Bauchi,11.313599,10.463126,7.4993035323351425,0.4411,1,High Risk - Severe Poverty,High
-Ningi,Bauchi,11.06666667,9.56666667,9.916142865001971,0.4411,1,High Risk - Severe Poverty,High
-Shira,Bauchi,11.50416667,10.01722222,10.737152570443614,0.4411,1,High Risk - Severe Poverty,High
-Tafawa Balewa,Bauchi,9.759094,9.553127,18.67370304363159,0.4411,1,High Risk - Severe Poverty,High
-Toro,Bauchi,10.059364,9.071724,12.938338778495515,0.4411,1,High Risk - Severe Poverty,High
-Warji,Bauchi,11.18333333,9.75,10.939317852168292,0.4411,1,High Risk - Severe Poverty,High
-Zaki,Bauchi,12.13333333,10.28333333,8.043328932701499,0.4411,1,High Risk - Severe Poverty,High
-Brass,Bayelsa,4.315,6.24166667,18.147019694102873,0.0644,2,Low Risk - Vulnerable,Low
-Ekeremor,Bayelsa,5.05,5.78333333,22.353791713652345,0.0644,2,Low Risk - Vulnerable,Low
-Kolokuma/Opokuma,Bayelsa,5.13333333,6.3,22.44735730982308,0.0644,2,Low Risk - Vulnerable,Low
-Nembe,Bayelsa,4.53690278,6.40621111,30.849254117455857,0.0644,2,Low Risk - Vulnerable,Low
-Ogbia,Bayelsa,4.78333333,6.33333333,22.389583785656633,0.0644,2,Low Risk - Vulnerable,Low
-Sagbama,Bayelsa,5.16666667,6.2,23.104642027000835,0.0644,2,Low Risk - Vulnerable,Low
-Southern Ijaw,Bayelsa,4.7,5.966667,23.02919803088427,0.0644,2,Low Risk - Vulnerable,Low
-Yenagoa,Bayelsa,5.03333333,6.33333333,18.960632567141403,0.0644,2,Low Risk - Vulnerable,Low
-Ado,Benue,7.8,7.65,20.36180178354506,0.1156,2,Low Risk - Vulnerable,Low
-Agatu,Benue,7.9,7.9,18.98913243806032,0.1156,2,Low Risk - Vulnerable,Low
-Apa,Benue,7.829754,8.069994,19.24692118112914,0.1156,2,Low Risk - Vulnerable,Low
-Buruku,Benue,7.416792,9.224674,14.971586975615782,0.1156,2,Low Risk - Vulnerable,Low
-Gboko,Benue,7.327778,8.995,22.086160272808296,0.1156,2,Low Risk - Vulnerable,Low
-Guma,Benue,7.823295,8.863239,12.681190151623156,0.1156,2,Low Risk - Vulnerable,Low
-Gwer East,Benue,7.298066,8.482303,19.69777262140081,0.1156,2,Low Risk - Vulnerable,Low
-Gwer West,Benue,7.584645,8.205478,23.935410217429933,0.1156,2,Low Risk - Vulnerable,Low
-Katsina Ala,Benue,7.16666667,9.28333333,15.228391024607934,0.1156,2,Low Risk - Vulnerable,Low
-Konshisha,Benue,7.071123,8.663878,16.692194151191682,0.1156,2,Low Risk - Vulnerable,Low
-Kwande,Benue,6.890043,9.233408,19.052201435262923,0.1156,2,Low Risk - Vulnerable,Low
-Logo,Benue,7.507748,9.350653,16.0074103776514,0.1156,2,Low Risk - Vulnerable,Low
-Makurdi,Benue,7.730556,8.536111,12.4202310468016,0.1156,2,Low Risk - Vulnerable,Low
-Obi,Benue,7.0,8.25,18.739022264418082,0.1156,2,Low Risk - Vulnerable,Low
-Ogbadibo,Benue,7.13907,7.668285,15.068282198821684,0.1156,2,Low Risk - Vulnerable,Low
-Ohimini,Benue,7.23015,7.927993,19.493810631905543,0.1156,2,Low Risk - Vulnerable,Low
-Oju,Benue,6.85,8.41666667,16.07506063729859,0.1156,2,Low Risk - Vulnerable,Low
-Okpokwu,Benue,7.06277778,8.21,23.057580995052618,0.1156,2,Low Risk - Vulnerable,Low
-Otukpo,Benue,7.19305556,8.14638889,15.797462342991286,0.1156,2,Low Risk - Vulnerable,Low
-Tarka,Benue,7.620833,8.881944,16.32548279138297,0.1156,2,Low Risk - Vulnerable,Low
-Ukum,Benue,7.530801,9.649268,19.912282992109006,0.1156,2,Low Risk - Vulnerable,Low
-Ushongo,Benue,7.135788,9.032921,14.569164390698134,0.1156,2,Low Risk - Vulnerable,Low
-Vandeikya,Benue,6.782346,9.069257,19.651021143812386,0.1156,2,Low Risk - Vulnerable,Low
-Abadam,Borno,13.610953,13.277664,9.232855602847282,0.2922,3,Medium Risk - Poor,Medium
-Askira/Uba,Borno,10.654724,12.907777,6.401435636316316,0.2922,3,Medium Risk - Poor,Medium
-Bama,Borno,11.51888889,13.68416667,10.049457135596914,0.2922,3,Medium Risk - Poor,Medium
-Bayo,Borno,10.441838,11.704237,12.42930572274527,0.2922,3,Medium Risk - Poor,Medium
-Biu,Borno,10.6111,12.195,13.65660195533193,0.2922,3,Medium Risk - Poor,Medium
-Chibok,Borno,10.86972222,12.84666667,7.083036767365753,0.2922,3,Medium Risk - Poor,Medium
-Damboa,Borno,11.15,12.75,6.2719635007471695,0.2922,3,Medium Risk - Poor,Medium
-Dikwa,Borno,12.0239,13.9158,10.051358036850694,0.2922,3,Medium Risk - Poor,Medium
-Gubio,Borno,12.4975,12.78,8.429287359699556,0.2922,3,Medium Risk - Poor,Medium
-Guzamala,Borno,12.94656,13.176822,7.391691891037628,0.2922,3,Medium Risk - Poor,Medium
-Gwoza,Borno,11.086111,13.691389,11.400455968490924,0.2922,3,Medium Risk - Poor,Medium
-Hawul,Borno,10.451308,12.116581,9.590643175264528,0.2922,3,Medium Risk - Poor,Medium
-Jere,Borno,11.89912,13.29155,9.43185443148301,0.2922,3,Medium Risk - Poor,Medium
-Kaga,Borno,11.810333,12.494153,9.791884759896043,0.2922,3,Medium Risk - Poor,Medium
-Kala/Balge,Borno,12.268627,14.464896,5.853025085920894,0.2922,3,Medium Risk - Poor,Medium
-Konduga,Borno,11.65166667,13.41944444,14.82732353343427,0.2922,3,Medium Risk - Poor,Medium
-Kukawa,Borno,12.91666667,13.56666667,8.121498762735362,0.2922,3,Medium Risk - Poor,Medium
-Kwaya Kusar,Borno,11.817338,13.120352,5.324746848392054,0.2922,3,Medium Risk - Poor,Medium
-Mafa,Borno,11.92583333,13.60555556,10.651327505901488,0.2922,3,Medium Risk - Poor,Medium
-Magumeri,Borno,12.115657,12.83101,5.377974329318033,0.2922,3,Medium Risk - Poor,Medium
-Maiduguri,Borno,11.83333333,13.15,11.227920491227355,0.2922,3,Medium Risk - Poor,Medium
-Marte,Borno,12.364596,13.826741,11.279928077022209,0.2922,3,Medium Risk - Poor,Medium
-Mobbar,Borno,13.103993,12.511041,3.863300384944869,0.2922,3,Medium Risk - Poor,Medium
-Monguno,Borno,12.68333333,13.6,10.056795067732963,0.2922,3,Medium Risk - Poor,Medium
-Ngala,Borno,12.371107,14.206223,9.029462120809493,0.2922,3,Medium Risk - Poor,Medium
-Nganzai,Borno,12.486253,13.209321,10.027007819983469,0.2922,3,Medium Risk - Poor,Medium
-Shani,Borno,10.183889,11.963889,17.85593428796184,0.2922,3,Medium Risk - Poor,Medium
-Abi,Cross River,6.833333,7.233333,18.13050299199139,0.0775,2,Low Risk - Vulnerable,Low
-Akamkpa,Cross River,5.326828,8.346262,19.61846884692753,0.0775,2,Low Risk - Vulnerable,Low
-Akpabuyo,Cross River,4.950439,8.393276,19.96391205112343,0.0775,2,Low Risk - Vulnerable,Low
-Bakassi,Cross River,4.58333333,8.6,20.919235825103684,0.0775,2,Low Risk - Vulnerable,Low
-Bekwarra,Cross River,6.69388889,8.9675,18.914250431757686,0.0775,2,Low Risk - Vulnerable,Low
-Biase,Cross River,5.557438,8.110474,22.44191326444993,0.0775,2,Low Risk - Vulnerable,Low
-Boki,Cross River,6.273889,9.01,20.815627737990056,0.0775,2,Low Risk - Vulnerable,Low
-Calabar Municipal,Cross River,4.974531,8.34241,25.065821087108073,0.0775,2,Low Risk - Vulnerable,Low
-Calabar South,Cross River,4.918822,8.320945,22.734695015633722,0.0775,2,Low Risk - Vulnerable,Low
-Etung,Cross River,5.858889,8.791667,25.17615757147195,0.0775,2,Low Risk - Vulnerable,Low
-Ikom,Cross River,6.08333333,8.61666667,19.57269618028613,0.0775,2,Low Risk - Vulnerable,Low
-Obanliku,Cross River,6.609277,9.250274,27.475286839768856,0.0775,2,Low Risk - Vulnerable,Low
-Obubra,Cross River,6.083333,8.333333,22.243669383295018,0.0775,2,Low Risk - Vulnerable,Low
-Obudu,Cross River,6.66666667,9.16666667,16.62852733075115,0.0775,2,Low Risk - Vulnerable,Low
-Odukpani,Cross River,5.079809,8.350403,19.161037845816658,0.0775,2,Low Risk - Vulnerable,Low
-Ogoja,Cross River,6.5,8.66666667,20.980750585729552,0.0775,2,Low Risk - Vulnerable,Low
-Yakurr,Cross River,5.806111,8.175,20.250722984022445,0.0775,2,Low Risk - Vulnerable,Low
-Yala,Cross River,6.7,8.6,21.275334822276275,0.0775,2,Low Risk - Vulnerable,Low
-Aniocha North,Delta,6.319994,6.476847,21.31305821372063,0.0507,0,Minimal Risk - Wealthy,Minimal
-Aniocha South,Delta,6.183072,6.524367,19.94870260202938,0.0507,0,Minimal Risk - Wealthy,Minimal
-Bomadi,Delta,5.161805,5.924511,19.669342185794783,0.0507,0,Minimal Risk - Wealthy,Minimal
-Burutu,Delta,5.35,5.516667,17.288791665942405,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ethiope East,Delta,5.63314,6.028192,19.927508483798935,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ethiope West,Delta,5.63314,6.028192,23.836249722970415,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ika North East,Delta,6.186379,6.200409,20.80285657239061,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ika South,Delta,6.252758,6.199664,16.290601003864033,0.0507,0,Minimal Risk - Wealthy,Minimal
-Isoko North,Delta,5.538333,6.216111,21.976210117553546,0.0507,0,Minimal Risk - Wealthy,Minimal
-Isoko South,Delta,5.538333,6.216111,22.61261947918651,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ndokwa East,Delta,5.669319,6.523171,18.5431230313966,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ndokwa West,Delta,5.815022,6.350772,21.36446465783658,0.0507,0,Minimal Risk - Wealthy,Minimal
-Okpe,Delta,5.43333333,5.95,21.841292835338,0.0507,0,Minimal Risk - Wealthy,Minimal
-Oshimili North,Delta,6.382652,6.624309,16.33911844650813,0.0507,0,Minimal Risk - Wealthy,Minimal
-Oshimili South,Delta,6.118256,6.66583,21.37018342104485,0.0507,0,Minimal Risk - Wealthy,Minimal
-Patani,Delta,5.2412505830419045,6.190626760617503,23.733185753020894,0.0507,0,Minimal Risk - Wealthy,Minimal
-Sapele,Delta,5.9,5.66666667,23.98248706952583,0.0507,0,Minimal Risk - Wealthy,Minimal
-Udu,Delta,5.75,5.716667,24.19473949610471,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ughelli North,Delta,9.75,8.71666667,8.900325236128726,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ughelli South,Delta,9.75,8.71666667,10.21985822025463,0.0507,0,Minimal Risk - Wealthy,Minimal
-Ukwuani,Delta,5.850198,6.246481,22.37804314162598,0.0507,0,Minimal Risk - Wealthy,Minimal
-Uvwie,Delta,5.87,6.001,22.334691192736624,0.0507,0,Minimal Risk - Wealthy,Minimal
-Warri North,Delta,6.000089,5.466481,22.078298398918143,0.0507,0,Minimal Risk - Wealthy,Minimal
-Warri South,Delta,5.519063,5.800606,33.053401811964164,0.0507,0,Minimal Risk - Wealthy,Minimal
-Warri South West,Delta,5.599713,5.454881,23.046578872079497,0.0507,0,Minimal Risk - Wealthy,Minimal
-Abakaliki,Ebonyi,6.33333333,8.1,23.273363600541796,0.0341,0,Minimal Risk - Wealthy,Minimal
-Afikpo North,Ebonyi,5.887936,7.953071,23.619466630479607,0.0341,0,Minimal Risk - Wealthy,Minimal
-Afikpo South,Ebonyi,5.96666667,7.86666667,22.554173753917393,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ebonyi,Ebonyi,6.25,8.08333333,19.087525606078962,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ezza North,Ebonyi,6.081572,7.995858,22.6470970014798,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ezza South,Ebonyi,6.177757,8.040377,17.859343696387285,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ishielu,Ebonyi,6.428567,7.818371,18.96574351977997,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ivo,Ebonyi,5.919317,7.55976,19.23860869651269,0.0341,0,Minimal Risk - Wealthy,Minimal
-Izzi,Ebonyi,6.385765,8.02549,20.007425758158966,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ohaozara,Ebonyi,6.030218,7.71407,27.416873040020526,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ohaukwu,Ebonyi,6.030218,7.71407,14.871101762224756,0.0341,0,Minimal Risk - Wealthy,Minimal
-Onicha,Ebonyi,6.11252,7.825484,22.36707391112354,0.0341,0,Minimal Risk - Wealthy,Minimal
-Ikwo,Ebonyi,12.473,7.487,2.749185726431042,0.0341,0,Minimal Risk - Wealthy,Minimal
-Akoko Edo,Edo,7.275622,6.107379,16.566293742631697,0.0358,0,Minimal Risk - Wealthy,Minimal
-Egor,Edo,6.382926,5.569175,23.034333130902098,0.0358,0,Minimal Risk - Wealthy,Minimal
-Esan Central,Edo,6.738727,6.218905,19.248719397286386,0.0358,0,Minimal Risk - Wealthy,Minimal
-Esan North East,Edo,6.7,6.333333,15.90009900621208,0.0358,0,Minimal Risk - Wealthy,Minimal
-Esan South East,Edo,6.659722,6.382222,17.067978212220094,0.0358,0,Minimal Risk - Wealthy,Minimal
-Esan West,Edo,6.753472,6.073766,21.065182586804028,0.0358,0,Minimal Risk - Wealthy,Minimal
-Etsako Central,Edo,7.08965,6.50146,16.16293344484859,0.0358,0,Minimal Risk - Wealthy,Minimal
-Etsako East,Edo,7.106769,6.687541,18.969171108745925,0.0358,0,Minimal Risk - Wealthy,Minimal
-Etsako West,Edo,6.913601,6.29955,18.84284685971144,0.0358,0,Minimal Risk - Wealthy,Minimal
-Igueben,Edo,6.6,6.58333333,17.37853229718255,0.0358,0,Minimal Risk - Wealthy,Minimal
-Ikpoba Okha,Edo,6.256981,5.722929,26.451203607975977,0.0358,0,Minimal Risk - Wealthy,Minimal
-Oredo,Edo,6.183772,5.596106,22.06754640695403,0.0358,0,Minimal Risk - Wealthy,Minimal
-Orhionmwon,Edo,6.294568,6.027932,13.868769580027177,0.0358,0,Minimal Risk - Wealthy,Minimal
-Ovia North East,Edo,6.29312,5.543304,20.506456284308282,0.0358,0,Minimal Risk - Wealthy,Minimal
-Ovia South West,Edo,6.567402,5.353142,17.413169945694833,0.0358,0,Minimal Risk - Wealthy,Minimal
-Owan East,Edo,6.943126,5.985832,21.204381344388672,0.0358,0,Minimal Risk - Wealthy,Minimal
-Owan West,Edo,6.907245,5.924599,16.341281124701897,0.0358,0,Minimal Risk - Wealthy,Minimal
-Uhunmwonde,Edo,6.617483,5.985682,18.9541580155993,0.0358,0,Minimal Risk - Wealthy,Minimal
-Ado-Ekiti,Ekiti,7.621111,5.221389,18.806073176941368,0.0532,2,Low Risk - Vulnerable,Low
-Efon,Ekiti,7.36666667,3.63333333,20.397265582510364,0.0532,2,Low Risk - Vulnerable,Low
-Ekiti East,Ekiti,7.749096,5.719633,13.43425211883267,0.0532,2,Low Risk - Vulnerable,Low
-Ekiti South West,Ekiti,7.617082,5.24349,16.295665632477153,0.0532,2,Low Risk - Vulnerable,Low
-Ekiti West,Ekiti,7.657723,5.223741,15.79305140651713,0.0532,2,Low Risk - Vulnerable,Low
-Emure,Ekiti,7.45,5.46667,15.673345642278862,0.0532,2,Low Risk - Vulnerable,Low
-Gbonyin,Ekiti,7.621623,5.239016,22.58645006084329,0.0532,2,Low Risk - Vulnerable,Low
-Ido-Osi,Ekiti,7.856505,5.175537,18.035268472882866,0.0532,2,Low Risk - Vulnerable,Low
-Ijero,Ekiti,7.81667,5.08333,13.117341476994863,0.0532,2,Low Risk - Vulnerable,Low
-Ikere,Ekiti,7.5,5.23333,20.28691918116433,0.0532,2,Low Risk - Vulnerable,Low
-Ikole,Ekiti,7.78333333,5.51666667,23.3331352710379,0.0532,2,Low Risk - Vulnerable,Low
-Ilejemeje,Ekiti,7.953263,5.230908,19.72420312165344,0.0532,2,Low Risk - Vulnerable,Low
-Irepodun/Ifelodun,Ekiti,7.621111,5.221389,12.733001442137958,0.0532,2,Low Risk - Vulnerable,Low
-Ise/Orun,Ekiti,7.46,5.42,16.160631121401245,0.0532,2,Low Risk - Vulnerable,Low
-Moba,Ekiti,7.987774,5.124049,20.358518787559866,0.0532,2,Low Risk - Vulnerable,Low
-Oye,Ekiti,7.79944444,5.32833333,14.811436063143656,0.0532,2,Low Risk - Vulnerable,Low
-Aninri,Enugu,6.05,7.58333333,21.764791624438686,0.03,0,Minimal Risk - Wealthy,Minimal
-Awgu,Enugu,6.1169,7.476,22.62343550028801,0.03,0,Minimal Risk - Wealthy,Minimal
-Enugu East,Enugu,6.53333,7.53333,16.68588192526575,0.03,0,Minimal Risk - Wealthy,Minimal
-Enugu North,Enugu,6.46666667,7.51666667,19.421423931814598,0.03,0,Minimal Risk - Wealthy,Minimal
-Enugu South,Enugu,6.4,7.5,10.00953131979278,0.03,0,Minimal Risk - Wealthy,Minimal
-Ezeagu,Enugu,6.75,7.33333333,15.96017041599713,0.03,0,Minimal Risk - Wealthy,Minimal
-Igbo Etiti,Enugu,6.66667,7.36667,18.442288885820517,0.03,0,Minimal Risk - Wealthy,Minimal
-Igbo Eze North,Enugu,6.98333,7.45,14.823323794105452,0.03,0,Minimal Risk - Wealthy,Minimal
-Igbo Eze South,Enugu,6.91667,7.4,23.597227251794905,0.03,0,Minimal Risk - Wealthy,Minimal
-Isi-Uzo,Enugu,6.78333333,7.71666667,14.6762425461181,0.03,0,Minimal Risk - Wealthy,Minimal
-Nkanu East,Enugu,6.33333333,7.65,18.546533219909048,0.03,0,Minimal Risk - Wealthy,Minimal
-Nkanu West,Enugu,6.3,7.55,20.325555071858272,0.03,0,Minimal Risk - Wealthy,Minimal
-Nsukka,Enugu,6.85666667,7.39583333,23.143819867198346,0.03,0,Minimal Risk - Wealthy,Minimal
-Oji-River,Enugu,6.26666667,7.26666667,15.69241354646168,0.03,0,Minimal Risk - Wealthy,Minimal
-Udenu,Enugu,6.91667,7.51667,22.18948459646488,0.03,0,Minimal Risk - Wealthy,Minimal
-Udi,Enugu,6.31667,7.43333,19.93069252305876,0.03,0,Minimal Risk - Wealthy,Minimal
-Uzo-Uwani,Enugu,6.75,7.2,16.088807386856146,0.03,0,Minimal Risk - Wealthy,Minimal
-Abaji,Federal Capital Territory,8.475556,6.943333,16.968531762789812,0.06434,0,Minimal Risk - Wealthy,Minimal
-Abuja,Federal Capital Territory,9.06666667,7.48333333,14.997179086720408,0.12804,2,Low Risk - Vulnerable,Low
-Bwari,Federal Capital Territory,9.280278,7.38,12.172126708523617,0.18531999999999998,3,Medium Risk - Poor,Medium
-Gwagwalada,Federal Capital Territory,8.939167,7.075833,14.864405594970057,0.16502,3,Medium Risk - Poor,Medium
-Kuje,Federal Capital Territory,8.88222222,7.22027778,13.61294810941472,0.18826,3,Medium Risk - Poor,Medium
-Kwali,Federal Capital Territory,8.839722,7.054167,15.194441375753742,0.14004,2,Low Risk - Vulnerable,Low
-Akko,Gombe,10.10706761352457,11.041261362116334,14.305590136513999,0.3345,1,High Risk - Severe Poverty,High
-Balanga,Gombe,9.96666667,11.68333333,17.358050448436053,0.3345,3,Medium Risk - Poor,Medium
-Billiri,Gombe,9.83333333,11.15,9.153220183519451,0.3345,1,High Risk - Severe Poverty,High
-Dukku,Gombe,10.81666667,10.76666667,17.2991001239688,0.3345,3,Medium Risk - Poor,Medium
-Funakaye,Gombe,10.85,11.43333333,4.977069941432494,0.3345,1,High Risk - Severe Poverty,High
-Gombe,Gombe,10.28333333,11.16666667,11.51131139489325,0.3345,1,High Risk - Severe Poverty,High
-Kaltungo,Gombe,9.88333333,11.43333333,14.53161829945373,0.3345,1,High Risk - Severe Poverty,High
-Kwami,Gombe,10.5,11.25,12.376308943205096,0.3345,1,High Risk - Severe Poverty,High
-Nafada,Gombe,11.1333,11.25,8.398634780538217,0.3345,1,High Risk - Severe Poverty,High
-Shongom,Gombe,9.65,11.2167,12.608966588928173,0.3345,1,High Risk - Severe Poverty,High
-Yamaltu/Deba,Gombe,10.2167,11.3833,10.6209305360235,0.3345,1,High Risk - Severe Poverty,High
-Aboh Mbaise,Imo,5.45,7.23333333,19.865239069167366,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ahiazu Mbaise,Imo,5.546985,7.270299,23.988169631063073,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ehime Mbano,Imo,5.66258,7.30387,22.27921979789514,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ezinihitte Mbaise,Imo,5.50511,7.367715,19.444384554218036,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ideato North,Imo,5.50511,7.367715,24.22191296629975,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ideato South,Imo,5.85,7.1,21.755231902629827,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ihitte/Uboma,Imo,5.616412,7.349424,23.739095696516877,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ikeduru,Imo,5.550556,7.066389,23.321107865770834,0.0183,0,Minimal Risk - Wealthy,Minimal
-Isiala Mbano,Imo,5.703582,7.179541,18.63918430723378,0.0183,0,Minimal Risk - Wealthy,Minimal
-Isu,Imo,5.68388889,7.06888889,19.48501243940909,0.0183,0,Minimal Risk - Wealthy,Minimal
-Mbaitoli,Imo,5.587778,7.05,23.599658155369784,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ngor Okpala,Imo,5.496233,7.043545,23.371978136300392,0.0183,0,Minimal Risk - Wealthy,Minimal
-Njaba,Imo,5.702103,7.018633,21.066422558107554,0.0183,0,Minimal Risk - Wealthy,Minimal
-Nkwerre,Imo,5.75,7.1,21.385315489926345,0.0183,0,Minimal Risk - Wealthy,Minimal
-Nwangele,Imo,5.725859,7.119447,24.914610027365274,0.0183,0,Minimal Risk - Wealthy,Minimal
-Obowo,Imo,5.601592,7.320757,19.55543517349251,0.0183,0,Minimal Risk - Wealthy,Minimal
-Oguta,Imo,5.71166667,6.80944444,22.751292143510113,0.0183,0,Minimal Risk - Wealthy,Minimal
-Ohaji/Egbema,Imo,5.305833,6.945556,21.315089382698318,0.0183,0,Minimal Risk - Wealthy,Minimal
-Okigwe,Imo,5.483,7.55,20.914289730318337,0.0183,0,Minimal Risk - Wealthy,Minimal
-Onuimo,Imo,5.77363,7.2411,24.282403895961572,0.0183,0,Minimal Risk - Wealthy,Minimal
-Orlu,Imo,5.79638889,7.03888889,23.41680460696409,0.0183,0,Minimal Risk - Wealthy,Minimal
-Orsu,Imo,5.853889,6.86,23.266084248001917,0.0183,0,Minimal Risk - Wealthy,Minimal
-Oru East,Imo,5.983333,6.983333,24.483103761462985,0.0183,0,Minimal Risk - Wealthy,Minimal
-Oru West,Imo,5.735833,6.883333,21.12467886489828,0.0183,0,Minimal Risk - Wealthy,Minimal
-Owerri Municipal,Imo,5.485,7.035,23.609192253884892,0.0183,0,Minimal Risk - Wealthy,Minimal
-Owerri North,Imo,5.456667,7.102778,20.68919907021963,0.0183,0,Minimal Risk - Wealthy,Minimal
-Owerri West,Imo,5.476513,6.979718,22.552806397465325,0.0183,0,Minimal Risk - Wealthy,Minimal
-Auyo,Jigawa,12.36,9.98555556,7.422904176896946,0.4377,1,High Risk - Severe Poverty,High
-Babura,Jigawa,12.63333333,8.96666667,7.557654574978155,0.4377,1,High Risk - Severe Poverty,High
-Biriniwa,Jigawa,12.7833,10.2333,8.75220441631074,0.4377,1,High Risk - Severe Poverty,High
-Birnin Kudu,Jigawa,11.45,9.475,7.178671290299583,0.4377,1,High Risk - Severe Poverty,High
-Buji,Jigawa,11.66371,9.730518,15.483075167056379,0.4377,1,High Risk - Severe Poverty,High
-Dutse,Jigawa,11.70111111,9.34194444,6.113058975500894,0.4377,1,High Risk - Severe Poverty,High
-Gagarawa,Jigawa,12.407564,9.528397,4.0756395016368,0.4377,1,High Risk - Severe Poverty,High
-Garki,Jigawa,12.432259,9.181244,11.143147960500201,0.4377,1,High Risk - Severe Poverty,High
-Gumel,Jigawa,12.62833333,9.38972222,9.651654761888807,0.4377,1,High Risk - Severe Poverty,High
-Guri,Jigawa,12.633757685656764,10.481106764515644,9.138177419842936,0.4377,1,High Risk - Severe Poverty,High
-Gwaram,Jigawa,11.185833,9.968611,12.046703867792838,0.4377,1,High Risk - Severe Poverty,High
-Gwiwa,Jigawa,12.736914,8.271095,7.022765021459254,0.4377,1,High Risk - Severe Poverty,High
-Hadejia,Jigawa,12.45,10.04,4.941570225542506,0.4377,1,High Risk - Severe Poverty,High
-Jahun,Jigawa,12.06666667,9.63333333,8.627413674581177,0.4377,1,High Risk - Severe Poverty,High
-Kafin Hausa,Jigawa,11.981763,8.496467,6.538322205463662,0.4377,1,High Risk - Severe Poverty,High
-Kaugama,Jigawa,12.4833,9.73333,10.492092540253253,0.4377,1,High Risk - Severe Poverty,High
-Kazaure,Jigawa,12.6528,8.41194,6.786561195493585,0.4377,1,High Risk - Severe Poverty,High
-Kiri Kasama,Jigawa,12.594408,10.214753,4.868025749622465,0.4377,1,High Risk - Severe Poverty,High
-Kiyawa,Jigawa,11.78472222,9.60833333,7.999731375041017,0.4377,1,High Risk - Severe Poverty,High
-Maigatari,Jigawa,12.804038,9.448007,8.164051702826871,0.4377,1,High Risk - Severe Poverty,High
-Malam Madori,Jigawa,12.554071,10.028136,5.734017681588074,0.4377,1,High Risk - Severe Poverty,High
-Miga,Jigawa,12.23333333,9.71666667,5.600005493300703,0.4377,1,High Risk - Severe Poverty,High
-Ringim,Jigawa,12.28333333,9.46666667,8.697728314475736,0.4377,1,High Risk - Severe Poverty,High
-Roni,Jigawa,12.566481,8.347088,8.135271053326168,0.4377,1,High Risk - Severe Poverty,High
-Sule Tankarkar,Jigawa,12.65577,9.18751,5.7009638138866086,0.4377,1,High Risk - Severe Poverty,High
-Taura,Jigawa,12.2724893,9.36241882485775,6.57523982314503,0.4377,1,High Risk - Severe Poverty,High
-Yankwashi,Jigawa,12.743623,8.53892,7.742237152072908,0.4377,1,High Risk - Severe Poverty,High
-Birnin Gwari,Kaduna,10.6667,6.55,6.8556803155080255,0.1671,3,Medium Risk - Poor,Medium
-Chikun,Kaduna,10.285059,7.110283,7.740824016870333,0.1671,3,Medium Risk - Poor,Medium
-Giwa,Kaduna,11.280784,7.417606,7.816432676242689,0.1671,3,Medium Risk - Poor,Medium
-Igabi,Kaduna,10.78333333,7.76666667,10.326325224864458,0.1671,3,Medium Risk - Poor,Medium
-Ikara,Kaduna,11.1833,8.23333,11.099456036794013,0.1671,3,Medium Risk - Poor,Medium
-Jaba,Kaduna,9.44818,8.00845,18.063041990848653,0.1671,3,Medium Risk - Poor,Medium
-Jema'a,Kaduna,9.578827,8.292147,15.948658209606055,0.1671,3,Medium Risk - Poor,Medium
-Kachia,Kaduna,9.872636,7.955089,12.308245750109718,0.1671,3,Medium Risk - Poor,Medium
-Kaduna North,Kaduna,9.923174,7.430551,12.629936716291933,0.1671,3,Medium Risk - Poor,Medium
-Kaduna South,Kaduna,10.464834,7.418024,8.596077246086573,0.1671,3,Medium Risk - Poor,Medium
-Kagarko,Kaduna,9.45,7.68333333,13.57779393202283,0.1671,3,Medium Risk - Poor,Medium
-Kajuru,Kaduna,9.489736,7.695075,12.687885423239582,0.1671,3,Medium Risk - Poor,Medium
-Kaura,Kaduna,9.630686,8.503075,14.240117021014266,0.1671,3,Medium Risk - Poor,Medium
-Kauru,Kaduna,10.65,8.15,8.75164050934303,0.1671,3,Medium Risk - Poor,Medium
-Kubau,Kaduna,10.96289,8.392213,12.165592882723516,0.1671,3,Medium Risk - Poor,Medium
-Kudan,Kaduna,11.26478,7.648952,14.60199007900773,0.1671,3,Medium Risk - Poor,Medium
-Lere,Kaduna,10.416589,8.681673,11.373874894629425,0.1671,3,Medium Risk - Poor,Medium
-Makarfi,Kaduna,11.29795,7.96917,11.142568506296822,0.1671,3,Medium Risk - Poor,Medium
-Sabon Gari,Kaduna,11.1167,7.73333,12.370365315133338,0.1671,3,Medium Risk - Poor,Medium
-Sanga,Kaduna,9.225183,8.459182,12.879305924342491,0.1671,3,Medium Risk - Poor,Medium
-Soba,Kaduna,10.984935,8.058804,11.235740785431249,0.1671,3,Medium Risk - Poor,Medium
-Zangon Kataf,Kaduna,9.784597,8.283949,13.001916542345384,0.1671,3,Medium Risk - Poor,Medium
-Zaria,Kaduna,11.06666667,7.7,10.693028295646494,0.1671,3,Medium Risk - Poor,Medium
-Ajingi,Kano,11.97,9.03916667,6.274303988433598,0.2497,3,Medium Risk - Poor,Medium
-Albasu,Kano,11.67388889,9.14111111,9.259086082776825,0.2497,3,Medium Risk - Poor,Medium
-Bagwai,Kano,12.15777778,8.13583333,9.711772653736348,0.2497,3,Medium Risk - Poor,Medium
-Bebeji,Kano,11.66666667,8.26666667,13.553430823385124,0.2497,3,Medium Risk - Poor,Medium
-Bichi,Kano,12.23416667,8.24111111,10.942812478255618,0.2497,3,Medium Risk - Poor,Medium
-Bunkure,Kano,11.7,8.55,15.592880712534669,0.2497,3,Medium Risk - Poor,Medium
-Dala,Kano,12.01666667,8.48333333,6.197957311335852,0.2497,3,Medium Risk - Poor,Medium
-Dambatta,Kano,12.43305556,8.51527778,10.284184130162034,0.2497,3,Medium Risk - Poor,Medium
-Dawakin Kudu,Kano,11.83472222,8.59805556,9.413914917215054,0.2497,3,Medium Risk - Poor,Medium
-Dawakin Tofa,Kano,12.10277778,8.33138889,14.897186579653015,0.2497,3,Medium Risk - Poor,Medium
-Doguwa,Kano,10.75,8.73333333,8.608438483934545,0.2497,3,Medium Risk - Poor,Medium
-Fagge,Kano,12.00666667,8.52916667,6.0008344734576715,0.2497,3,Medium Risk - Poor,Medium
-Gabasawa,Kano,12.1,8.88333333,6.5351554036679325,0.2497,3,Medium Risk - Poor,Medium
-Garko,Kano,11.65,8.9,2.8616461670705773,0.2497,3,Medium Risk - Poor,Medium
-Garun Malam,Kano,11.6833,8.36667,7.589468274957717,0.2497,3,Medium Risk - Poor,Medium
-Gaya,Kano,11.86805556,9.01111111,6.519824235338905,0.2497,3,Medium Risk - Poor,Medium
-Gezawa,Kano,12.1,8.73333333,8.784514699428623,0.2497,3,Medium Risk - Poor,Medium
-Gwale,Kano,11.96666667,8.5,9.625267927331477,0.2497,3,Medium Risk - Poor,Medium
-Gwarzo,Kano,11.91666667,7.93333333,14.328512517647658,0.2497,3,Medium Risk - Poor,Medium
-Kabo,Kano,11.89146325,8.200628471157401,11.601678354558151,0.2497,3,Medium Risk - Poor,Medium
-Kano Municipal,Kano,11.95194444,8.54027778,6.89873349301279,0.2497,3,Medium Risk - Poor,Medium
-Karaye,Kano,11.78333333,8.01666667,6.271422665954926,0.2497,3,Medium Risk - Poor,Medium
-Kibiya,Kano,11.53333333,8.66666667,10.942424194519518,0.2497,3,Medium Risk - Poor,Medium
-Kiru,Kano,11.7,8.13333333,5.172633718938074,0.2497,3,Medium Risk - Poor,Medium
-Kunchi,Kano,12.50138889,8.27166667,13.024931857563061,0.2497,3,Medium Risk - Poor,Medium
-Kura,Kano,11.77138889,8.43027778,12.52887592216386,0.2497,3,Medium Risk - Poor,Medium
-Madobi,Kano,11.77722222,8.28833333,7.571361943685883,0.2497,3,Medium Risk - Poor,Medium
-Makoda,Kano,12.41861111,8.4325,2.5567075327273656,0.2497,3,Medium Risk - Poor,Medium
-Minjibir,Kano,12.17833333,8.65916667,12.23828380249624,0.2497,3,Medium Risk - Poor,Medium
-Nasarawa,Kano,8.53333333,8.3,15.123047144242147,0.2497,3,Medium Risk - Poor,Medium
-Rano,Kano,11.55722222,8.58333333,13.132337835920385,0.2497,3,Medium Risk - Poor,Medium
-Rimin Gado,Kano,11.965,8.25,3.8200503636168976,0.2497,3,Medium Risk - Poor,Medium
-Rogo,Kano,11.56666667,7.83333333,7.6018749311386795,0.2497,3,Medium Risk - Poor,Medium
-Shanono,Kano,12.05,7.98333333,8.449064439154547,0.2497,3,Medium Risk - Poor,Medium
-Sumaila,Kano,11.53333333,8.96666667,9.607608461294227,0.2497,3,Medium Risk - Poor,Medium
-Takai,Kano,11.4853125,9.156044842198048,8.21251192556227,0.2497,3,Medium Risk - Poor,Medium
-Tarauni,Kano,11.96666667,8.56666667,10.468549797042494,0.2497,3,Medium Risk - Poor,Medium
-Tofa,Kano,12.05,8.26666667,5.230472051852214,0.2497,3,Medium Risk - Poor,Medium
-Tsanyawa,Kano,12.3,7.98333333,7.506194884936117,0.2497,3,Medium Risk - Poor,Medium
-Tudun Wada,Kano,11.25,8.4,10.394220235135695,0.2497,3,Medium Risk - Poor,Medium
-Ungogo,Kano,12.09055556,8.49666667,9.895538722176244,0.2497,3,Medium Risk - Poor,Medium
-Warawa,Kano,11.88333333,8.68333333,10.90151131426667,0.2497,3,Medium Risk - Poor,Medium
-Wudil,Kano,11.81666667,8.85,5.526073724486391,0.2497,3,Medium Risk - Poor,Medium
-kumbotso,Kano,11.88805556,8.50277778,4.154879707793132,0.2497,3,Medium Risk - Poor,Medium
-Bakori,Katsina,11.55,7.43333333,13.266363805695525,0.3331,3,Medium Risk - Poor,Medium
-Batagarawa,Katsina,12.9,7.61666667,7.730275375938773,0.3331,1,High Risk - Severe Poverty,High
-Batsari,Katsina,12.75277778,7.24194444,4.782318170330337,0.3331,1,High Risk - Severe Poverty,High
-Baure,Katsina,12.78333333,8.76666667,11.620122606567568,0.3331,1,High Risk - Severe Poverty,High
-Bindawa,Katsina,12.71666667,7.83333333,7.447023902878573,0.3331,1,High Risk - Severe Poverty,High
-Charanchi,Katsina,12.675,7.7275,10.721224892191476,0.3331,1,High Risk - Severe Poverty,High
-Dan Musa,Katsina,12.26388889,7.33388889,8.208111004230325,0.3331,1,High Risk - Severe Poverty,High
-DanDume,Katsina,11.41666667,7.2,15.88224377464596,0.3331,3,Medium Risk - Poor,Medium
-Danja,Katsina,11.38333333,7.56666667,15.032689207329614,0.3331,3,Medium Risk - Poor,Medium
-Daura,Katsina,13.03638889,8.31777778,5.713663114562779,0.3331,1,High Risk - Severe Poverty,High
-Dutsi,Katsina,12.82527778,8.14277778,9.797490632863063,0.3331,1,High Risk - Severe Poverty,High
-Dutsin-Ma,Katsina,12.455,7.49138889,9.559461188755442,0.3331,1,High Risk - Severe Poverty,High
-Faskari,Katsina,11.71666667,7.03333333,13.205894672597044,0.3331,3,Medium Risk - Poor,Medium
-Funtua,Katsina,11.53333333,7.31666667,6.571896298259686,0.3331,1,High Risk - Severe Poverty,High
-Ingawa,Katsina,12.63972222,8.05027778,9.312043279995319,0.3331,1,High Risk - Severe Poverty,High
-Jibia,Katsina,13.09166667,7.22638889,9.52527346054876,0.3331,1,High Risk - Severe Poverty,High
-Kafur,Katsina,11.65,7.7,3.9571148807306553,0.3331,1,High Risk - Severe Poverty,High
-Kaita,Katsina,13.08055556,7.75388889,2.8224466820026723,0.3331,1,High Risk - Severe Poverty,High
-Kankara,Katsina,11.930319,7.412649,2.554998806719695,0.3331,1,High Risk - Severe Poverty,High
-Kankia,Katsina,12.46666667,7.8,6.791779496666324,0.3331,1,High Risk - Severe Poverty,High
-Katsina,Katsina,12.98888889,7.60083333,8.708182327387885,0.3331,1,High Risk - Severe Poverty,High
-Kurfi,Katsina,12.66611111,7.48305556,11.708182276288085,0.3331,1,High Risk - Severe Poverty,High
-Kusada,Katsina,12.46666667,7.98333333,7.822284341259324,0.3331,1,High Risk - Severe Poverty,High
-Mai'Adua,Katsina,13.19055556,8.21166667,11.038068856713874,0.3331,1,High Risk - Severe Poverty,High
-Malumfashi,Katsina,11.8,7.61666667,4.793028965355323,0.3331,1,High Risk - Severe Poverty,High
-Mani,Katsina,12.85611111,7.87444444,1.7109638019345335,0.3331,1,High Risk - Severe Poverty,High
-Mashi,Katsina,13.1,8.0,6.166690243310143,0.3331,1,High Risk - Severe Poverty,High
-Matazu,Katsina,12.2333,7.66667,9.218929686817921,0.3331,1,High Risk - Severe Poverty,High
-Musawa,Katsina,12.12944444,7.66888889,8.176360215717718,0.3331,1,High Risk - Severe Poverty,High
-Rimi,Katsina,12.85,7.71555556,0.6310070398803695,0.3331,1,High Risk - Severe Poverty,High
-Sabuwa,Katsina,11.3,7.11666667,9.665973221461632,0.3331,1,High Risk - Severe Poverty,High
-Safana,Katsina,12.5,7.23333333,3.619924838485439,0.3331,1,High Risk - Severe Poverty,High
-Sandamu,Katsina,12.93333333,8.36666667,8.675684326490114,0.3331,1,High Risk - Severe Poverty,High
-Zango,Katsina,12.93333333,8.53333333,7.766461418290543,0.3331,1,High Risk - Severe Poverty,High
-Aliero,Kebbi,12.29654,4.42793,5.120613981017932,0.4373,1,High Risk - Severe Poverty,High
-Arewa Dandi,Kebbi,12.688388,4.074184,5.614956587989918,0.4373,1,High Risk - Severe Poverty,High
-Argungu,Kebbi,12.73333333,4.51666667,3.8890261143331424,0.4373,1,High Risk - Severe Poverty,High
-Augie,Kebbi,12.88333333,4.6,6.5786293881804845,0.4373,1,High Risk - Severe Poverty,High
-Bagudo,Kebbi,11.400095,4.225767,12.598570301503713,0.4373,1,High Risk - Severe Poverty,High
-Birnin Kebbi,Kebbi,12.45361111,4.20027778,4.668932980993366,0.4373,1,High Risk - Severe Poverty,High
-Bunza,Kebbi,12.0916,4.0108,9.862272886553534,0.4373,1,High Risk - Severe Poverty,High
-Dandi,Kebbi,12.68333333,8.66666667,5.575893824882677,0.4373,1,High Risk - Severe Poverty,High
-Danko-Wasagu,Kebbi,11.395688,5.485568,7.363338843212967,0.4373,1,High Risk - Severe Poverty,High
-Fakai,Kebbi,11.547523,4.96493,9.117196260136325,0.4373,1,High Risk - Severe Poverty,High
-Gwandu,Kebbi,12.50222222,4.6425,4.423161932741876,0.4373,1,High Risk - Severe Poverty,High
-Jega,Kebbi,12.3667,4.6333,6.138985423958453,0.4373,1,High Risk - Severe Poverty,High
-Kalgo,Kebbi,12.33257,4.20035,4.274559662233452,0.4373,1,High Risk - Severe Poverty,High
-Koko/Besse,Kebbi,11.45855,4.43782,15.510408738749165,0.4373,1,High Risk - Severe Poverty,High
-Maiyama,Kebbi,11.99054,4.35394,8.658043995915186,0.4373,1,High Risk - Severe Poverty,High
-Ngaski,Kebbi,10.40709,4.71781,9.619976816022241,0.4373,1,High Risk - Severe Poverty,High
-Sakaba,Kebbi,11.065401,5.596032,11.044471072202665,0.4373,1,High Risk - Severe Poverty,High
-Shanga,Kebbi,11.1958,4.5675,9.80474919092751,0.4373,1,High Risk - Severe Poverty,High
-Suru,Kebbi,11.83,4.096667,8.210424541400329,0.4373,1,High Risk - Severe Poverty,High
-Yauri,Kebbi,11.395688,5.485568,11.584457440130276,0.4373,1,High Risk - Severe Poverty,High
-Zuru,Kebbi,11.435,5.235,11.935856470141914,0.4373,1,High Risk - Severe Poverty,High
-Adavi,Kogi,7.66666667,6.45,15.608496557168417,0.0638,2,Low Risk - Vulnerable,Low
-Ajaokuta,Kogi,7.55611111,6.655,15.69365639806596,0.0638,2,Low Risk - Vulnerable,Low
-Ankpa,Kogi,7.43333333,7.63333333,16.841511588545067,0.0638,2,Low Risk - Vulnerable,Low
-Bassa,Kogi,7.9,7.05,9.827569845793244,0.0638,2,Low Risk - Vulnerable,Low
-Dekina,Kogi,7.58333333,7.2,12.82109349340434,0.0638,2,Low Risk - Vulnerable,Low
-Ibaji,Kogi,6.86666667,6.8,22.900622802333572,0.0638,2,Low Risk - Vulnerable,Low
-Idah,Kogi,7.08333333,6.75,23.30156982050385,0.0638,2,Low Risk - Vulnerable,Low
-Igalamela Odolu,Kogi,7.08333333,7.08333333,17.619558561330862,0.0638,2,Low Risk - Vulnerable,Low
-Ijumu,Kogi,7.85,5.96666667,18.563004229167298,0.0638,2,Low Risk - Vulnerable,Low
-Kabba/Bunu,Kogi,8.11666667,6.15,17.233750463630606,0.0638,2,Low Risk - Vulnerable,Low
-Kogi,Kogi,7.5,6.7,26.76997576536571,0.0638,2,Low Risk - Vulnerable,Low
-Lokoja,Kogi,7.80194444,6.74416667,20.28816919430373,0.0638,2,Low Risk - Vulnerable,Low
-Mopa-Muro,Kogi,8.09722222,5.89583333,15.955136125557697,0.0638,2,Low Risk - Vulnerable,Low
-Ofu,Kogi,7.33333333,7.08333333,15.00004535819872,0.0638,2,Low Risk - Vulnerable,Low
-Ogori/Magongo,Kogi,7.483333,6.216667,12.74732837922728,0.0638,2,Low Risk - Vulnerable,Low
-Okehi,Kogi,7.7,6.3,17.74372424760167,0.0638,2,Low Risk - Vulnerable,Low
-Okene,Kogi,7.55,6.23333333,15.16428110414709,0.0638,2,Low Risk - Vulnerable,Low
-Olamaboro,Kogi,7.18333,7.56667,13.899912211206978,0.0638,2,Low Risk - Vulnerable,Low
-Omala,Kogi,7.81666667,7.51666667,14.960281347272419,0.0638,2,Low Risk - Vulnerable,Low
-Yagba East,Kogi,8.16666667,5.7,12.955355989156814,0.0638,2,Low Risk - Vulnerable,Low
-Yagba West,Kogi,8.25,5.55,21.094758245217694,0.0638,2,Low Risk - Vulnerable,Low
-Asa,Kwara,8.324804,4.533673,18.52864461084835,0.0962,0,Minimal Risk - Wealthy,Minimal
-Baruten,Kwara,9.58333333,3.25,13.342748756050145,0.0962,0,Minimal Risk - Wealthy,Minimal
-Edu,Kwara,8.841903,5.399178,19.289359756670073,0.0962,0,Minimal Risk - Wealthy,Minimal
-Ekiti,Kwara,8.139435,5.32809,16.486568262942853,0.0962,0,Minimal Risk - Wealthy,Minimal
-Ifelodun,Kwara,8.820023,4.967322,12.309434736015206,0.0962,0,Minimal Risk - Wealthy,Minimal
-Ilorin East,Kwara,8.573234,4.703608,19.95623757180897,0.0962,0,Minimal Risk - Wealthy,Minimal
-Ilorin South,Kwara,8.498688,4.562779,17.152687471053977,0.0962,0,Minimal Risk - Wealthy,Minimal
-Ilorin West,Kwara,8.480048,4.614006,12.46149887702063,0.0962,0,Minimal Risk - Wealthy,Minimal
-Irepodun,Kwara,8.487457,4.527301,14.987403305749176,0.0962,0,Minimal Risk - Wealthy,Minimal
-Isin,Kwara,8.2579064,5.038849070678933,13.390665779845728,0.0962,0,Minimal Risk - Wealthy,Minimal
-Kaiama,Kwara,9.605193,3.941946,9.174548147106991,0.0962,3,Medium Risk - Poor,Medium
-Moro,Kwara,8.845,4.556667,17.621865982594922,0.0962,0,Minimal Risk - Wealthy,Minimal
-Offa,Kwara,8.147,4.72,21.96758326141039,0.0962,0,Minimal Risk - Wealthy,Minimal
-Oke-Ero,Kwara,8.088888,5.144659,12.159854618542575,0.0962,0,Minimal Risk - Wealthy,Minimal
-Oyun,Kwara,8.16827,4.65212,17.88570105007171,0.0962,0,Minimal Risk - Wealthy,Minimal
-Pategi,Kwara,8.73333333,5.75,13.114738972634516,0.0962,0,Minimal Risk - Wealthy,Minimal
-Agege,Lagos,6.62194444,3.32583333,17.82806830870591,0.0044,0,Minimal Risk - Wealthy,Minimal
-Ajeromi-Ifelodun,Lagos,6.4448,3.3339,17.86655156728339,0.0044,0,Minimal Risk - Wealthy,Minimal
-Alimosho,Lagos,6.61055556,3.29583333,16.72024991096055,0.0044,0,Minimal Risk - Wealthy,Minimal
-Amuwo-Odofin,Lagos,6.45,3.266667,19.77889822383448,0.0044,0,Minimal Risk - Wealthy,Minimal
-Apapa,Lagos,6.45,3.36666667,17.140482990766884,0.0044,0,Minimal Risk - Wealthy,Minimal
-Badagry,Lagos,6.41666667,2.88333333,20.511370477339515,0.0044,0,Minimal Risk - Wealthy,Minimal
-Epe,Lagos,6.58333333,3.98333333,19.215952351652586,0.0044,0,Minimal Risk - Wealthy,Minimal
-Eti-Osa,Lagos,6.437443,3.564588,18.94160319940077,0.0044,0,Minimal Risk - Wealthy,Minimal
-Ibeju-Lekki,Lagos,6.416667,2.883333,16.977308353875205,0.0044,0,Minimal Risk - Wealthy,Minimal
-Ifako-Ijaiye,Lagos,6.68472222,3.28888889,17.433574908295,0.0044,0,Minimal Risk - Wealthy,Minimal
-Ikeja,Lagos,6.6,3.35,21.59950701747727,0.0044,0,Minimal Risk - Wealthy,Minimal
-Ikorodu,Lagos,6.6,3.5,20.83608490287314,0.0044,0,Minimal Risk - Wealthy,Minimal
-Kosofe,Lagos,6.556879,3.384174,16.486909605604346,0.0044,0,Minimal Risk - Wealthy,Minimal
-Lagos Island,Lagos,6.45,3.4,19.931330256287676,0.0044,0,Minimal Risk - Wealthy,Minimal
-Lagos Mainland,Lagos,6.504937,3.386503,21.777620710115364,0.0044,0,Minimal Risk - Wealthy,Minimal
-Mushin,Lagos,6.53333333,3.35,14.458450836635883,0.0044,0,Minimal Risk - Wealthy,Minimal
-Ojo,Lagos,6.46666667,3.18333333,21.230080577139802,0.0044,0,Minimal Risk - Wealthy,Minimal
-Oshodi-Isolo,Lagos,6.511865,3.308021,17.521732063162457,0.0044,0,Minimal Risk - Wealthy,Minimal
-Somolu,Lagos,6.540833,3.387222,21.163463345779476,0.0044,0,Minimal Risk - Wealthy,Minimal
-Surulere,Lagos,6.5,3.35,17.243555870372447,0.0044,0,Minimal Risk - Wealthy,Minimal
-Akwanga,Nasarawa,8.91666667,8.38333333,9.285353698006443,0.1888,3,Medium Risk - Poor,Medium
-Awe,Nasarawa,7.823611,3.95,12.003484026350511,0.1888,3,Medium Risk - Poor,Medium
-Doma,Nasarawa,8.396241,8.35864,15.885106179984145,0.1888,3,Medium Risk - Poor,Medium
-Karu,Nasarawa,9.019231,7.613516,15.274038845164444,0.1888,3,Medium Risk - Poor,Medium
-Keana,Nasarawa,8.147346,8.800478,13.525691464686773,0.1888,3,Medium Risk - Poor,Medium
-Keffi,Nasarawa,8.8464,7.8733,16.756310716332123,0.1888,2,Low Risk - Vulnerable,Low
-Kokona,Nasarawa,8.85,5.08333333,9.84877315319312,0.1888,3,Medium Risk - Poor,Medium
-Lafia,Nasarawa,8.49166667,8.51666667,15.351760604058047,0.1888,3,Medium Risk - Poor,Medium
-Nasarawa,Nasarawa,8.53333333,8.3,11.833618080712629,0.1888,3,Medium Risk - Poor,Medium
-Nasarawa Egon,Nasarawa,8.741115,8.542192,13.09559501659352,0.1888,3,Medium Risk - Poor,Medium
-Obi,Nasarawa,7.0,8.25,18.67552935394924,0.1888,2,Low Risk - Vulnerable,Low
-Toto,Nasarawa,8.388021,7.078199,13.176051244148141,0.1888,3,Medium Risk - Poor,Medium
-Wamba,Nasarawa,8.93333333,8.6,13.513000047310523,0.1888,3,Medium Risk - Poor,Medium
-Agaie,Niger,9.01666667,6.31666667,17.518878427643322,0.2191,3,Medium Risk - Poor,Medium
-Agwara,Niger,10.7,4.58333333,9.402657731430555,0.2191,3,Medium Risk - Poor,Medium
-Bida,Niger,9.08333333,6.01666667,16.873743016195423,0.2191,3,Medium Risk - Poor,Medium
-Borgu,Niger,11.0,3.5,7.144212776027144,0.2191,3,Medium Risk - Poor,Medium
-Bosso,Niger,9.651457,6.526626,14.819831873745846,0.2191,3,Medium Risk - Poor,Medium
-Chanchaga,Niger,9.61388889,6.55694444,17.6302614219737,0.2191,3,Medium Risk - Poor,Medium
-Edati,Niger,9.05,5.65,7.018399839618129,0.2191,3,Medium Risk - Poor,Medium
-Gbako,Niger,9.26666667,5.98333333,11.60931423358857,0.2191,3,Medium Risk - Poor,Medium
-Gurara,Niger,9.35,7.08333333,15.564549721541619,0.2191,3,Medium Risk - Poor,Medium
-Katcha,Niger,9.15,6.23333333,13.62419718187102,0.2191,3,Medium Risk - Poor,Medium
-Kontagora,Niger,10.403,5.473,12.840770960113925,0.2191,3,Medium Risk - Poor,Medium
-Lapai,Niger,8.81666667,6.68333333,13.088044439852537,0.2191,3,Medium Risk - Poor,Medium
-Lavun,Niger,9.45,5.63333333,13.8931027024187,0.2191,3,Medium Risk - Poor,Medium
-Magama,Niger,10.46666667,5.05,11.132968293823758,0.2191,3,Medium Risk - Poor,Medium
-Mariga,Niger,10.7,5.83333333,14.636679524979423,0.2191,3,Medium Risk - Poor,Medium
-Mashegu,Niger,9.95,5.21666667,13.396595869903638,0.2191,3,Medium Risk - Poor,Medium
-Mokwa,Niger,9.2,5.33333333,15.146141326225607,0.2191,3,Medium Risk - Poor,Medium
-Munya,Niger,9.78333,7.03333,11.731042441632598,0.2191,3,Medium Risk - Poor,Medium
-Paikoro,Niger,9.43333,6.63333,12.203854667782519,0.2191,3,Medium Risk - Poor,Medium
-Rafi,Niger,10.18444444,6.25333333,10.866769896541136,0.2191,3,Medium Risk - Poor,Medium
-Rijau,Niger,11.1,5.26666667,11.51668976713489,0.2191,3,Medium Risk - Poor,Medium
-Shiroro,Niger,9.95694444,6.83194444,11.356491017539211,0.2191,3,Medium Risk - Poor,Medium
-Suleja,Niger,9.18333333,7.18333333,15.035991250689237,0.2191,3,Medium Risk - Poor,Medium
-Tafa,Niger,9.25,7.25,20.259535735936314,0.2191,3,Medium Risk - Poor,Medium
-Wushishi,Niger,9.721763,6.111317,15.703181450295077,0.2191,3,Medium Risk - Poor,Medium
-Abeokuta North,Ogun,7.2,3.2,17.155262743496476,0.0918,2,Low Risk - Vulnerable,Low
-Abeokuta South,Ogun,7.15,3.35,21.836975106491835,0.0918,2,Low Risk - Vulnerable,Low
-Ado-Odo/Ota,Ogun,6.63333333,3.1,18.042440560935344,0.0918,2,Low Risk - Vulnerable,Low
-Ewekoro,Ogun,6.93333333,3.21666667,12.552293074466437,0.0918,2,Low Risk - Vulnerable,Low
-Ifo,Ogun,6.81666667,3.2,15.875741067247787,0.0918,2,Low Risk - Vulnerable,Low
-Ijebu East,Ogun,6.73333333,4.16666667,13.454290916922432,0.0918,2,Low Risk - Vulnerable,Low
-Ijebu North,Ogun,6.95,4.0,17.578792887876073,0.0918,2,Low Risk - Vulnerable,Low
-Ijebu North East,Ogun,6.9,4.01666667,18.788588477568652,0.0918,2,Low Risk - Vulnerable,Low
-Ijebu Ode,Ogun,6.82083333,3.92083333,23.92097861682585,0.0918,2,Low Risk - Vulnerable,Low
-Ikenne,Ogun,6.86666667,3.71666667,19.780782121292486,0.0918,2,Low Risk - Vulnerable,Low
-Imeko Afon,Ogun,7.63333333,2.86666667,16.609365093573405,0.0918,2,Low Risk - Vulnerable,Low
-Ipokia,Ogun,6.53333333,2.85,21.954883423550466,0.0918,2,Low Risk - Vulnerable,Low
-Obafemi Owode,Ogun,6.95,3.5,11.999927412976342,0.0918,2,Low Risk - Vulnerable,Low
-Odeda,Ogun,7.21666667,3.51666667,18.806843674325695,0.0918,2,Low Risk - Vulnerable,Low
-Odogbolu,Ogun,6.76666667,3.8,21.3125955816609,0.0918,2,Low Risk - Vulnerable,Low
-Ogun Waterside,Ogun,6.48333333,4.4,15.130907942660475,0.0918,2,Low Risk - Vulnerable,Low
-Remo North,Ogun,7.0,3.71666667,21.964595469620786,0.0918,2,Low Risk - Vulnerable,Low
-Shagamu,Ogun,6.83333333,3.65,19.88215590248324,0.0918,2,Low Risk - Vulnerable,Low
-Yewa North,Ogun,7.15,2.91666667,16.987469598297594,0.0918,2,Low Risk - Vulnerable,Low
-Yewa South,Ogun,6.8,2.95,20.831678938318852,0.0918,2,Low Risk - Vulnerable,Low
-Akoko North East,Ondo,7.516667,5.75,24.312077913413187,0.0637,2,Low Risk - Vulnerable,Low
-Akoko North West,Ondo,7.643346,5.76057,17.792240105175484,0.0637,2,Low Risk - Vulnerable,Low
-Akoko South East,Ondo,7.451155,5.910301,18.37568509890101,0.0637,2,Low Risk - Vulnerable,Low
-Akoko South West,Ondo,7.45439,5.801639,16.246470641379265,0.0637,2,Low Risk - Vulnerable,Low
-Akure North,Ondo,7.26277778,5.31583333,15.458244671605623,0.0637,2,Low Risk - Vulnerable,Low
-Akure South,Ondo,7.2075,5.18833333,20.609340789632736,0.0637,2,Low Risk - Vulnerable,Low
-Ese Odo,Ondo,6.25754,5.000496,17.450001862273396,0.0637,2,Low Risk - Vulnerable,Low
-Idanre,Ondo,7.09222222,5.13222222,18.563587611658175,0.0637,2,Low Risk - Vulnerable,Low
-Ifedore,Ondo,7.343085,5.108323,16.414190999704648,0.0637,2,Low Risk - Vulnerable,Low
-Ilaje,Ondo,6.369232,4.784181,21.231808817239173,0.0637,2,Low Risk - Vulnerable,Low
-Ile Oluji/Okeigbo,Ondo,7.166442,4.724235,19.20143565586084,0.0637,2,Low Risk - Vulnerable,Low
-Irele,Ondo,6.48333333,4.86666667,22.679286512773697,0.0637,2,Low Risk - Vulnerable,Low
-Odigbo,Ondo,6.793915,4.867455,17.415454143435756,0.0637,2,Low Risk - Vulnerable,Low
-Okitipupa,Ondo,6.55,4.71666667,18.623708534119885,0.0637,2,Low Risk - Vulnerable,Low
-Ondo East,Ondo,7.065508,4.931343,15.466026192653075,0.0637,2,Low Risk - Vulnerable,Low
-Ondo West,Ondo,7.09727,4.84115,17.005913559771663,0.0637,2,Low Risk - Vulnerable,Low
-Ose,Ondo,6.922762,5.777478,19.819710819134556,0.0637,2,Low Risk - Vulnerable,Low
-Owo,Ondo,7.18333333,5.58333333,20.437632529936053,0.0637,2,Low Risk - Vulnerable,Low
-Ayedaade,Osun,7.31666667,4.35,15.133504027467122,0.0315,0,Minimal Risk - Wealthy,Minimal
-Aiyedire,Osun,7.56666667,4.23333333,20.00881776031698,0.0315,0,Minimal Risk - Wealthy,Minimal
-Atakunmosa East,Osun,7.48333,4.78333,21.633586916414853,0.0315,0,Minimal Risk - Wealthy,Minimal
-Atakunmosa West,Osun,7.55,4.66667,18.6736380496711,0.0315,0,Minimal Risk - Wealthy,Minimal
-Boluwaduro,Osun,7.9,4.81666667,22.363720777674196,0.0315,0,Minimal Risk - Wealthy,Minimal
-Boripe,Osun,7.86666667,4.65833333,14.47863240268928,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ede North,Osun,7.73333333,4.48333333,13.332702570065749,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ede South,Osun,7.7,4.45,11.797172593287161,0.0315,0,Minimal Risk - Wealthy,Minimal
-Egbedore,Osun,7.81666667,4.43333333,21.38813293446755,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ejigbo,Osun,7.9,4.315,18.696430309062173,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ife Central,Osun,7.55,4.53333333,17.266579327268634,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ife East,Osun,7.45,4.6,18.47323921895946,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ife North,Osun,7.36666667,4.46666667,14.42353285810487,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ife South,Osun,7.2,4.6,25.470589278850476,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ifedayo,Osun,7.95,4.98333333,17.02099688592568,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ifelodun,Osun,7.91667,4.66667,17.02817772381468,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ila,Osun,8.01666667,4.9,18.677299871696075,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ilesa East,Osun,7.61666667,4.76666667,18.743027695210138,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ilesa West,Osun,7.65,4.71666667,17.90498541283739,0.0315,0,Minimal Risk - Wealthy,Minimal
-Irepodun,Osun,7.83333,4.48333,14.495249973664063,0.0315,0,Minimal Risk - Wealthy,Minimal
-Irewole,Osun,7.41666667,4.21666667,19.114405071407987,0.0315,0,Minimal Risk - Wealthy,Minimal
-Isokan,Osun,7.3,4.18333333,23.5794068294251,0.0315,0,Minimal Risk - Wealthy,Minimal
-Iwo,Osun,7.63333333,4.18333333,21.302926818464933,0.0315,0,Minimal Risk - Wealthy,Minimal
-Obokun,Osun,7.78333333,4.76666667,21.746226559918192,0.0315,0,Minimal Risk - Wealthy,Minimal
-Odo-Otin,Osun,8.01666667,4.7,14.966352970706446,0.0315,0,Minimal Risk - Wealthy,Minimal
-Ola-Oluwa,Osun,7.78333333,4.21666667,13.997852219224256,0.0315,0,Minimal Risk - Wealthy,Minimal
-Olorunda,Osun,7.86666667,4.58333333,16.422639239701056,0.0315,0,Minimal Risk - Wealthy,Minimal
-Oriade,Osun,7.58333333,4.86666667,17.533841416866082,0.0315,0,Minimal Risk - Wealthy,Minimal
-Orolu,Osun,7.9,4.45,20.015907895412845,0.0315,0,Minimal Risk - Wealthy,Minimal
-Osogbo,Osun,7.76666667,4.56666667,11.92260611085554,0.0315,0,Minimal Risk - Wealthy,Minimal
-Afijio,Oyo,7.8,3.9,21.521984298381838,0.0809,0,Minimal Risk - Wealthy,Minimal
-Akinyele,Oyo,7.523735,3.914781,17.01183964426303,0.0809,0,Minimal Risk - Wealthy,Minimal
-Atiba,Oyo,7.849454,3.930354,15.553782130157739,0.0809,0,Minimal Risk - Wealthy,Minimal
-Atisbo,Oyo,8.549788,3.45,12.397444214219497,0.0809,0,Minimal Risk - Wealthy,Minimal
-Egbeda,Oyo,7.381337,3.966501,12.80608932440269,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibadan North,Oyo,7.403239,3.913107,20.19636709188574,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibadan North East,Oyo,7.401536,3.938985,17.95021524156521,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibadan North West,Oyo,7.395799,3.881569,13.871852640776837,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibadan South East,Oyo,7.37577,3.897557,13.89655702380915,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibadan South West,Oyo,7.396389,3.916667,16.733201242129613,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibarapa Central,Oyo,7.435346,3.288581,22.669705915868178,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibarapa East,Oyo,7.549722,3.45,16.655115285909183,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ibarapa North,Oyo,7.564226,3.229916,12.89545248064568,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ido,Oyo,7.507354,3.719376,16.781396147742164,0.0809,0,Minimal Risk - Wealthy,Minimal
-Irepo,Oyo,7.350425,3.880304,17.014312630756987,0.0809,0,Minimal Risk - Wealthy,Minimal
-Iseyin,Oyo,7.96666667,3.6,8.509340071175282,0.0809,0,Minimal Risk - Wealthy,Minimal
-Itesiwaju,Oyo,7.358763,3.959258,17.652922740446563,0.0809,0,Minimal Risk - Wealthy,Minimal
-Iwajowa,Oyo,7.983269,3.05274,15.873991749373964,0.0809,0,Minimal Risk - Wealthy,Minimal
-Kajola,Oyo,8.037685,3.348942,18.546582434440253,0.0809,0,Minimal Risk - Wealthy,Minimal
-Lagelu,Oyo,7.495026,4.073009,23.090149624836034,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ogbomosho North,Oyo,8.133333,4.25,19.646362428643272,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ogbomosho South,Oyo,8.11791,4.239092,15.490847268335507,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ogo Oluwa,Oyo,8.13524,4.24006,12.943275613774988,0.0809,0,Minimal Risk - Wealthy,Minimal
-Olorunsogo,Oyo,8.752377,4.130988,22.74865874974958,0.0809,0,Minimal Risk - Wealthy,Minimal
-Oluyole,Oyo,7.218,3.892,18.274988642043464,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ona Ara,Oyo,7.225568,4.026554,18.123985215738838,0.0809,0,Minimal Risk - Wealthy,Minimal
-Oorelope,Oyo,8.833333,3.75,14.79429207866999,0.0809,0,Minimal Risk - Wealthy,Minimal
-Ori Ire,Oyo,8.33423,4.14423,16.459127622303562,0.0809,0,Minimal Risk - Wealthy,Minimal
-Oyo East,Oyo,7.882092,3.998755,16.336068104228172,0.0809,0,Minimal Risk - Wealthy,Minimal
-Oyo West,Oyo,7.94157,3.8218,14.929207319359291,0.0809,0,Minimal Risk - Wealthy,Minimal
-Saki East,Oyo,8.628418,3.640723,13.635920516278823,0.0809,0,Minimal Risk - Wealthy,Minimal
-Saki West,Oyo,8.666667,3.4,15.101739529352002,0.0809,0,Minimal Risk - Wealthy,Minimal
-Surulere,Oyo,6.5,3.35,17.903059026598704,0.0809,0,Minimal Risk - Wealthy,Minimal
-Barkin Ladi,Plateau,9.56667,8.91667,11.261455991968505,0.1945,3,Medium Risk - Poor,Medium
-Bassa,Plateau,10.0833,8.73333,12.68602402307569,0.1945,2,Low Risk - Vulnerable,Low
-Bokkos,Plateau,9.25,8.88333333,13.268401687737434,0.1945,2,Low Risk - Vulnerable,Low
-Jos East,Plateau,9.91666667,9.1,17.211978965748067,0.1945,2,Low Risk - Vulnerable,Low
-Jos North,Plateau,9.91666667,8.9,4.747090574820963,0.1945,3,Medium Risk - Poor,Medium
-Jos South,Plateau,9.76666667,8.8,16.274520555767385,0.1945,2,Low Risk - Vulnerable,Low
-Kanam,Plateau,9.56601387018746,9.991505892537331,17.139561177117965,0.1945,2,Low Risk - Vulnerable,Low
-Kanke,Plateau,9.3671789,9.639354933485455,7.578804842775549,0.1945,3,Medium Risk - Poor,Medium
-Langtang North,Plateau,9.13333333,9.78333333,13.238603897758953,0.1945,2,Low Risk - Vulnerable,Low
-Langtang South,Plateau,8.63333333,9.8,14.152344082012625,0.1945,2,Low Risk - Vulnerable,Low
-Mangu,Plateau,9.43333333,9.13333333,9.444131595846535,0.1945,3,Medium Risk - Poor,Medium
-Mikang,Plateau,9.0,9.58333333,12.199883277227373,0.1945,2,Low Risk - Vulnerable,Low
-Pankshin,Plateau,9.327248,9.431291,10.54710980360251,0.1945,3,Medium Risk - Poor,Medium
-Qua'an Pan,Plateau,8.8,9.15,20.190144670270865,0.1945,2,Low Risk - Vulnerable,Low
-Riyom,Plateau,9.56666667,8.66666667,16.207035179442382,0.1945,2,Low Risk - Vulnerable,Low
-Shendam,Plateau,8.71666667,9.5,18.914665284982476,0.1945,2,Low Risk - Vulnerable,Low
-Wase,Plateau,9.1,9.96666667,16.498349532129705,0.1945,2,Low Risk - Vulnerable,Low
-Abua-Odual,Rivers,4.82972222,6.5675,19.486733586348308,0.0351,0,Minimal Risk - Wealthy,Minimal
-Ahoada East,Rivers,5.06833333,6.64666667,20.82310588116068,0.0351,0,Minimal Risk - Wealthy,Minimal
-Ahoada West,Rivers,5.08638889,6.47527778,23.82867924368375,0.0351,0,Minimal Risk - Wealthy,Minimal
-Akuku-Toru,Rivers,4.56,6.74972222,19.746949913324165,0.0351,0,Minimal Risk - Wealthy,Minimal
-Andoni,Rivers,4.54916667,7.44638889,25.57399529051716,0.0351,0,Minimal Risk - Wealthy,Minimal
-Asari-Toru,Rivers,4.78333333,6.85,22.245690485525593,0.0351,0,Minimal Risk - Wealthy,Minimal
-Bonny,Rivers,4.43333333,7.16666667,22.542204257351205,0.0351,0,Minimal Risk - Wealthy,Minimal
-Degema,Rivers,4.57416667,6.93805556,25.517879904610474,0.0351,0,Minimal Risk - Wealthy,Minimal
-Eleme,Rivers,4.7875,7.14361111,24.29112327445812,0.0351,0,Minimal Risk - Wealthy,Minimal
-Emohua,Rivers,4.88333333,6.86666667,21.68376818254276,0.0351,0,Minimal Risk - Wealthy,Minimal
-Etche,Rivers,4.99,7.05,26.03132275009274,0.0351,0,Minimal Risk - Wealthy,Minimal
-Gokana,Rivers,4.65972222,7.2825,19.97069891720031,0.0351,0,Minimal Risk - Wealthy,Minimal
-Ikwerre,Rivers,5.055143,6.922417,24.270854160832787,0.0351,0,Minimal Risk - Wealthy,Minimal
-Khana,Rivers,4.7,7.35,24.912637113905152,0.0351,0,Minimal Risk - Wealthy,Minimal
-Obio/Akpor,Rivers,4.874902,6.999767,21.85489002205803,0.0351,0,Minimal Risk - Wealthy,Minimal
-Ogba/Egbema/Ndoni,Rivers,5.34166944,6.65556111,22.82839352672635,0.0351,0,Minimal Risk - Wealthy,Minimal
-Ogu/Bolo,Rivers,4.65055556,7.18305556,19.47888149084409,0.0351,0,Minimal Risk - Wealthy,Minimal
-Okrika,Rivers,4.74,7.083,25.8254143976207,0.0351,0,Minimal Risk - Wealthy,Minimal
-Omuma,Rivers,4.969419,7.020821,22.03978893067103,0.0351,0,Minimal Risk - Wealthy,Minimal
-Opobo/Nkoro,Rivers,4.56805556,7.55277778,21.82905315844288,0.0351,0,Minimal Risk - Wealthy,Minimal
-Oyigbo,Rivers,4.87806111,7.12833056,25.924238797510665,0.0351,0,Minimal Risk - Wealthy,Minimal
-Port Harcourt,Rivers,4.82416667,7.03361111,20.77196892837172,0.0351,0,Minimal Risk - Wealthy,Minimal
-Tai,Rivers,4.71666667,7.3,18.87461611090932,0.0351,0,Minimal Risk - Wealthy,Minimal
-Binji,Sokoto,13.21666667,4.91666667,1.4301124794282867,0.4372,1,High Risk - Severe Poverty,High
-Bodinga,Sokoto,12.88333333,5.16666667,8.584696534036919,0.4372,1,High Risk - Severe Poverty,High
-Dange/Shuni,Sokoto,12.85,5.35,2.99204528251115,0.4372,1,High Risk - Severe Poverty,High
-Gada,Sokoto,13.76666667,5.66666667,10.264382545953094,0.4372,1,High Risk - Severe Poverty,High
-Goronyo,Sokoto,13.45305556,5.67638889,0.0,0.4372,1,High Risk - Severe Poverty,High
-Gudu,Sokoto,13.46666667,4.43333333,10.689369104870114,0.4372,1,High Risk - Severe Poverty,High
-Gwadabawa,Sokoto,13.3697,5.23,6.426985741607854,0.4372,1,High Risk - Severe Poverty,High
-Illela,Sokoto,13.7325,5.30027778,4.778194004388822,0.4372,1,High Risk - Severe Poverty,High
-Isa,Sokoto,13.20027778,6.40722222,4.498020519573148,0.4372,1,High Risk - Severe Poverty,High
-Kware,Sokoto,13.21805556,5.26722222,7.294630563056211,0.4372,1,High Risk - Severe Poverty,High
-Rabah,Sokoto,13.11666667,5.51666667,6.187095892725452,0.4372,1,High Risk - Severe Poverty,High
-Sabon Birni,Sokoto,13.5611,6.325,8.721038986049564,0.4372,1,High Risk - Severe Poverty,High
-Shagari,Sokoto,12.63333333,5.0,7.609349625986119,0.4372,1,High Risk - Severe Poverty,High
-Silame,Sokoto,13.03333333,4.85,6.917571964385632,0.4372,1,High Risk - Severe Poverty,High
-Sokoto North,Sokoto,13.05,5.23333333,5.34249670335843,0.4372,1,High Risk - Severe Poverty,High
-Sokoto South,Sokoto,13.05,5.21666667,6.262496468836795,0.4372,1,High Risk - Severe Poverty,High
-Tambuwal,Sokoto,12.31666667,4.8,8.823405306676175,0.4372,1,High Risk - Severe Poverty,High
-Tangaza,Sokoto,13.5167,4.96667,0.36942816203012185,0.4372,1,High Risk - Severe Poverty,High
-Tureta,Sokoto,12.58944444,5.54694444,3.309888193682861,0.4372,1,High Risk - Severe Poverty,High
-Wamako,Sokoto,13.03777778,5.09361111,8.687570062068142,0.4372,1,High Risk - Severe Poverty,High
-Wurno,Sokoto,13.28416667,5.4275,6.477596314383826,0.4372,1,High Risk - Severe Poverty,High
-Yabo,Sokoto,12.71916667,5.00616667,6.543049990941961,0.4372,1,High Risk - Severe Poverty,High
-Kebbe,Sokoto,12.13333333,4.73333333,8.32196847919618,0.4372,1,High Risk - Severe Poverty,High
-Ardo Kola,Taraba,8.8467,11.2067,15.882678456085012,0.2702,3,Medium Risk - Poor,Medium
-Bali,Taraba,7.854286164866859,10.963562199223984,15.205481969338196,0.2702,3,Medium Risk - Poor,Medium
-Donga,Taraba,7.55,10.28333333,15.09841916379306,0.2702,3,Medium Risk - Poor,Medium
-Gashaka,Taraba,7.506556,11.364155,18.107757105293043,0.2702,3,Medium Risk - Poor,Medium
-Gassol,Taraba,8.4,10.5333,12.798215007154901,0.2702,3,Medium Risk - Poor,Medium
-Ibi,Taraba,8.31666667,9.85,17.124758267143413,0.2702,3,Medium Risk - Poor,Medium
-Jalingo,Taraba,8.9,11.36666667,9.625582527286477,0.2702,3,Medium Risk - Poor,Medium
-Karim Lamido,Taraba,9.2,10.8833,17.220800251976932,0.2702,3,Medium Risk - Poor,Medium
-Kurmi,Taraba,8.708857,10.080541,16.533411787239128,0.2702,3,Medium Risk - Poor,Medium
-Lau,Taraba,9.18694444,11.42,14.927533662941627,0.2702,3,Medium Risk - Poor,Medium
-Sardauna,Taraba,6.95,11.116667,21.58140629183654,0.2702,3,Medium Risk - Poor,Medium
-Takum,Taraba,7.25,9.98333333,23.02975667338773,0.2702,3,Medium Risk - Poor,Medium
-Ussa,Taraba,7.11666667,10.08333333,21.34311019505439,0.2702,3,Medium Risk - Poor,Medium
-Wukari,Taraba,7.85,9.78333333,11.310710646005063,0.2702,3,Medium Risk - Poor,Medium
-Yorro,Taraba,8.749986,11.616698,11.194630439792896,0.2702,3,Medium Risk - Poor,Medium
-Zing,Taraba,8.993239,11.740887,12.672399606912961,0.2702,3,Medium Risk - Poor,Medium
-Bade,Yobe,12.86666667,10.96666667,6.878273150632499,0.3428,1,High Risk - Severe Poverty,High
-Bursari,Yobe,12.75,11.76666667,8.586310401407367,0.3428,1,High Risk - Severe Poverty,High
-Damaturu,Yobe,11.74444444,11.96111111,6.867213020539601,0.3428,1,High Risk - Severe Poverty,High
-Fika,Yobe,11.41666667,11.21666667,10.260300293431234,0.3428,1,High Risk - Severe Poverty,High
-Fune,Yobe,11.88333333,11.9,6.5005178829400325,0.3428,1,High Risk - Severe Poverty,High
-Geidam,Yobe,12.71666667,12.03333333,5.265446591024153,0.3428,1,High Risk - Severe Poverty,High
-Gujba,Yobe,11.49777778,11.93083333,5.317794489455332,0.3428,1,High Risk - Severe Poverty,High
-Gulani,Yobe,11.0,11.71666667,7.763633601667285,0.3428,1,High Risk - Severe Poverty,High
-Jakusko,Yobe,12.41666667,10.93333333,3.6449461831509984,0.3428,1,High Risk - Severe Poverty,High
-Karasuwa,Yobe,13.0,10.78333333,3.6057135810680006,0.3428,1,High Risk - Severe Poverty,High
-Machina,Yobe,13.1,10.0,9.494258729823517,0.3428,1,High Risk - Severe Poverty,High
-Nangere,Yobe,11.85,10.96666667,5.9851366735041704,0.3428,1,High Risk - Severe Poverty,High
-Nguru,Yobe,12.875,10.458333,14.680479534512171,0.3428,1,High Risk - Severe Poverty,High
-Potiskum,Yobe,11.7092,11.0694,10.594887042642668,0.3428,1,High Risk - Severe Poverty,High
-Tarmuwa,Yobe,12.2,11.78333333,8.687841711084623,0.3428,1,High Risk - Severe Poverty,High
-Yunusari,Yobe,13.11666667,11.73333333,3.7249266594563566,0.3428,1,High Risk - Severe Poverty,High
-Yusufari,Yobe,13.18333333,10.85,8.267596318226973,0.3428,1,High Risk - Severe Poverty,High
-Anka,Zamfara,11.98333333,6.03333333,6.839753201286675,0.3913,1,High Risk - Severe Poverty,High
-Bakura,Zamfara,12.15,5.9,8.599362783936083,0.3913,1,High Risk - Severe Poverty,High
-Birnin Magaji/Kiyaw,Zamfara,12.46666667,6.9,15.280253614806382,0.3913,1,High Risk - Severe Poverty,High
-Bukkuyum,Zamfara,12.0,5.61666667,8.24515364082605,0.3913,1,High Risk - Severe Poverty,High
-Bungudu,Zamfara,12.15,6.5,11.681153318857024,0.3913,1,High Risk - Severe Poverty,High
-Gummi,Zamfara,12.05,5.16666667,6.323804064622335,0.3913,1,High Risk - Severe Poverty,High
-Gusau,Zamfara,12.166667,6.666667,8.095033868509113,0.3913,1,High Risk - Severe Poverty,High
-Kaura Namoda,Zamfara,12.6,6.589722,12.64573524690653,0.3913,1,High Risk - Severe Poverty,High
-Maradun,Zamfara,12.75,6.28333333,5.152432166636697,0.3913,1,High Risk - Severe Poverty,High
-Maru,Zamfara,11.6,6.28333333,14.770679013990787,0.3913,1,High Risk - Severe Poverty,High
-Shinkafi,Zamfara,13.03333333,6.51666667,8.589922486366426,0.3913,1,High Risk - Severe Poverty,High
-Talata Mafara,Zamfara,12.35,6.06666667,6.1459330123171965,0.3913,1,High Risk - Severe Poverty,High
-Tsafe,Zamfara,11.93333333,6.9,10.563889897166561,0.3913,1,High Risk - Severe Poverty,High
-Zurmi,Zamfara,12.85,6.73333333,9.750996688880189,0.3913,1,High Risk - Severe Poverty,High
+LGA_Name,State,Latitude,Longitude,mean_nightlight_intensity,MPI,Headcount_Ratio,Intensity_of_Deprivation,In_Severe_Poverty,cluster,cluster_label,risk_level
+Aba North,Abia,5.33333333,7.31666667,3.060582399368286,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Aba South,Abia,5.1,7.35,1.895314335823059,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Arochukwu,Abia,5.38333333,7.91666667,1.1731988191604614,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Bende,Abia,5.56666667,7.63333333,0.6448462605476379,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Ikwuano,Abia,5.43333333,7.56666667,1.030436635017395,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Isiala Ngwa North,Abia,5.388966,7.446948,1.8786526679992677,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Isiala Ngwa South,Abia,5.36241,7.39998,1.8786526679992677,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Isuikwuato,Abia,5.533333,7.483333,0.5931695699691772,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Obi Ngwa,Abia,5.155402,7.457067,1.8786526679992677,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Ohafia,Abia,5.61666667,7.83333333,0.7418349981307983,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Osisioma,Abia,5.14972222,7.33027778,1.8786526679992677,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Ugwunagbo,Abia,4.984474,7.325783,1.001613736152649,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Ukwa East,Abia,4.8872,7.3572,1.0120255947113037,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Ukwa West,Abia,4.9884,7.2425,3.1458427906036377,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Umu-Nneochi,Abia,5.985662,7.469005,0.49454158544540405,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Umuahia North,Abia,5.5333,7.4833,2.228395700454712,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Umuahia South,Abia,5.515311,7.447314,1.2761858701705933,0.0419,9.3971,44.6266,3.3537,0,Low Risk - Vulnerable,Low
+Demsa,Adamawa,9.41666667,12.13333333,0.7985424995422363,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Fufore,Adamawa,9.21666667,12.65,0.6154672503471375,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Ganye,Adamawa,8.43333,12.0667,0.7471598982810974,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Girei,Adamawa,9.36667,12.55,0.9654918313026428,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Gombi,Adamawa,10.16222222,12.74,0.7412757873535156,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Guyuk,Adamawa,9.90555556,11.92833333,0.5652178525924683,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Hong,Adamawa,10.23166667,12.93027778,0.5068039298057556,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Jada,Adamawa,8.76666667,12.15,0.781326949596405,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Lamurde,Adamawa,9.6,11.78333333,1.1117141246795654,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Madagali,Adamawa,10.74611111,13.41583333,0.5517160892486572,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Maiha,Adamawa,9.99555556,13.21805556,0.44174471497535706,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Mayo Belwa,Adamawa,9.05,12.05,0.9885822057723999,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Michika,Adamawa,10.61666667,13.38333333,0.40087801218032837,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Mubi North,Adamawa,10.26666667,13.26666667,0.9813941121101379,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Mubi South,Adamawa,10.1874,13.39576,0.9629787802696228,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Numan,Adamawa,9.46694444,12.03277778,0.7772228717803955,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Shelleng,Adamawa,9.88472222,12.00888889,0.5445464253425598,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Song,Adamawa,9.82444444,12.625,0.559866726398468,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Toungo,Adamawa,8.11666667,12.05,0.5327566862106323,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Yola North,Adamawa,9.188528,12.393866,3.644528388977051,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Yola South,Adamawa,9.249949,12.412618,1.4755280017852783,0.182,39.0971,46.545,15.2143,2,Medium Risk - Poor,Medium
+Abak,Akwa Ibom,4.98333333,7.78333333,0.9729042053222656,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Eastern Obolo,Akwa Ibom,4.533333,7.7,10.761428833007812,0.0446,9.8074,45.428,3.6118,3,Minimal Risk - Wealthy,Minimal
+Eket,Akwa Ibom,4.65,7.93333333,1.773894190788269,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Esit Eket,Akwa Ibom,4.66055556,8.06666667,3.964538097381592,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Essien Udim,Akwa Ibom,5.13333333,7.68333333,0.8467192649841309,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Etim Ekpo,Akwa Ibom,5.01666667,7.61666667,0.669461190700531,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Etinan,Akwa Ibom,4.85,7.83333333,0.8275926113128662,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ibeno,Akwa Ibom,4.568693,7.976396,22.422060012817383,0.0446,9.8074,45.428,3.6118,3,Minimal Risk - Wealthy,Minimal
+Ibesikpo Asutan,Akwa Ibom,4.76666667,7.95,2.0563414096832275,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ibiono Ibom,Akwa Ibom,5.23333333,7.88333333,1.190673589706421,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ika,Akwa Ibom,5.01666667,7.53333333,2.2318729162216187,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ikono,Akwa Ibom,5.210278,7.793889,0.7982566356658936,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ikot Abasi,Akwa Ibom,4.633333,7.65,1.1880114078521729,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ikot Ekpene,Akwa Ibom,5.18333333,7.71666667,1.3282883167266846,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ini,Akwa Ibom,5.4,7.733333,0.8597284555435181,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Itu,Akwa Ibom,5.16666667,7.98333333,2.1639394760131836,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Mbo,Akwa Ibom,4.65,8.23333333,1.8816707134246826,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Mkpat Enin,Akwa Ibom,4.73361111,7.74861111,0.8591514229774475,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Nsit Atai,Akwa Ibom,4.85,8.01666667,1.4629133939743042,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Nsit Ibom,Akwa Ibom,4.88333333,7.9,1.1611626148223877,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Nsit Ubium,Akwa Ibom,4.76666667,7.93333333,0.7042615413665771,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Obot Akara,Akwa Ibom,5.26667,7.6,2.2318729162216187,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Okobo,Akwa Ibom,4.83333333,8.13333333,0.7927217483520508,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Onna,Akwa Ibom,4.65,7.86666667,1.079186201095581,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Oron,Akwa Ibom,4.82583333,8.23388889,0.8694474697113037,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Oruk Anam,Akwa Ibom,4.81666667,7.65,0.7440104484558105,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Udung Uko,Akwa Ibom,4.76666667,8.23333333,1.3036086559295654,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Ukanafun,Akwa Ibom,4.9,7.6,2.2318729162216187,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Uruan,Akwa Ibom,5.03333333,8.05,1.0761785507202148,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Urue Offong/Oruko,Akwa Ibom,4.71667,8.15,0.7253876328468323,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Uyo,Akwa Ibom,5.03333333,7.91666667,3.830202579498291,0.0446,9.8074,45.428,3.6118,2,Medium Risk - Poor,Medium
+Aguata,Anambra,6.01666667,7.08333333,1.3612710237503052,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Anambra East,Anambra,6.333333,6.866667,1.2904596328735352,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Anambra West,Anambra,6.416667,6.683333,1.337498664855957,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Anaocha,Anambra,6.15,7.05,1.2667964696884155,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Awka North,Anambra,6.233333,7.133333,1.2519515752792358,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Awka South,Anambra,6.16666667,7.06666667,2.7574946880340576,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Ayamelum,Anambra,6.6,6.966667,6.31155641078949,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Dunukofia,Anambra,6.271944,6.976667,1.346228837966919,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Ekwusigo,Anambra,6.054662,6.82859,1.2856521606445312,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Idemili North,Anambra,6.097069,6.984745,2.331068515777588,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Idemili South,Anambra,6.100683,6.898364,1.9332512617111206,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Ihiala,Anambra,5.85388889,6.86,1.0457324981689453,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Njikoka,Anambra,6.183846,6.99191,1.887609839439392,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Nnewi North,Anambra,5.938767,5.938767,1.8677090406417847,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Nnewi South,Anambra,5.938383,6.921821,1.2520763874053955,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Ogbaru,Anambra,5.960656,6.731678,25.13041877746582,0.0089,2.0449,43.3105,0.5472,3,Minimal Risk - Wealthy,Minimal
+Onitsha North,Anambra,6.189277,6.805853,3.379114866256714,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Onitsha South,Anambra,6.135818,6.788542,3.850013017654419,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Orumba North,Anambra,6.042599,7.213103,1.0713863372802734,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Orumba South,Anambra,5.990942,5.990942,0.7623085379600525,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Oyi,Anambra,5.25,6.21666667,1.5607696771621704,0.0089,2.0449,43.3105,0.5472,0,Low Risk - Vulnerable,Low
+Alkaleri,Bauchi,9.88333333,10.5,0.5848003625869751,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Bauchi,Bauchi,10.31583333,9.84416667,2.4301674365997314,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Bogoro,Bauchi,9.66852,9.60395,0.5926124691963196,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Damban,Bauchi,11.62592,10.78622,0.5926124691963196,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Darazo,Bauchi,11.0,10.41,0.6975489854812622,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Dass,Bauchi,10.126111,9.484704,0.5857043266296387,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Gamawa,Bauchi,12.133333,10.533333,0.5173746347427368,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Ganjuwa,Bauchi,10.868124,10.165283,0.7256087064743042,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Giade,Bauchi,11.390251,10.199128,0.5393450856208801,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Itas/Gadau,Bauchi,11.86666667,9.96666667,0.5508648157119751,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Jama'are,Bauchi,11.669111,9.928958,0.7489414811134338,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Katagum,Bauchi,12.28333333,10.35,1.54471755027771,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Kirfi,Bauchi,10.4,10.4,0.5219506621360779,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Misau,Bauchi,11.313599,10.463126,0.8173746466636658,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Ningi,Bauchi,11.06666667,9.56666667,0.6854020953178406,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Shira,Bauchi,11.50416667,10.01722222,0.5160841345787048,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Tafawa Balewa,Bauchi,9.759094,9.553127,0.5926124691963196,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Toro,Bauchi,10.059364,9.071724,0.6550642848014832,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Warji,Bauchi,11.18333333,9.75,0.5926124691963196,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Zaki,Bauchi,12.13333333,10.28333333,0.4564102590084076,0.4411,75.3563,58.5358,50.7513,1,High Risk - Severe Poverty,High
+Brass,Bayelsa,4.315,6.24166667,1.8059263229370117,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Ekeremor,Bayelsa,5.05,5.78333333,5.252670764923096,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Kolokuma/Opokuma,Bayelsa,5.13333333,6.3,1.2772444486618042,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Nembe,Bayelsa,4.53690278,6.40621111,7.205227851867676,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Ogbia,Bayelsa,4.78333333,6.33333333,1.0064587593078613,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Sagbama,Bayelsa,5.16666667,6.2,1.0667920112609863,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Southern Ijaw,Bayelsa,4.7,5.966667,5.605161666870117,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Yenagoa,Bayelsa,5.03333333,6.33333333,3.232176947593689,0.0644,13.9659,46.083,5.9807,2,Medium Risk - Poor,Medium
+Ado,Benue,7.8,7.65,0.5060125589370728,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Agatu,Benue,7.9,7.9,1.0156151533126831,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Apa,Benue,7.829754,8.069994,0.4267931282520294,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Buruku,Benue,7.416792,9.224674,0.6802735328674316,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Gboko,Benue,7.327778,8.995,1.6899845600128174,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Guma,Benue,7.823295,8.863239,0.7669793963432312,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Gwer East,Benue,7.298066,8.482303,0.7561566829681396,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Gwer West,Benue,7.584645,8.205478,1.0156151533126831,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Katsina Ala,Benue,7.16666667,9.28333333,1.0156151533126831,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Konshisha,Benue,7.071123,8.663878,1.0156151533126831,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Kwande,Benue,6.890043,9.233408,0.7731346487998962,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Logo,Benue,7.507748,9.350653,0.607062578201294,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Makurdi,Benue,7.730556,8.536111,2.176325798034668,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Obi,Benue,7.0,8.25,1.0156151533126831,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Obi,Benue,7.0,8.25,0.5522817373275757,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Ogbadibo,Benue,7.13907,7.668285,1.0808205604553223,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Ohimini,Benue,7.23015,7.927993,0.6753477454185486,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Oju,Benue,6.85,8.41666667,1.0156151533126831,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Okpokwu,Benue,7.06277778,8.21,1.0052618980407715,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Otukpo,Benue,7.19305556,8.14638889,1.0156151533126831,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Tarka,Benue,7.620833,8.881944,0.8971074819564819,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Ukum,Benue,7.530801,9.649268,0.6971108913421631,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Ushongo,Benue,7.135788,9.032921,0.5801892876625061,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Vandeikya,Benue,6.782346,9.069257,0.5442346930503845,0.1156,27.0206,42.7942,7.6549,2,Medium Risk - Poor,Medium
+Abadam,Borno,13.610953,13.277664,0.47065988183021545,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Askira/Uba,Borno,10.654724,12.907777,0.927924370765686,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Bama,Borno,11.51888889,13.68416667,0.6660257577896118,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Bayo,Borno,10.441838,11.704237,0.5476850271224976,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Biu,Borno,10.6111,12.195,1.5407847166061401,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Chibok,Borno,10.86972222,12.84666667,0.5173116326332092,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Damboa,Borno,11.15,12.75,0.72474205493927,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Dikwa,Borno,12.0239,13.9158,0.617235541343689,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Gubio,Borno,12.4975,12.78,0.5498864054679871,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Guzamala,Borno,12.94656,13.176822,0.927924370765686,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Gwoza,Borno,11.086111,13.691389,0.6361166834831238,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Hawul,Borno,10.451308,12.116581,0.5794063806533813,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Jere,Borno,11.89912,13.29155,1.6062759160995483,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Kaga,Borno,11.810333,12.494153,0.48225778341293335,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Kala/Balge,Borno,12.268627,14.464896,0.927924370765686,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Konduga,Borno,11.65166667,13.41944444,1.2458523511886597,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Kukawa,Borno,12.91666667,13.56666667,0.49952399730682373,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Kwaya Kusar,Borno,11.817338,13.120352,0.6672638058662415,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Mafa,Borno,11.92583333,13.60555556,0.9185541272163391,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Magumeri,Borno,12.115657,12.83101,0.663532555103302,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Maiduguri,Borno,11.83333333,13.15,4.477824687957764,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Marte,Borno,12.364596,13.826741,0.44560930132865906,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Mobbar,Borno,13.103993,12.511041,0.5610587000846863,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Monguno,Borno,12.68333333,13.6,1.0899759531021118,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Ngala,Borno,12.371107,14.206223,0.6250885128974915,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Nganzai,Borno,12.486253,13.209321,0.6739957928657532,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Shani,Borno,10.183889,11.963889,0.6138116717338562,0.2922,53.8861,54.2321,31.1462,1,High Risk - Severe Poverty,High
+Abi,Cross River,6.833333,7.233333,1.5685543179512025,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Akamkpa,Cross River,5.326828,8.346262,1.7997236251831055,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Akpabuyo,Cross River,4.950439,8.393276,1.8176145553588867,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Bakassi,Cross River,4.58333333,8.6,1.5685543179512025,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Bekwarra,Cross River,6.69388889,8.9675,1.5685543179512025,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Biase,Cross River,5.557438,8.110474,0.47768062353134155,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Boki,Cross River,6.273889,9.01,1.5685543179512025,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Calabar Municipal,Cross River,4.974531,8.34241,4.181992053985596,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Calabar South,Cross River,4.918822,8.320945,2.4681549072265625,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Etung,Cross River,5.858889,8.791667,1.5685543179512025,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Ikom,Cross River,6.08333333,8.61666667,0.9321252107620239,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Obanliku,Cross River,6.609277,9.250274,0.48900577425956726,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Obubra,Cross River,6.083333,8.333333,1.5685543179512025,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Obudu,Cross River,6.66666667,9.16666667,0.7776435613632202,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Odukpani,Cross River,5.079809,8.350403,1.6450438499450684,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Ogoja,Cross River,6.5,8.66666667,0.7842437028884888,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Yakurr,Cross River,5.806111,8.175,0.6133608818054199,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Yala,Cross River,6.7,8.6,0.6181311011314392,0.0775,19.086,40.6066,3.9392,2,Medium Risk - Poor,Medium
+Aniocha North,Delta,6.319994,6.476847,0.8316776156425476,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Aniocha South,Delta,6.183072,6.524367,1.154614806175232,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Bomadi,Delta,5.161805,5.924511,0.6334624290466309,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Burutu,Delta,5.35,5.516667,2.8030946254730225,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Ethiope East,Delta,5.63314,6.028192,1.6790833473205566,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Ethiope West,Delta,5.63314,6.028192,2.3266098499298096,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Ika North East,Delta,6.186379,6.200409,1.8637712001800537,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Ika South,Delta,6.252758,6.199664,1.9082406759262085,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Isoko North,Delta,5.538333,6.216111,7.4700164794921875,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Isoko South,Delta,5.538333,6.216111,4.289799690246582,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Ndokwa East,Delta,5.669319,6.523171,10.544503211975098,0.0507,11.7821,43.0696,3.0882,3,Minimal Risk - Wealthy,Minimal
+Ndokwa West,Delta,5.815022,6.350772,12.31119441986084,0.0507,11.7821,43.0696,3.0882,3,Minimal Risk - Wealthy,Minimal
+Okpe,Delta,5.43333333,5.95,1.5851994752883911,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Oshimili North,Delta,6.382652,6.624309,3.2642428874969482,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Oshimili South,Delta,6.118256,6.66583,4.366880893707275,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Patani,Delta,5.2412505830419045,6.190626760617503,0.6122222542762756,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Sapele,Delta,5.9,5.66666667,11.233539581298828,0.0507,11.7821,43.0696,3.0882,3,Minimal Risk - Wealthy,Minimal
+Udu,Delta,5.75,5.716667,9.82062816619873,0.0507,11.7821,43.0696,3.0882,3,Minimal Risk - Wealthy,Minimal
+Ughelli North,Delta,9.75,8.71666667,11.942963600158691,0.0507,11.7821,43.0696,3.0882,3,Minimal Risk - Wealthy,Minimal
+Ughelli South,Delta,9.75,8.71666667,8.512615203857422,0.0507,11.7821,43.0696,3.0882,3,Minimal Risk - Wealthy,Minimal
+Ukwuani,Delta,5.850198,6.246481,4.067595958709717,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Uvwie,Delta,5.87,6.001,4.152709484100342,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Warri North,Delta,6.000089,5.466481,11.998315811157227,0.0507,11.7821,43.0696,3.0882,3,Minimal Risk - Wealthy,Minimal
+Warri South,Delta,5.519063,5.800606,3.3980772495269775,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Warri South West,Delta,5.599713,5.454881,7.985673141479492,0.0507,11.7821,43.0696,3.0882,0,Low Risk - Vulnerable,Low
+Abakaliki,Ebonyi,6.33333333,8.1,2.1548163890838623,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Afikpo North,Ebonyi,5.887936,7.953071,0.8470515012741089,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Afikpo South,Ebonyi,5.96666667,7.86666667,0.796431839466095,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ebonyi,Ebonyi,6.25,8.08333333,2.865729570388794,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ezza North,Ebonyi,6.081572,7.995858,1.417826533317566,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ezza South,Ebonyi,6.177757,8.040377,0.8679684400558472,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ishielu,Ebonyi,6.428567,7.818371,0.7663484215736389,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ivo,Ebonyi,5.919317,7.55976,0.7794477939605713,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Izzi,Ebonyi,6.385765,8.02549,0.839799165725708,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ohaozara,Ebonyi,6.030218,7.71407,1.0332149267196655,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ohaukwu,Ebonyi,6.030218,7.71407,0.8459087014198303,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Onicha,Ebonyi,6.11252,7.825484,1.3533677220344544,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Ikwo,Ebonyi,12.473,7.487,1.3311810493469238,0.0341,8.0227,42.4481,1.0561,0,Low Risk - Vulnerable,Low
+Akoko Edo,Edo,7.275622,6.107379,2.4599729061126707,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Egor,Edo,6.382926,5.569175,2.647651433944702,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Esan Central,Edo,6.738727,6.218905,1.0464909076690674,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Esan North East,Edo,6.7,6.333333,2.4599729061126707,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Esan South East,Edo,6.659722,6.382222,2.4599729061126707,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Esan West,Edo,6.753472,6.073766,1.2891205549240112,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Etsako Central,Edo,7.08965,6.50146,0.8181034922599792,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Etsako East,Edo,7.106769,6.687541,1.7556387186050415,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Etsako West,Edo,6.913601,6.29955,1.4814804792404175,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Igueben,Edo,6.6,6.58333333,2.4599729061126707,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Ikpoba Okha,Edo,6.256981,5.722929,2.4599729061126707,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Oredo,Edo,6.183772,5.596106,5.835121154785156,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Orhionmwon,Edo,6.294568,6.027932,13.892175674438477,0.0358,8.316,43.0149,1.695,3,Minimal Risk - Wealthy,Minimal
+Ovia North East,Edo,6.29312,5.543304,2.4599729061126707,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Ovia South West,Edo,6.567402,5.353142,2.4599729061126707,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Owan East,Edo,6.943126,5.985832,0.7179321646690369,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Owan West,Edo,6.907245,5.924599,0.7677557468414307,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Uhunmwonde,Edo,6.617483,5.985682,2.2659451961517334,0.0358,8.316,43.0149,1.695,0,Low Risk - Vulnerable,Low
+Ado-Ekiti,Ekiti,7.621111,5.221389,2.0793051719665527,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Efon,Ekiti,7.36666667,3.63333333,0.7070410251617432,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ekiti East,Ekiti,7.749096,5.719633,0.6535500288009644,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ekiti South West,Ekiti,7.617082,5.24349,0.9866858959197998,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ekiti West,Ekiti,7.657723,5.223741,0.7016494870185852,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Emure,Ekiti,7.45,5.46667,0.6245817542076111,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Gbonyin,Ekiti,7.621623,5.239016,0.6762630939483643,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ido-Osi,Ekiti,7.856505,5.175537,0.64298415184021,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ijero,Ekiti,7.81667,5.08333,0.640220046043396,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ikere,Ekiti,7.5,5.23333,0.8718787431716919,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ikole,Ekiti,7.78333333,5.51666667,0.5381393432617188,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ilejemeje,Ekiti,7.953263,5.230908,0.9866858959197998,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Irepodun/Ifelodun,Ekiti,7.621111,5.221389,0.8474754691123962,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Ise/Orun,Ekiti,7.46,5.42,0.5991504788398743,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Moba,Ekiti,7.987774,5.124049,0.8217622637748718,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Oye,Ekiti,7.79944444,5.32833333,0.6223439574241638,0.0532,12.4744,42.6072,3.5337,2,Medium Risk - Poor,Medium
+Aninri,Enugu,6.05,7.58333333,1.875659739971161,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Awgu,Enugu,6.1169,7.476,0.7614313960075378,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Enugu East,Enugu,6.53333,7.53333,2.965424060821533,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Enugu North,Enugu,6.46666667,7.51666667,5.904945373535156,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Enugu South,Enugu,6.4,7.5,3.1199891567230225,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Ezeagu,Enugu,6.75,7.33333333,1.4514131546020508,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Igbo Etiti,Enugu,6.66667,7.36667,1.875659739971161,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Igbo Eze North,Enugu,6.98333,7.45,1.875659739971161,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Igbo Eze South,Enugu,6.91667,7.4,1.875659739971161,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Isi-Uzo,Enugu,6.78333333,7.71666667,0.6494638919830322,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Nkanu East,Enugu,6.33333333,7.65,1.3407000303268433,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Nkanu West,Enugu,6.3,7.55,1.0815857648849487,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Nsukka,Enugu,6.85666667,7.39583333,1.4426610469818115,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Oji-River,Enugu,6.26666667,7.26666667,1.0220386981964111,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Udenu,Enugu,6.91667,7.51667,1.0215599536895752,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Udi,Enugu,6.31667,7.43333,1.4498683214187622,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Uzo-Uwani,Enugu,6.75,7.2,1.875659739971161,0.03,6.8819,43.6104,2.3834,0,Low Risk - Vulnerable,Low
+Abaji,Federal Capital Territory,8.475556,6.943333,0.8059629201889038,0.06884,15.22508,43.28492,5.021599999999999,0,Low Risk - Vulnerable,Low
+Abuja,Federal Capital Territory,9.06666667,7.48333333,2.0081656454574492,0.167903470437018,32.01562403598972,48.093371593830334,17.193187789203087,2,Medium Risk - Poor,Medium
+Bwari,Federal Capital Territory,9.280278,7.38,4.1780314445495605,0.10328000000000001,20.9775,44.13626000000001,9.103539999999999,0,Low Risk - Vulnerable,Low
+Gwagwalada,Federal Capital Territory,8.939167,7.075833,1.8771134614944458,0.031,7.01528,43.94904,2.2296199999999997,0,Low Risk - Vulnerable,Low
+Kuje,Federal Capital Territory,8.88222222,7.22027778,1.844525694847107,0.04922,11.337259999999999,43.69954,3.4334200000000004,2,Medium Risk - Poor,Medium
+Kwali,Federal Capital Territory,8.839722,7.054167,1.0002013444900513,0.2024,38.070119999999996,50.07252,20.88396,2,Medium Risk - Poor,Medium
+Akko,Gombe,10.10706761352457,11.041261362116334,1.779610514640808,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Balanga,Gombe,9.96666667,11.68333333,0.64248126745224,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Billiri,Gombe,9.83333333,11.15,0.8145039677619934,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Dukku,Gombe,10.81666667,10.76666667,0.8232983946800232,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Funakaye,Gombe,10.85,11.43333333,1.4303581714630127,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Gombe,Gombe,10.28333333,11.16666667,6.7188029289245605,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Kaltungo,Gombe,9.88333333,11.43333333,0.8483791947364807,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Kwami,Gombe,10.5,11.25,0.9906145334243774,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Nafada,Gombe,11.1333,11.25,0.6810811161994934,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Shongom,Gombe,9.65,11.2167,2.0078542470932006,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Yamaltu/Deba,Gombe,10.2167,11.3833,0.8640741109848022,0.3345,61.3412,54.5291,40.1715,1,High Risk - Severe Poverty,High
+Aboh Mbaise,Imo,5.45,7.23333333,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ahiazu Mbaise,Imo,5.546985,7.270299,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ehime Mbano,Imo,5.66258,7.30387,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ezinihitte Mbaise,Imo,5.50511,7.367715,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ideato North,Imo,5.50511,7.367715,0.759437084197998,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ideato South,Imo,5.85,7.1,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ihitte/Uboma,Imo,5.616412,7.349424,0.8517272472381592,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ikeduru,Imo,5.550556,7.066389,1.205348014831543,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Isiala Mbano,Imo,5.703582,7.179541,0.8792297840118408,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Isu,Imo,5.68388889,7.06888889,0.8001561760902405,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Mbaitoli,Imo,5.587778,7.05,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Ngor Okpala,Imo,5.496233,7.043545,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Njaba,Imo,5.702103,7.018633,1.0747795104980469,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Nkwerre,Imo,5.75,7.1,1.109255075454712,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Nwangele,Imo,5.725859,7.119447,0.7958848476409912,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Obowo,Imo,5.601592,7.320757,0.7255157828330994,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Oguta,Imo,5.71166667,6.80944444,9.115585327148438,0.0183,4.6123,39.654,0.2865,3,Minimal Risk - Wealthy,Minimal
+Ohaji/Egbema,Imo,5.305833,6.945556,12.523863792419434,0.0183,4.6123,39.654,0.2865,3,Minimal Risk - Wealthy,Minimal
+Okigwe,Imo,5.483,7.55,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Onuimo,Imo,5.77363,7.2411,0.8900803327560425,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Orlu,Imo,5.79638889,7.03888889,0.9409915208816528,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Orsu,Imo,5.853889,6.86,1.0389431715011597,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Oru East,Imo,5.983333,6.983333,1.4115904569625854,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Oru West,Imo,5.735833,6.883333,1.1085140705108643,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Owerri Municipal,Imo,5.485,7.035,4.01192045211792,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Owerri North,Imo,5.456667,7.102778,2.1679792404174805,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Owerri West,Imo,5.476513,6.979718,1.712887167930603,0.0183,4.6123,39.654,0.2865,0,Low Risk - Vulnerable,Low
+Auyo,Jigawa,12.36,9.98555556,0.6640698909759521,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Babura,Jigawa,12.63333333,8.96666667,0.8735118508338928,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Biriniwa,Jigawa,12.7833,10.2333,0.8866803646087646,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Birnin Kudu,Jigawa,11.45,9.475,0.8527295589447021,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Buji,Jigawa,11.66371,9.730518,1.0715879201889038,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Dutse,Jigawa,11.70111111,9.34194444,2.1172847747802734,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Gagarawa,Jigawa,12.407564,9.528397,0.7082334756851196,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Garki,Jigawa,12.432259,9.181244,0.6717069149017334,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Gumel,Jigawa,12.62833333,9.38972222,1.5107518434524536,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Guri,Jigawa,12.633757685656764,10.481106764515644,0.7983157634735107,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Gwaram,Jigawa,11.185833,9.968611,0.7537769079208374,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Gwiwa,Jigawa,12.736914,8.271095,0.8421996235847473,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Hadejia,Jigawa,12.45,10.04,3.002880811691284,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Jahun,Jigawa,12.06666667,9.63333333,1.1420140266418457,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Kafin Hausa,Jigawa,11.981763,8.496467,0.8436321020126343,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Kaugama,Jigawa,12.4833,9.73333,0.8568267226219177,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Kazaure,Jigawa,12.6528,8.41194,1.6533406972885132,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Kiri Kasama,Jigawa,12.594408,10.214753,0.723659098148346,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Kiyawa,Jigawa,11.78472222,9.60833333,0.7535830140113831,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Maigatari,Jigawa,12.804038,9.448007,0.9338474273681641,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Malam Madori,Jigawa,12.554071,10.028136,1.1687572002410889,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Miga,Jigawa,12.23333333,9.71666667,0.8249071836471558,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Ringim,Jigawa,12.28333333,9.46666667,1.0052896738052368,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Roni,Jigawa,12.566481,8.347088,0.6804511547088623,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Sule Tankarkar,Jigawa,12.65577,9.18751,0.7144423127174377,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Taura,Jigawa,12.2724893,9.36241882485775,0.7376095056533813,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Yankwashi,Jigawa,12.743623,8.53892,0.900262176990509,0.4377,74.7774,58.5301,51.9815,1,High Risk - Severe Poverty,High
+Birnin Gwari,Kaduna,10.6667,6.55,0.8547404408454895,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Chikun,Kaduna,10.285059,7.110283,2.455338478088379,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Giwa,Kaduna,11.280784,7.417606,0.6416719555854797,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Igabi,Kaduna,10.78333333,7.76666667,1.7055846452713013,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Ikara,Kaduna,11.1833,8.23333,0.5582388639450073,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Jaba,Kaduna,9.44818,8.00845,0.7318786382675171,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Jema'a,Kaduna,9.578827,8.292147,1.170827031135559,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kachia,Kaduna,9.872636,7.955089,0.5940976738929749,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kaduna North,Kaduna,9.923174,7.430551,10.191023826599121,0.1671,34.0943,49.0019,14.6989,3,Minimal Risk - Wealthy,Minimal
+Kaduna South,Kaduna,10.464834,7.418024,7.352571964263916,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kagarko,Kaduna,9.45,7.68333333,2.204582929611206,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kajuru,Kaduna,9.489736,7.695075,0.5923170447349548,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kaura,Kaduna,9.630686,8.503075,0.6439206600189209,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kauru,Kaduna,10.65,8.15,0.47348281741142273,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kubau,Kaduna,10.96289,8.392213,0.6562817692756653,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Kudan,Kaduna,11.26478,7.648952,0.4964451491832733,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Lere,Kaduna,10.416589,8.681673,0.6086503863334656,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Makarfi,Kaduna,11.29795,7.96917,1.0030344724655151,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Sabon Gari,Kaduna,11.1167,7.73333,2.307278871536255,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Sanga,Kaduna,9.225183,8.459182,0.5363090634346008,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Soba,Kaduna,10.984935,8.058804,0.5250484347343445,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Zangon Kataf,Kaduna,9.784597,8.283949,0.6234342455863953,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Zaria,Kaduna,11.06666667,7.7,1.7895443439483643,0.1671,34.0943,49.0019,14.6989,2,Medium Risk - Poor,Medium
+Ajingi,Kano,11.97,9.03916667,0.4713367223739624,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Albasu,Kano,11.67388889,9.14111111,0.5155020356178284,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Bagwai,Kano,12.15777778,8.13583333,0.5408143997192383,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Bebeji,Kano,11.66666667,8.26666667,0.8490297198295593,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Bichi,Kano,12.23416667,8.24111111,1.0061078071594238,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Bunkure,Kano,11.7,8.55,0.4742652475833893,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Dala,Kano,12.01666667,8.48333333,6.875094890594482,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Dambatta,Kano,12.43305556,8.51527778,0.7758496403694153,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Dawakin Kudu,Kano,11.83472222,8.59805556,1.6029566526412964,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Dawakin Tofa,Kano,12.10277778,8.33138889,0.8574326634407043,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Doguwa,Kano,10.75,8.73333333,1.2236589193344116,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Fagge,Kano,12.00666667,8.52916667,7.025066375732422,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Gabasawa,Kano,12.1,8.88333333,0.4803006947040558,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Garko,Kano,11.65,8.9,0.6059339642524719,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Garun Malam,Kano,11.6833,8.36667,0.6564844846725464,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Gaya,Kano,11.86805556,9.01111111,0.6459628343582153,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Gezawa,Kano,12.1,8.73333333,3.2734110355377197,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Gwale,Kano,11.96666667,8.5,12.255406379699707,0.2497,45.0612,55.4098,26.7308,3,Minimal Risk - Wealthy,Minimal
+Gwarzo,Kano,11.91666667,7.93333333,0.7222236394882202,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Kabo,Kano,11.89146325,8.200628471157401,0.6505295634269714,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Kano Municipal,Kano,11.95194444,8.54027778,14.889799118041992,0.2497,45.0612,55.4098,26.7308,3,Minimal Risk - Wealthy,Minimal
+Karaye,Kano,11.78333333,8.01666667,0.6049985289573669,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Kibiya,Kano,11.53333333,8.66666667,2.446748358011246,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Kiru,Kano,11.7,8.13333333,0.7194675207138062,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Kunchi,Kano,12.50138889,8.27166667,0.6429699063301086,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Kura,Kano,11.77138889,8.43027778,0.7564738988876343,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Madobi,Kano,11.77722222,8.28833333,0.7834377884864807,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Makoda,Kano,12.41861111,8.4325,0.5500057935714722,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Minjibir,Kano,12.17833333,8.65916667,0.5474995970726013,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Nasarawa,Kano,8.53333333,8.3,0.7872298955917358,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Rano,Kano,11.55722222,8.58333333,0.6298919320106506,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Rimin Gado,Kano,11.965,8.25,0.5952566862106323,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Rogo,Kano,11.56666667,7.83333333,0.5196585059165955,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Shanono,Kano,12.05,7.98333333,0.4355868101119995,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Sumaila,Kano,11.53333333,8.96666667,0.6619282364845276,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Takai,Kano,11.4853125,9.156044842198048,0.5782870054244995,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Tarauni,Kano,11.96666667,8.56666667,14.100471496582031,0.2497,45.0612,55.4098,26.7308,3,Minimal Risk - Wealthy,Minimal
+Tofa,Kano,12.05,8.26666667,0.9185139536857605,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Tsanyawa,Kano,12.3,7.98333333,0.5548285841941833,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Tudun Wada,Kano,11.25,8.4,0.5533153414726257,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Ungogo,Kano,12.09055556,8.49666667,2.3982882499694824,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Warawa,Kano,11.88333333,8.68333333,1.0148308277130127,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Wudil,Kano,11.81666667,8.85,0.9670753479003906,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+kumbotso,Kano,11.88805556,8.50277778,4.917171001434326,0.2497,45.0612,55.4098,26.7308,1,High Risk - Severe Poverty,High
+Bakori,Katsina,11.55,7.43333333,0.9435712099075317,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Batagarawa,Katsina,12.9,7.61666667,1.5988848209381104,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Batsari,Katsina,12.75277778,7.24194444,0.48122888803482056,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Baure,Katsina,12.78333333,8.76666667,0.49861568212509155,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Bindawa,Katsina,12.71666667,7.83333333,0.4684526324272156,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Charanchi,Katsina,12.675,7.7275,0.5593188405036926,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Dan Musa,Katsina,12.26388889,7.33388889,0.4373199939727783,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+DanDume,Katsina,11.41666667,7.2,0.5886157155036926,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Danja,Katsina,11.38333333,7.56666667,0.5055692791938782,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Daura,Katsina,13.03638889,8.31777778,1.6871981620788574,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Dutsi,Katsina,12.82527778,8.14277778,0.467081218957901,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Dutsin-Ma,Katsina,12.455,7.49138889,0.7747502088546753,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Faskari,Katsina,11.71666667,7.03333333,0.5360089540481567,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Funtua,Katsina,11.53333333,7.31666667,1.709998369216919,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Ingawa,Katsina,12.63972222,8.05027778,0.47733980417251587,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Jibia,Katsina,13.09166667,7.22638889,0.6493319272994995,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Kafur,Katsina,11.65,7.7,0.4743788242340088,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Kaita,Katsina,13.08055556,7.75388889,0.5854665637016296,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Kankara,Katsina,11.930319,7.412649,0.5475112795829773,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Kankia,Katsina,12.46666667,7.8,0.6825346946716309,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Katsina,Katsina,12.98888889,7.60083333,4.1761474609375,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Kurfi,Katsina,12.66611111,7.48305556,0.5082324743270874,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Kusada,Katsina,12.46666667,7.98333333,0.454281747341156,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Mai'Adua,Katsina,13.19055556,8.21166667,0.855748176574707,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Malumfashi,Katsina,11.8,7.61666667,1.1938468217849731,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Mani,Katsina,12.85611111,7.87444444,0.5419846773147583,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Mashi,Katsina,13.1,8.0,0.5422582626342773,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Matazu,Katsina,12.2333,7.66667,0.5071413516998291,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Musawa,Katsina,12.12944444,7.66888889,0.5124009847640991,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Rimi,Katsina,12.85,7.71555556,0.6730707287788391,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Sabuwa,Katsina,11.3,7.11666667,0.364732027053833,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Safana,Katsina,12.5,7.23333333,0.5010719895362854,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Sandamu,Katsina,12.93333333,8.36666667,0.6382347941398621,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Zango,Katsina,12.93333333,8.53333333,0.6640228629112244,0.3331,61.1319,54.4864,35.1948,1,High Risk - Severe Poverty,High
+Aliero,Kebbi,12.29654,4.42793,0.8559428691864014,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Arewa Dandi,Kebbi,12.688388,4.074184,0.48827484250068665,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Argungu,Kebbi,12.73333333,4.51666667,1.48639976978302,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Augie,Kebbi,12.88333333,4.6,1.1324012279510498,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Bagudo,Kebbi,11.400095,4.225767,0.8559428691864014,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Birnin Kebbi,Kebbi,12.45361111,4.20027778,2.1829490661621094,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Bunza,Kebbi,12.0916,4.0108,0.5472339391708374,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Dandi,Kebbi,12.68333333,8.66666667,0.587001621723175,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Danko-Wasagu,Kebbi,11.395688,5.485568,0.8559428691864014,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Fakai,Kebbi,11.547523,4.96493,0.8559428691864014,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Gwandu,Kebbi,12.50222222,4.6425,0.6384922862052917,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Jega,Kebbi,12.3667,4.6333,1.0120940208435059,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Kalgo,Kebbi,12.33257,4.20035,0.7405378818511963,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Koko/Besse,Kebbi,11.45855,4.43782,0.8559428691864014,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Maiyama,Kebbi,11.99054,4.35394,0.5047825574874878,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Ngaski,Kebbi,10.40709,4.71781,0.5359001159667969,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Sakaba,Kebbi,11.065401,5.596032,0.8559428691864014,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Shanga,Kebbi,11.1958,4.5675,0.3845675587654114,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Suru,Kebbi,11.83,4.096667,0.47981685400009155,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Yauri,Kebbi,11.395688,5.485568,1.0826420783996582,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Zuru,Kebbi,11.435,5.235,0.6176241636276245,0.4373,73.7863,59.2602,52.7493,1,High Risk - Severe Poverty,High
+Adavi,Kogi,7.66666667,6.45,1.7146142721176147,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Ajaokuta,Kogi,7.55611111,6.655,1.6880236864089966,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Ankpa,Kogi,7.43333333,7.63333333,0.9171385765075684,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Bassa,Kogi,7.9,7.05,0.989901602268219,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Bassa,Kogi,7.9,7.05,0.8623833656311035,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Dekina,Kogi,7.58333333,7.2,0.6813758611679077,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Ibaji,Kogi,6.86666667,6.8,0.8501577734947204,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Idah,Kogi,7.08333333,6.75,0.6524097919464111,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Igalamela Odolu,Kogi,7.08333333,7.08333333,0.8501577734947204,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Ijumu,Kogi,7.85,5.96666667,1.078391671180725,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Kabba/Bunu,Kogi,8.11666667,6.15,0.8194421529769897,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Kogi,Kogi,7.5,6.7,0.9140767455101013,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Lokoja,Kogi,7.80194444,6.74416667,2.3581948280334473,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Mopa-Muro,Kogi,8.09722222,5.89583333,0.5146441459655762,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Ofu,Kogi,7.33333333,7.08333333,0.8491209149360657,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Ogori/Magongo,Kogi,7.483333,6.216667,0.5473943948745728,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Okehi,Kogi,7.7,6.3,0.8863864541053772,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Okene,Kogi,7.55,6.23333333,1.5891814231872559,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Olamaboro,Kogi,7.18333,7.56667,1.2954518795013428,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Omala,Kogi,7.81666667,7.51666667,0.5765355825424194,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Yagba East,Kogi,8.16666667,5.7,0.5814637541770935,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Yagba West,Kogi,8.25,5.55,0.5928024649620056,0.0638,14.0219,45.4947,5.6812,2,Medium Risk - Poor,Medium
+Asa,Kwara,8.324804,4.533673,1.388670563697815,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Baruten,Kwara,9.58333333,3.25,0.5751678943634033,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Edu,Kwara,8.841903,5.399178,0.6637733578681946,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Ekiti,Kwara,8.139435,5.32809,0.6097181439399719,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Ifelodun,Kwara,8.820023,4.967322,1.6065086126327515,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Ifelodun,Kwara,8.820023,4.967322,1.2981691360473633,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Ilorin East,Kwara,8.573234,4.703608,2.4574317932128906,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Ilorin South,Kwara,8.498688,4.562779,2.2544479370117188,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Ilorin West,Kwara,8.480048,4.614006,2.543989896774292,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Irepodun,Kwara,8.487457,4.527301,1.1019891500473022,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Irepodun,Kwara,8.487457,4.527301,1.5716360807418823,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Isin,Kwara,8.2579064,5.038849070678933,0.5828230977058411,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Kaiama,Kwara,9.605193,3.941946,0.8540161848068237,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Moro,Kwara,8.845,4.556667,0.8628544807434082,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Offa,Kwara,8.147,4.72,1.4557932615280151,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Oke-Ero,Kwara,8.088888,5.144659,1.5149807929992676,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Oyun,Kwara,8.16827,4.65212,0.9748392105102539,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Pategi,Kwara,8.73333333,5.75,0.5293692946434021,0.0962,20.156,47.7497,8.1368,0,Low Risk - Vulnerable,Low
+Agege,Lagos,6.62194444,3.32583333,15.38697338104248,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Ajeromi-Ifelodun,Lagos,6.4448,3.3339,16.087716007232665,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Alimosho,Lagos,6.61055556,3.29583333,9.348999977111816,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Amuwo-Odofin,Lagos,6.45,3.266667,16.087716007232665,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Apapa,Lagos,6.45,3.36666667,21.978744506835938,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Badagry,Lagos,6.41666667,2.88333333,1.6772717237472534,0.0044,1.1054,39.4491,0.2073,0,Low Risk - Vulnerable,Low
+Epe,Lagos,6.58333333,3.98333333,3.435980796813965,0.0044,1.1054,39.4491,0.2073,0,Low Risk - Vulnerable,Low
+Eti-Osa,Lagos,6.437443,3.564588,16.087716007232665,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Ibeju-Lekki,Lagos,6.416667,2.883333,16.087716007232665,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Ifako-Ijaiye,Lagos,6.68472222,3.28888889,16.087716007232665,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Ikeja,Lagos,6.6,3.35,24.44477653503418,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Ikorodu,Lagos,6.6,3.5,5.578470230102539,0.0044,1.1054,39.4491,0.2073,0,Low Risk - Vulnerable,Low
+Kosofe,Lagos,6.556879,3.384174,13.778976440429688,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Lagos Island,Lagos,6.45,3.4,25.281064987182617,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Lagos Mainland,Lagos,6.504937,3.386503,16.1258602142334,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Mushin,Lagos,6.53333333,3.35,19.616872787475586,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Ojo,Lagos,6.46666667,3.18333333,4.193605899810791,0.0044,1.1054,39.4491,0.2073,0,Low Risk - Vulnerable,Low
+Oshodi-Isolo,Lagos,6.511865,3.308021,16.087716007232665,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Somolu,Lagos,6.540833,3.387222,16.087716007232665,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Surulere,Lagos,6.5,3.35,0.6402723789215088,0.0044,1.1054,39.4491,0.2073,0,Low Risk - Vulnerable,Low
+Surulere,Lagos,6.5,3.35,18.523496627807617,0.0044,1.1054,39.4491,0.2073,3,Minimal Risk - Wealthy,Minimal
+Akwanga,Nasarawa,8.91666667,8.38333333,1.182805061340332,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Awe,Nasarawa,7.823611,3.95,0.7101865410804749,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Doma,Nasarawa,8.396241,8.35864,0.8320620656013489,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Karu,Nasarawa,9.019231,7.613516,2.6325037479400635,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Keana,Nasarawa,8.147346,8.800478,0.6067680716514587,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Keffi,Nasarawa,8.8464,7.8733,1.8045490980148315,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Kokona,Nasarawa,8.85,5.08333333,0.9766321778297424,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Lafia,Nasarawa,8.49166667,8.51666667,1.5291650295257568,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Nasarawa,Nasarawa,8.53333333,8.3,0.7872298955917358,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Nasarawa Egon,Nasarawa,8.741115,8.542192,0.8285104632377625,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Obi,Nasarawa,7.0,8.25,1.4065953969955445,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Obi,Nasarawa,7.0,8.25,0.5522817373275757,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Toto,Nasarawa,8.388021,7.078199,0.507482647895813,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Wamba,Nasarawa,8.93333333,8.6,0.6435480117797852,0.1888,40.583,46.5126,15.7076,2,Medium Risk - Poor,Medium
+Agaie,Niger,9.01666667,6.31666667,0.7572249174118042,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Agwara,Niger,10.7,4.58333333,0.5394013524055481,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Bida,Niger,9.08333333,6.01666667,1.7162331342697144,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Borgu,Niger,11.0,3.5,1.6644951105117798,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Bosso,Niger,9.651457,6.526626,1.5351557731628418,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Chanchaga,Niger,9.61388889,6.55694444,4.997640609741211,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Edati,Niger,9.05,5.65,0.6973114609718323,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Gbako,Niger,9.26666667,5.98333333,0.5702575445175171,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Gurara,Niger,9.35,7.08333333,1.7736186981201172,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Katcha,Niger,9.15,6.23333333,0.7286950945854187,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Kontagora,Niger,10.403,5.473,1.665555715560913,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Lapai,Niger,8.81666667,6.68333333,0.795272946357727,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Lavun,Niger,9.45,5.63333333,0.6403967142105103,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Magama,Niger,10.46666667,5.05,1.1734826564788818,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Mariga,Niger,10.7,5.83333333,0.9720375537872314,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Mashegu,Niger,9.95,5.21666667,0.8352816700935364,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Mokwa,Niger,9.2,5.33333333,1.1242761611938477,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Munya,Niger,9.78333,7.03333,0.4731704592704773,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Paikoro,Niger,9.43333,6.63333,0.6934322714805603,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Rafi,Niger,10.18444444,6.25333333,1.2175451517105103,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Rijau,Niger,11.1,5.26666667,0.511364758014679,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Shiroro,Niger,9.95694444,6.83194444,0.9618204236030579,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Suleja,Niger,9.18333333,7.18333333,1.979885220527649,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Tafa,Niger,9.25,7.25,2.715254545211792,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Wushishi,Niger,9.721763,6.111317,0.6401862502098083,0.2191,44.5601,49.1694,22.7942,2,Medium Risk - Poor,Medium
+Abeokuta North,Ogun,7.2,3.2,1.5516085624694824,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Abeokuta South,Ogun,7.15,3.35,3.1841964721679688,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ado-Odo/Ota,Ogun,6.63333333,3.1,1.0749117732048035,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ewekoro,Ogun,6.93333333,3.21666667,2.0558454990386963,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ifo,Ogun,6.81666667,3.2,3.4365110397338867,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ijebu East,Ogun,6.73333333,4.16666667,1.2213828563690186,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ijebu North,Ogun,6.95,4.0,1.147194743156433,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ijebu North East,Ogun,6.9,4.01666667,1.1552886962890625,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ijebu Ode,Ogun,6.82083333,3.92083333,2.2712533473968506,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ikenne,Ogun,6.86666667,3.71666667,2.0790932178497314,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Imeko Afon,Ogun,7.63333333,2.86666667,0.7038127183914185,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ipokia,Ogun,6.53333333,2.85,0.8811509013175964,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Obafemi Owode,Ogun,6.95,3.5,2.565643548965454,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Odeda,Ogun,7.21666667,3.51666667,1.1408966779708862,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Odogbolu,Ogun,6.76666667,3.8,1.501503825187683,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Ogun Waterside,Ogun,6.48333333,4.4,1.0749117732048035,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Remo North,Ogun,7.0,3.71666667,1.2906206846237183,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Shagamu,Ogun,6.83333333,3.65,3.704709053039551,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Yewa North,Ogun,7.15,2.91666667,1.573438286781311,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Yewa South,Ogun,6.8,2.95,0.9640149474143982,0.0918,19.9482,46.0279,6.9381,2,Medium Risk - Poor,Medium
+Akoko North East,Ondo,7.516667,5.75,0.7867971062660217,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Akoko North West,Ondo,7.643346,5.76057,0.6324244141578674,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Akoko South East,Ondo,7.451155,5.910301,1.2313035488128663,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Akoko South West,Ondo,7.45439,5.801639,0.6961523294448853,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Akure North,Ondo,7.26277778,5.31583333,1.5628820657730103,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Akure South,Ondo,7.2075,5.18833333,1.595102071762085,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ese Odo,Ondo,6.25754,5.000496,0.8622105121612549,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Idanre,Ondo,7.09222222,5.13222222,0.6310358643531799,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ifedore,Ondo,7.343085,5.108323,1.6043453216552734,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ilaje,Ondo,6.369232,4.784181,2.650550365447998,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ile Oluji/Okeigbo,Ondo,7.166442,4.724235,1.1723003387451172,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Irele,Ondo,6.48333333,4.86666667,0.6700909733772278,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Odigbo,Ondo,6.793915,4.867455,1.0491068363189697,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Okitipupa,Ondo,6.55,4.71666667,0.8624408841133118,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ondo East,Ondo,7.065508,4.931343,1.0640449523925781,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ondo West,Ondo,7.09727,4.84115,1.0308148860931396,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ose,Ondo,6.922762,5.777478,0.8326233625411987,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Owo,Ondo,7.18333333,5.58333333,0.9801350235939026,0.0637,14.4482,44.0736,4.212,2,Medium Risk - Poor,Medium
+Ayedaade,Osun,7.31666667,4.35,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Aiyedire,Osun,7.56666667,4.23333333,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Atakunmosa East,Osun,7.48333,4.78333,2.2889811992645264,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Atakunmosa West,Osun,7.55,4.66667,1.1736547946929932,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Boluwaduro,Osun,7.9,4.81666667,0.7078748941421509,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Boripe,Osun,7.86666667,4.65833333,1.2067087888717651,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ede North,Osun,7.73333333,4.48333333,1.4709155559539795,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ede South,Osun,7.7,4.45,1.2010865211486816,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Egbedore,Osun,7.81666667,4.43333333,3.348977565765381,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ejigbo,Osun,7.9,4.315,0.8064438104629517,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ife Central,Osun,7.55,4.53333333,1.7767083644866943,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ife East,Osun,7.45,4.6,1.5862191915512085,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ife North,Osun,7.36666667,4.46666667,1.2156121730804443,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ife South,Osun,7.2,4.6,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ifedayo,Osun,7.95,4.98333333,0.4690278172492981,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ifelodun,Osun,7.91667,4.66667,1.6065086126327515,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ifelodun,Osun,7.91667,4.66667,1.2981691360473633,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ila,Osun,8.01666667,4.9,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ilesa East,Osun,7.61666667,4.76666667,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ilesa West,Osun,7.65,4.71666667,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Irepodun,Osun,7.83333,4.48333,1.1019891500473022,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Irepodun,Osun,7.83333,4.48333,1.5716360807418823,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Irewole,Osun,7.41666667,4.21666667,0.8117113709449768,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Isokan,Osun,7.3,4.18333333,0.8580899834632874,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Iwo,Osun,7.63333333,4.18333333,1.1243689060211182,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Obokun,Osun,7.78333333,4.76666667,0.9495230317115784,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Odo-Otin,Osun,8.01666667,4.7,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Ola-Oluwa,Osun,7.78333333,4.21666667,1.4243037343025207,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Olorunda,Osun,7.86666667,4.58333333,2.6228342056274414,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Oriade,Osun,7.58333333,4.86666667,0.9503849148750305,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Orolu,Osun,7.9,4.45,1.1349674463272095,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Osogbo,Osun,7.76666667,4.56666667,3.2634243965148926,0.0315,7.5201,41.8408,1.6488,0,Low Risk - Vulnerable,Low
+Afijio,Oyo,7.8,3.9,1.0927993059158325,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Akinyele,Oyo,7.523735,3.914781,1.693964958190918,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Atiba,Oyo,7.849454,3.930354,1.0980373620986938,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Atisbo,Oyo,8.549788,3.45,0.9010264277458191,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Egbeda,Oyo,7.381337,3.966501,2.5665740966796875,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ibadan North,Oyo,7.403239,3.913107,6.763916015625,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ibadan North East,Oyo,7.401536,3.938985,4.344743251800537,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ibadan North West,Oyo,7.395799,3.881569,5.536937713623047,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ibadan South East,Oyo,7.37577,3.897557,4.676723003387451,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ibadan South West,Oyo,7.396389,3.916667,12.233970642089844,0.0809,17.3758,46.544,6.3096,3,Minimal Risk - Wealthy,Minimal
+Ibarapa Central,Oyo,7.435346,3.288581,0.6681656837463379,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ibarapa East,Oyo,7.549722,3.45,0.8288475871086121,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ibarapa North,Oyo,7.564226,3.229916,0.6426446437835693,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ido,Oyo,7.507354,3.719376,2.153500556945801,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Irepo,Oyo,7.350425,3.880304,0.6001272201538086,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Iseyin,Oyo,7.96666667,3.6,1.454976201057434,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Itesiwaju,Oyo,7.358763,3.959258,0.7383032441139221,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Iwajowa,Oyo,7.983269,3.05274,0.5324053168296814,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Kajola,Oyo,8.037685,3.348942,0.9010264277458191,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Lagelu,Oyo,7.495026,4.073009,3.505856990814209,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ogbomosho North,Oyo,8.133333,4.25,1.431014060974121,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ogbomosho South,Oyo,8.11791,4.239092,1.0710597038269043,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ogo Oluwa,Oyo,8.13524,4.24006,0.804938793182373,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Olorunsogo,Oyo,8.752377,4.130988,0.6761499047279358,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Oluyole,Oyo,7.218,3.892,1.9837737083435059,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ona Ara,Oyo,7.225568,4.026554,1.5068069696426392,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Oorelope,Oyo,8.833333,3.75,0.9010264277458191,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Ori Ire,Oyo,8.33423,4.14423,0.6803919672966003,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Oyo East,Oyo,7.882092,3.998755,1.9601871967315674,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Oyo West,Oyo,7.94157,3.8218,1.4958311319351196,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Saki East,Oyo,8.628418,3.640723,0.6013649702072144,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Saki West,Oyo,8.666667,3.4,0.9097448587417603,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Surulere,Oyo,6.5,3.35,0.6402723789215088,0.0809,17.3758,46.544,6.3096,0,Low Risk - Vulnerable,Low
+Surulere,Oyo,6.5,3.35,18.523496627807617,0.0809,17.3758,46.544,6.3096,3,Minimal Risk - Wealthy,Minimal
+Barkin Ladi,Plateau,9.56667,8.91667,0.6598209142684937,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Bassa,Plateau,10.0833,8.73333,0.989901602268219,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Bassa,Plateau,10.0833,8.73333,0.8623833656311035,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Bokkos,Plateau,9.25,8.88333333,0.5666181445121765,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Jos East,Plateau,9.91666667,9.1,0.7053038477897644,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Jos North,Plateau,9.91666667,8.9,2.863405227661133,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Jos South,Plateau,9.76666667,8.8,2.6859657764434814,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Kanam,Plateau,9.56601387018746,9.991505892537331,0.7953029870986938,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Kanke,Plateau,9.3671789,9.639354933485455,0.4815615713596344,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Langtang North,Plateau,9.13333333,9.78333333,0.4366464614868164,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Langtang South,Plateau,8.63333333,9.8,1.4785707414150238,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Mangu,Plateau,9.43333333,9.13333333,0.7076244950294495,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Mikang,Plateau,9.0,9.58333333,1.4785707414150238,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Pankshin,Plateau,9.327248,9.431291,0.5522885918617249,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Qua'an Pan,Plateau,8.8,9.15,0.44220271706581116,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Riyom,Plateau,9.56666667,8.66666667,0.6705424189567566,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Shendam,Plateau,8.71666667,9.5,0.6295440793037415,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Wase,Plateau,9.1,9.96666667,0.6785703301429749,0.1945,42.4669,45.7951,16.2632,2,Medium Risk - Poor,Medium
+Abua-Odual,Rivers,4.82972222,6.5675,9.855693149566651,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Ahoada East,Rivers,5.06833333,6.64666667,1.6833416223526,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Ahoada West,Rivers,5.08638889,6.47527778,13.012986183166504,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Akuku-Toru,Rivers,4.56,6.74972222,9.855693149566651,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Andoni,Rivers,4.54916667,7.44638889,12.85708999633789,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Asari-Toru,Rivers,4.78333333,6.85,1.0558648109436035,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Bonny,Rivers,4.43333333,7.16666667,30.539283752441406,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Degema,Rivers,4.57416667,6.93805556,6.659358978271484,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Eleme,Rivers,4.7875,7.14361111,5.858214378356934,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Emohua,Rivers,4.88333333,6.86666667,9.855693149566651,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Etche,Rivers,4.99,7.05,11.999692916870117,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Gokana,Rivers,4.65972222,7.2825,1.0248156785964966,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Ikwerre,Rivers,5.055143,6.922417,6.473439693450928,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Khana,Rivers,4.7,7.35,0.8512958884239197,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Obio/Akpor,Rivers,4.874902,6.999767,10.033576965332031,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Ogba/Egbema/Ndoni,Rivers,5.34166944,6.65556111,11.286338806152344,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Ogu/Bolo,Rivers,4.65055556,7.18305556,9.855693149566651,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Okrika,Rivers,4.74,7.083,11.33142375946045,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Omuma,Rivers,4.969419,7.020821,9.855693149566651,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Opobo/Nkoro,Rivers,4.56805556,7.55277778,1.2852592468261719,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Oyigbo,Rivers,4.87806111,7.12833056,9.440332412719727,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Port Harcourt,Rivers,4.82416667,7.03361111,9.855693149566651,0.0351,8.3898,41.8616,1.3755,3,Minimal Risk - Wealthy,Minimal
+Tai,Rivers,4.71666667,7.3,1.3985507488250732,0.0351,8.3898,41.8616,1.3755,0,Low Risk - Vulnerable,Low
+Binji,Sokoto,13.21666667,4.91666667,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Bodinga,Sokoto,12.88333333,5.16666667,0.7318952679634094,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Dange/Shuni,Sokoto,12.85,5.35,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Gada,Sokoto,13.76666667,5.66666667,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Goronyo,Sokoto,13.45305556,5.67638889,0.5674569606781006,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Gudu,Sokoto,13.46666667,4.43333333,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Gwadabawa,Sokoto,13.3697,5.23,0.3734932541847229,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Illela,Sokoto,13.7325,5.30027778,0.5540116429328918,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Isa,Sokoto,13.20027778,6.40722222,0.45916590094566345,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Kware,Sokoto,13.21805556,5.26722222,0.6874942779541016,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Rabah,Sokoto,13.11666667,5.51666667,0.36447054147720337,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Sabon Birni,Sokoto,13.5611,6.325,0.4605855643749237,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Shagari,Sokoto,12.63333333,5.0,0.4175121784210205,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Silame,Sokoto,13.03333333,4.85,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Sokoto North,Sokoto,13.05,5.23333333,2.9513769149780273,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Sokoto South,Sokoto,13.05,5.21666667,3.15970516204834,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Tambuwal,Sokoto,12.31666667,4.8,0.6165720820426941,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Tangaza,Sokoto,13.5167,4.96667,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Tureta,Sokoto,12.58944444,5.54694444,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Wamako,Sokoto,13.03777778,5.09361111,0.47280657291412354,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Wurno,Sokoto,13.28416667,5.4275,0.423194944858551,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Yabo,Sokoto,12.71916667,5.00616667,0.5156896710395813,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Kebbe,Sokoto,12.13333333,4.73333333,0.4616723954677582,0.4372,70.739,61.8037,51.402,1,High Risk - Severe Poverty,High
+Ardo Kola,Taraba,8.8467,11.2067,0.9364958763122558,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Bali,Taraba,7.854286164866859,10.963562199223984,0.9364958763122558,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Donga,Taraba,7.55,10.28333333,0.8397209048271179,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Gashaka,Taraba,7.506556,11.364155,0.5698433518409729,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Gassol,Taraba,8.4,10.5333,0.8343861103057861,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Ibi,Taraba,8.31666667,9.85,0.7022744417190552,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Jalingo,Taraba,8.9,11.36666667,2.3766393661499023,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Karim Lamido,Taraba,9.2,10.8833,0.5094268918037415,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Kurmi,Taraba,8.708857,10.080541,0.9364958763122558,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Lau,Taraba,9.18694444,11.42,0.5242953300476074,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Sardauna,Taraba,6.95,11.116667,0.6065893769264221,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Takum,Taraba,7.25,9.98333333,1.024885892868042,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Ussa,Taraba,7.11666667,10.08333333,0.9364958763122558,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Wukari,Taraba,7.85,9.78333333,1.2839233875274658,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Yorro,Taraba,8.749986,11.616698,0.9737523198127747,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Zing,Taraba,8.993239,11.740887,0.9254526495933533,0.2702,56.704,47.6506,25.4282,2,Medium Risk - Poor,Medium
+Bade,Yobe,12.86666667,10.96666667,0.9562831521034241,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Bursari,Yobe,12.75,11.76666667,0.42278504371643066,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Damaturu,Yobe,11.74444444,11.96111111,2.1197707653045654,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Fika,Yobe,11.41666667,11.21666667,0.5892481207847595,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Fune,Yobe,11.88333333,11.9,0.579276978969574,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Geidam,Yobe,12.71666667,12.03333333,0.6297222971916199,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Gujba,Yobe,11.49777778,11.93083333,0.6800941228866577,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Gulani,Yobe,11.0,11.71666667,0.4116254150867462,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Jakusko,Yobe,12.41666667,10.93333333,0.540850043296814,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Karasuwa,Yobe,13.0,10.78333333,0.5251542329788208,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Machina,Yobe,13.1,10.0,0.7363858819007874,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Nangere,Yobe,11.85,10.96666667,0.4794628322124481,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Nguru,Yobe,12.875,10.458333,1.0823354721069336,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Potiskum,Yobe,11.7092,11.0694,1.3689372539520264,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Tarmuwa,Yobe,12.2,11.78333333,0.5305280685424805,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Yunusari,Yobe,13.11666667,11.73333333,0.43442362546920776,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Yusufari,Yobe,13.18333333,10.85,0.621034562587738,0.3428,63.0234,54.3901,43.5571,1,High Risk - Severe Poverty,High
+Anka,Zamfara,11.98333333,6.03333333,0.49511003494262695,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Bakura,Zamfara,12.15,5.9,0.4602726697921753,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Birnin Magaji/Kiyaw,Zamfara,12.46666667,6.9,0.6554967641830445,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Bukkuyum,Zamfara,12.0,5.61666667,0.6554967641830445,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Bungudu,Zamfara,12.15,6.5,0.7677142024040222,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Gummi,Zamfara,12.05,5.16666667,0.5303041934967041,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Gusau,Zamfara,12.166667,6.666667,2.8256633281707764,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Kaura Namoda,Zamfara,12.6,6.589722,0.5112294554710388,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Maradun,Zamfara,12.75,6.28333333,0.5054827928543091,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Maru,Zamfara,11.6,6.28333333,0.4214947521686554,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Shinkafi,Zamfara,13.03333333,6.51666667,0.6699191331863403,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Talata Mafara,Zamfara,12.35,6.06666667,1.0766676664352417,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Tsafe,Zamfara,11.93333333,6.9,0.5959190726280212,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
+Zurmi,Zamfara,12.85,6.73333333,0.5122407078742981,0.3913,71.8695,54.4413,44.736,1,High Risk - Severe Poverty,High
