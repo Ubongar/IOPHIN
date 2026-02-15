@@ -121,23 +121,49 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
     const typedFeature = feature as HotspotFeature;
     const { LGA_Name, State, risk_level, MPI, mean_nightlight_intensity } = typedFeature.properties;
 
-    // Tooltip with LGA info
-    const tooltipContent = `
-      <div class="font-sans">
-        <div class="font-bold text-base mb-1">${LGA_Name}</div>
-        <div class="text-sm text-gray-600 mb-2">${State} State</div>
-        <div class="flex items-center gap-2 mb-1">
-          <span class="inline-block w-3 h-3 rounded-full" style="background-color: ${RISK_COLORS[risk_level]}"></span>
-          <span class="font-semibold text-sm">${risk_level} Risk</span>
-        </div>
-        <div class="text-xs text-gray-700 mt-2">
-          <div>MPI: ${MPI.toFixed(4)}</div>
-          <div>Nightlight: ${mean_nightlight_intensity.toFixed(2)}</div>
-        </div>
-      </div>
-    `;
+    // Tooltip with LGA info (build DOM to avoid XSS from interpolated HTML)
+    const container = document.createElement('div');
+    container.className = 'font-sans';
 
-    layer.bindTooltip(tooltipContent, {
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'font-bold text-base mb-1';
+    titleDiv.textContent = LGA_Name ?? '';
+    container.appendChild(titleDiv);
+
+    const stateDiv = document.createElement('div');
+    stateDiv.className = 'text-sm text-gray-600 mb-2';
+    stateDiv.textContent = `${State ?? ''} State`;
+    container.appendChild(stateDiv);
+
+    const riskRow = document.createElement('div');
+    riskRow.className = 'flex items-center gap-2 mb-1';
+
+    const riskDot = document.createElement('span');
+    riskDot.className = 'inline-block w-3 h-3 rounded-full';
+    riskDot.style.backgroundColor = RISK_COLORS[risk_level];
+    riskRow.appendChild(riskDot);
+
+    const riskLabel = document.createElement('span');
+    riskLabel.className = 'font-semibold text-sm';
+    riskLabel.textContent = `${risk_level} Risk`;
+    riskRow.appendChild(riskLabel);
+
+    container.appendChild(riskRow);
+
+    const metricsContainer = document.createElement('div');
+    metricsContainer.className = 'text-xs text-gray-700 mt-2';
+
+    const mpiDiv = document.createElement('div');
+    mpiDiv.textContent = `MPI: ${MPI.toFixed(4)}`;
+    metricsContainer.appendChild(mpiDiv);
+
+    const nightlightDiv = document.createElement('div');
+    nightlightDiv.textContent = `Nightlight: ${mean_nightlight_intensity.toFixed(2)}`;
+    metricsContainer.appendChild(nightlightDiv);
+
+    container.appendChild(metricsContainer);
+
+    layer.bindTooltip(container, {
       sticky: true,
       className: 'custom-tooltip',
     });
