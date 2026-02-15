@@ -142,6 +142,18 @@ Note: The actual score varies depending on the data and clustering iteration.
 - The system generates synthetic nightlight data when VIIRS is unavailable
 - For production use with actual VIIRS data, place `viirs_2024.tif` in `data/raw/`
 
+## Troubleshooting
+
+If you encounter the **"No valid pixels found for geometry"** error, the system now includes comprehensive diagnostics to help identify the root cause:
+
+- ✅ Automatic file size verification
+- ✅ Spatial bounds overlap detection
+- ✅ Sample pixel data inspection
+- ✅ Coordinate system validation
+- ✅ Enhanced error messages
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for a complete guide on diagnosing and fixing extraction issues.
+
 ## License
 
 This project is part of the IOPHIN (Integrated Optimization Platform for Health Information in Nigeria) initiative.
