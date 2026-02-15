@@ -1,4 +1,4 @@
-"# IOPHIN - Nigeria Poverty Hotspot Identifier
+# IOPHIN - Nigeria Poverty Hotspot Identifier
 
 A geospatial machine learning system for identifying poverty hotspots across Nigeria's Local Government Areas (LGAs) using nighttime satellite imagery and multidimensional poverty indicators.
 
