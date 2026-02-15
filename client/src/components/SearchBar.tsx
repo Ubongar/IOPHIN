@@ -14,7 +14,9 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
+  const resultsId = 'search-results-list';
 
   const filteredResults = useMemo(() => {
     if (!searchTerm || searchTerm.length < 2 || !data) {
@@ -29,6 +31,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
   }, [searchTerm, data]);
 
   const hasResults = filteredResults.length > 0 && searchTerm.length > 0;
+
+  // Reset focused index when results change
+  useEffect(() => {
+    setFocusedIndex(-1);
+  }, [filteredResults]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -59,6 +66,36 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showResults || filteredResults.length === 0) {
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setFocusedIndex(prev => 
+          prev < filteredResults.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setFocusedIndex(prev => prev > 0 ? prev - 1 : -1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (focusedIndex >= 0 && focusedIndex < filteredResults.length) {
+          handleSelect(filteredResults[focusedIndex]);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setShowResults(false);
+        setFocusedIndex(-1);
+        break;
+    }
+  };
+
   return (
     <div ref={searchRef} className="relative w-full max-w-md">
       <div className="relative">
@@ -76,8 +113,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
               }
             }}
             onFocus={handleFocus}
+            onKeyDown={handleKeyDown}
             placeholder="Search LGAs or States..."
             className="search-input"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showResults && filteredResults.length > 0}
+            aria-controls={resultsId}
+            aria-activedescendant={
+              focusedIndex >= 0 ? `search-result-${focusedIndex}` : undefined
+            }
           />
           {searchTerm && (
             <button onClick={handleClear} className="search-clear-btn" aria-label="Clear search">
@@ -90,12 +135,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
       </div>
 
       {showResults && filteredResults.length > 0 && (
-        <div className="search-results">
-          {filteredResults.map((feature) => (
+        <div 
+          id={resultsId}
+          className="search-results"
+          role="listbox"
+          aria-label="Search results"
+        >
+          {filteredResults.map((feature, index) => (
             <button
+              id={`search-result-${index}`}
               key={`${feature.properties.State}-${feature.properties.LGA_Name}`}
               onClick={() => handleSelect(feature)}
-              className="search-result-item"
+              className={`search-result-item ${index === focusedIndex ? 'focused' : ''}`}
+              role="option"
+              aria-selected={index === focusedIndex}
             >
               <div className="flex-1">
                 <div className="search-result-title">{feature.properties.LGA_Name}</div>

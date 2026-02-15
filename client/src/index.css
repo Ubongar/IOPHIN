@@ -226,8 +226,14 @@
   border-bottom: none;
 }
 
-.search-result-item:hover {
+.search-result-item:hover,
+.search-result-item.focused {
   background: var(--bg-panel-hover);
+}
+
+.search-result-item.focused {
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
 }
 
 .search-result-title {
@@ -251,6 +257,12 @@
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* Ensure sufficient contrast for badge text in light mode */
+[data-theme='light'] .search-result-badge {
+  color: #000;
+  font-weight: 800;
 }
 
 /* ── Body ── */
