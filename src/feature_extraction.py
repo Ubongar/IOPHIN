@@ -161,9 +161,16 @@ def extract_nightlight_features_from_raster(gdf, raster_path):
         logger.info("Sampling raster data to verify content...")
         try:
             # Read a small window from the center of the raster
-            center_x = src.width // 2
-            center_y = src.height // 2
-            window = rasterio.windows.Window(center_x - 100, center_y - 100, 200, 200)
+            if src.width >= 200 and src.height >= 200:
+                center_x = src.width // 2
+                center_y = src.height // 2
+                window = rasterio.windows.Window(center_x - 100, center_y - 100, 200, 200)
+            else:
+                logger.info(
+                    "Raster dimensions are smaller than 200x200 "
+                    f"({src.width} x {src.height}); sampling full raster extent instead."
+                )
+                window = rasterio.windows.Window(0, 0, src.width, src.height)
             sample_data = src.read(1, window=window)
             sample_valid = sample_data[(sample_data > 0) & (sample_data < 9999)]
             
