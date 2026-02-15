@@ -99,7 +99,7 @@ Range: 0.00 - 58.45
 **Symptoms:**
 - Logs show processing finished in 2-5 seconds
 - Mean nightlight < 5
-- Many NaN/zero values
+- Many zero values
 
 **Diagnosis:**
 - Check file size: Should be ~10 GB
