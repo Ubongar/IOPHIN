@@ -6,7 +6,6 @@ import sys
 import logging
 import pandas as pd
 import geopandas as gpd
-import json
 
 from src import config
 from src.data_loader import (
