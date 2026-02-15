@@ -121,7 +121,9 @@ Aba North,Abia,5.33,7.32,23.36,0.0419,0,High Risk - Severe Poverty,High
 The system reports a **Silhouette Score** to measure cluster quality:
 - Scores > 0.5 indicate good separation
 - Scores > 0.7 indicate excellent separation
-- Current score: **0.4350** (moderate separation)
+- Example run: 0.4350 (moderate separation)
+
+Note: The actual score varies depending on the data and clustering iteration.
 
 ## Dependencies
 

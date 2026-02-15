@@ -30,6 +30,15 @@ K_CLUSTERS = 4  # Rich, Vulnerable, Poor, Severe
 PCA_VARIANCE = 0.95  # Keep 95% of variance
 KNN_NEIGHBORS = 5  # For imputation
 
+# Column name mappings (for handling different naming conventions)
+LGA_NAME_COLUMNS = ['lganame', 'LGA_NAME', 'ADM2_EN', 'LGAName', 'Name']
+STATE_NAME_COLUMNS = ['statename', 'StateName', 'State', 'ADM1_EN']
+CSV_OUTPUT_COLUMNS = ['LGA_Name', 'State', 'Latitude', 'Longitude', 
+                     'mean_nightlight_intensity', 'MPI', 'Headcount Ratio',
+                     'Intensity of Deprivation', 'In Severe Poverty']
+GEOJSON_OUTPUT_COLUMNS = ['LGA_Name', 'State', 'cluster_label', 'risk_level',
+                         'mean_nightlight_intensity', 'MPI', 'Headcount_Ratio']
+
 # Cluster labels mapping (based on clustering results)
 # Lower cluster numbers should map to areas with:
 # - High nightlight intensity + Low deprivation = Wealthy

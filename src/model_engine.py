@@ -286,7 +286,8 @@ def assign_cluster_labels(df, feature_columns):
     # Sort by nightlight (ascending) and poverty (descending) to identify severity
     if 'mean_nightlight' in cluster_df.columns and 'mean_poverty' in cluster_df.columns:
         # Create a composite score: high poverty + low nightlight = high risk
-        cluster_df['risk_score'] = cluster_df['mean_poverty'] / (cluster_df['mean_nightlight'] + 1)
+        # Use small epsilon to avoid division by zero while maintaining proportionality
+        cluster_df['risk_score'] = cluster_df['mean_poverty'] / (cluster_df['mean_nightlight'] + 1e-6)
         cluster_df = cluster_df.sort_values('risk_score', ascending=False)
     elif 'mean_nightlight' in cluster_df.columns:
         # Use only nightlight (lower = higher risk)
@@ -299,23 +300,25 @@ def assign_cluster_labels(df, feature_columns):
     label_mapping = {}
     risk_mapping = {}
     
-    for idx, row in cluster_df.iterrows():
+    cluster_df_sorted = cluster_df.reset_index(drop=True)  # Reset index for proper sequential counting
+    
+    for idx, row in cluster_df_sorted.iterrows():
         cluster_id = row['cluster']
         
-        if idx == 0 or (idx < len(cluster_df) * 0.25):
-            # Highest risk
+        if idx < len(cluster_df_sorted) * 0.25:
+            # Highest risk (top 25%)
             label_mapping[cluster_id] = "High Risk - Severe Poverty"
             risk_mapping[cluster_id] = "High"
-        elif idx < len(cluster_df) * 0.5:
-            # Medium-high risk
+        elif idx < len(cluster_df_sorted) * 0.5:
+            # Medium-high risk (25-50%)
             label_mapping[cluster_id] = "Medium Risk - Poor"
             risk_mapping[cluster_id] = "Medium"
-        elif idx < len(cluster_df) * 0.75:
-            # Medium-low risk
+        elif idx < len(cluster_df_sorted) * 0.75:
+            # Medium-low risk (50-75%)
             label_mapping[cluster_id] = "Low Risk - Vulnerable"
             risk_mapping[cluster_id] = "Low"
         else:
-            # Lowest risk
+            # Lowest risk (75-100%)
             label_mapping[cluster_id] = "Minimal Risk - Wealthy"
             risk_mapping[cluster_id] = "Minimal"
     

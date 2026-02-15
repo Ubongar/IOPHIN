@@ -195,9 +195,9 @@ def extract_nightlight_from_processed_csv(processed_df, gdf):
         # Extract from actual raster
         gdf_with_nightlight = extract_nightlight_features_from_raster(gdf, config.VIIRS_RASTER_PATH)
         
-        # Prepare merge key - find LGA name column in both datasets
+        # Prepare merge key - find LGA name column using config constant
         lga_col_shapefile = None
-        for col in ['LGA_NAME', 'ADM2_EN', 'LGAName', 'Name']:
+        for col in config.LGA_NAME_COLUMNS:
             if col in gdf_with_nightlight.columns:
                 lga_col_shapefile = col
                 break

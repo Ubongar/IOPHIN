@@ -40,14 +40,8 @@ def save_csv_output(df, output_path):
     """
     logger.info(f"Saving CSV output to {output_path}")
     
-    # Select relevant columns for output
-    output_cols = ['LGA_Name', 'State', 'Latitude', 'Longitude']
-    
-    # Add feature columns
-    for col in ['mean_nightlight_intensity', 'MPI', 'Headcount Ratio', 
-               'Intensity of Deprivation', 'In Severe Poverty']:
-        if col in df.columns:
-            output_cols.append(col)
+    # Select relevant columns for output (use config constants)
+    output_cols = config.CSV_OUTPUT_COLUMNS.copy()
     
     # Add model outputs
     output_cols.extend(['cluster', 'cluster_label', 'risk_level'])
@@ -71,9 +65,9 @@ def save_geojson_output(df, gdf, output_path):
     """
     logger.info(f"Saving GeoJSON output to {output_path}")
     
-    # Find LGA name column in shapefile
+    # Find LGA name column in shapefile (use config constants)
     lga_col = None
-    for col in ['lganame', 'LGA_NAME', 'ADM2_EN', 'LGAName', 'Name']:
+    for col in config.LGA_NAME_COLUMNS:
         if col in gdf.columns:
             lga_col = col
             break
@@ -107,13 +101,8 @@ def save_geojson_output(df, gdf, output_path):
         
         logger.info(f"Merged {len(geo_df)} LGAs with geometries")
     
-    # Select columns for GeoJSON
-    geojson_cols = ['LGA_Name', 'State', 'cluster_label', 'risk_level']
-    
-    # Add numeric features if available
-    for col in ['mean_nightlight_intensity', 'MPI', 'Headcount Ratio']:
-        if col in geo_df.columns:
-            geojson_cols.append(col)
+    # Select columns for GeoJSON (use config constants)
+    geojson_cols = config.GEOJSON_OUTPUT_COLUMNS.copy()
     
     # Add geometry
     geojson_cols.append('geometry')
