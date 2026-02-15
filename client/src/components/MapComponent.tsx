@@ -259,14 +259,14 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
 
   if (!data) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="w-full h-full flex items-center justify-center app-bg">
         <div className="text-center">
-          <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20" />
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-400 animate-spin" />
+          <div className="relative w-12 h-12 mx-auto mb-3">
+            <div className="absolute inset-0 rounded-full border-2 border-blue-500/20" />
+            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-blue-500 animate-spin" />
           </div>
-          <p className="text-white/60 text-sm font-medium">Loading map data…</p>
-          <p className="text-white/30 text-xs mt-1">Fetching {featureCount || ''} LGA boundaries</p>
+          <p className="text-white/50 text-sm font-medium">Loading map data…</p>
+          <p className="text-white/25 text-xs mt-1">Fetching {featureCount || ''} LGA boundaries</p>
         </div>
       </div>
     );

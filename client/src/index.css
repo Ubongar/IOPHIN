@@ -9,116 +9,111 @@
 @tailwind utilities;
 
 /* ============================================================
-   IOPHIN Dashboard — Modern Design System
+   IOPHIN Dashboard — Professional Dark Design System
+   Inspired by mappn / mapserve — clean, minimal, no gradients
    ============================================================ */
 
 :root {
-  /* Brand palette */
-  --brand-primary: #6366f1;
-  --brand-secondary: #8b5cf6;
-  --brand-accent: #06b6d4;
-
-  /* Sidebar gradient */
-  --sidebar-from: #0c1222;
-  --sidebar-via: #1a1145;
-  --sidebar-to: #0f2027;
-
-  /* Risk colors */
-  --risk-high: #ef4444;
-  --risk-medium: #f59e0b;
-  --risk-low: #10b981;
-  --risk-minimal: #3b82f6;
+  --bg: #0d0d0d;
+  --bg-rail: #0d0d0d;
+  --bg-sidebar: #111111;
+  --bg-panel: rgba(255, 255, 255, 0.04);
+  --bg-panel-hover: rgba(255, 255, 255, 0.065);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --blue: #2563eb;
+  --blue-light: #3b82f6;
 }
 
-/* Custom utility classes */
-@layer utilities {
-  .glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px) saturate(1.8);
-    -webkit-backdrop-filter: blur(20px) saturate(1.8);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-  }
+/* ── Core layout components ── */
 
-  .glass-dark {
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .glass-card {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(139, 92, 246, 0.06) 50%,
-      rgba(255, 255, 255, 0.04) 100%
-    );
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow:
-      0 4px 24px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .glass-card:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.15) 0%,
-      rgba(139, 92, 246, 0.1) 50%,
-      rgba(255, 255, 255, 0.07) 100%
-    );
-    border-color: rgba(139, 92, 246, 0.3);
-    transform: translateY(-2px);
-    box-shadow:
-      0 8px 32px rgba(99, 102, 241, 0.15),
-      0 4px 16px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  }
-
-  .gradient-text {
-    background: linear-gradient(135deg, #e0e7ff, #c4b5fd, #a78bfa, #818cf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .gradient-text-brand {
-    background: linear-gradient(135deg, #818cf8, #6366f1, #4f46e5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .shimmer {
-    position: relative;
-    overflow: hidden;
-  }
-  .shimmer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.08),
-      transparent
-    );
-    animation: shimmer 3s infinite;
-  }
-
-  @keyframes shimmer {
-    100% {
-      left: 100%;
-    }
-  }
+.app-bg {
+  background: var(--bg);
 }
 
-/* ---- Body ---- */
+/* Narrow left icon rail */
+.icon-rail {
+  width: 56px;
+  min-width: 56px;
+  height: 100%;
+  background: var(--bg-rail);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 20px;
+  z-index: 20;
+  flex-shrink: 0;
+}
+
+/* Nav icon buttons in the rail */
+.nav-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+.nav-icon-btn:hover {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+}
+.nav-icon-btn.active {
+  color: #fff;
+  background: var(--blue);
+}
+
+/* Sidebar panel (main content area) */
+.sidebar-panel {
+  width: 380px;
+  min-width: 380px;
+  height: 100%;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+/* Sidebar scroll surface */
+.sidebar-surface {
+  background: var(--bg-sidebar);
+}
+
+/* Panel card (replaces .card) */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.panel:hover {
+  background: var(--bg-panel-hover);
+  border-color: var(--border-hover);
+}
+
+/* Info chips (top-right on map) */
+.info-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: rgba(13, 13, 13, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Body ── */
 body {
   margin: 0;
   padding: 0;
@@ -127,40 +122,40 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg);
 }
 
 * {
   box-sizing: border-box;
 }
 
-/* Smooth scrollbar — sidebar */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Leaflet tooltip override — rich tooltip */
+/* ============================================================
+   Leaflet Tooltip — Dark, Clean
+   ============================================================ */
 .custom-tooltip {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 27, 75, 0.94)) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  backdrop-filter: blur(20px) saturate(1.5);
-  border: 1px solid rgba(139, 92, 246, 0.2) !important;
-  border-radius: 16px !important;
+  background: rgba(17, 17, 17, 0.96) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
   padding: 0 !important;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05) !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5) !important;
   color: #f1f5f9 !important;
   font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
@@ -169,12 +164,10 @@ body {
   overflow: hidden !important;
 }
 
-/* Remove leaflet default tooltip arrow */
 .custom-tooltip.leaflet-tooltip::before {
-  border-top-color: rgba(30, 27, 75, 0.94) !important;
+  border-top-color: rgba(17, 17, 17, 0.96) !important;
 }
 
-/* Inner tooltip layout */
 .map-tooltip-inner {
   padding: 14px 16px;
 }
@@ -187,16 +180,16 @@ body {
 }
 
 .tooltip-title {
-  font-weight: 800;
+  font-weight: 700;
   font-size: 14px;
   color: #fff;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
 .tooltip-subtitle {
   font-size: 11px;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   margin-top: 2px;
   font-weight: 500;
 }
@@ -215,7 +208,7 @@ body {
 .tooltip-divider {
   height: 1px;
   margin: 10px 0;
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .tooltip-grid {
@@ -225,8 +218,8 @@ body {
 }
 
 .tooltip-metric {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   padding: 8px 10px;
   text-align: center;
@@ -241,7 +234,7 @@ body {
 
 .tooltip-metric-label {
   font-size: 9px;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255, 255, 255, 0.35);
   margin-top: 4px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -252,7 +245,7 @@ body {
   margin-top: 8px;
   font-size: 10px;
   font-weight: 600;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   text-align: center;
   letter-spacing: 0.04em;
 }
@@ -265,7 +258,7 @@ body {
   width: 100%;
   height: 4px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
@@ -275,45 +268,34 @@ body {
   transition: width 0.3s ease;
 }
 
-.custom-tooltip .font-bold {
-  color: #fff !important;
-}
+/* ============================================================
+   Map Overrides
+   ============================================================ */
 
-.custom-tooltip .text-gray-600 {
-  color: #94a3b8 !important;
-}
-
-.custom-tooltip .text-gray-700 {
-  color: #cbd5e1 !important;
-}
-
-/* ---- Map container overrides ---- */
-
-/* Dark-themed zoom controls */
 .map-container .leaflet-control-zoom {
   border: none !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
 }
 
 .map-container .leaflet-control-zoom a {
-  background: rgba(15, 23, 42, 0.85) !important;
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(13, 13, 13, 0.9) !important;
   backdrop-filter: blur(12px);
-  color: rgba(255,255,255,0.7) !important;
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.5) !important;
   border: none !important;
-  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
-  width: 36px !important;
-  height: 36px !important;
-  line-height: 36px !important;
-  font-size: 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease;
 }
 
 .map-container .leaflet-control-zoom a:hover {
-  background: rgba(99, 102, 241, 0.4) !important;
+  background: rgba(37, 99, 235, 0.3) !important;
   color: #fff !important;
 }
 
@@ -321,153 +303,37 @@ body {
   border-bottom: none !important;
 }
 
-/* Dark attribution bar */
 .map-container .leaflet-control-attribution {
-  background: rgba(15, 23, 42, 0.7) !important;
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(13, 13, 13, 0.8) !important;
   backdrop-filter: blur(8px);
-  color: rgba(255,255,255,0.35) !important;
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.25) !important;
   font-size: 9px !important;
   border-radius: 8px 0 0 0 !important;
   padding: 3px 8px !important;
 }
 
 .map-container .leaflet-control-attribution a {
-  color: rgba(139, 92, 246, 0.6) !important;
-}
-
-/* Pulse ring animation for live indicator */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
-}
-
-.live-pulse-ring {
-  position: relative;
-}
-.live-pulse-ring::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: #22c55e;
-  animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Number counter animation */
-@keyframes count-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.animate-count {
-  animation: count-up 0.6s ease-out both;
-}
-
-/* Fade-in */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.fade-in-up {
-  animation: fade-in-up 0.5s ease-out both;
+  color: var(--blue-light) !important;
+  opacity: 0.4;
 }
 
 /* ============================================================
-   Sidebar — Ambient Glow Orbs & Decorative Layers
+   Animations
    ============================================================ */
 
-/* Floating colour orbs that give the sidebar depth/colour */
-.sidebar-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.45;
-  pointer-events: none;
-  z-index: 1;
-  animation: orb-drift 12s ease-in-out infinite alternate;
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-count {
+  animation: count-up 0.5s ease-out both;
 }
 
-.sidebar-orb-1 {
-  width: 220px;
-  height: 220px;
-  top: -40px;
-  left: -60px;
-  background: radial-gradient(circle, #6366f1, #4f46e5, transparent 70%);
-  animation-duration: 14s;
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-.sidebar-orb-2 {
-  width: 200px;
-  height: 200px;
-  top: 45%;
-  right: -80px;
-  background: radial-gradient(circle, #a855f7, #7c3aed, transparent 70%);
-  animation-duration: 18s;
-  animation-delay: -4s;
-}
-
-.sidebar-orb-3 {
-  width: 180px;
-  height: 180px;
-  bottom: -20px;
-  left: 40px;
-  background: radial-gradient(circle, #06b6d4, #0891b2, transparent 70%);
-  animation-duration: 16s;
-  animation-delay: -8s;
-}
-
-@keyframes orb-drift {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(20px, 15px) scale(1.1);
-  }
-  100% {
-    transform: translate(-10px, 25px) scale(0.95);
-  }
-}
-
-/* Branded sidebar top banner */
-.sidebar-banner {
-  position: relative;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(
-    180deg,
-    rgba(99, 102, 241, 0.12) 0%,
-    rgba(99, 102, 241, 0.03) 100%
-  );
-}
-.sidebar-banner::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 20px;
-  right: 20px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(139, 92, 246, 0.5),
-    rgba(6, 182, 212, 0.3),
-    transparent
-  );
+.fade-in-up {
+  animation: fade-in-up 0.4s ease-out both;
 }

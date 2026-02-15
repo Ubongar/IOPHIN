@@ -1,6 +1,6 @@
 /**
- * IOPHIN - Poverty Hotspot Identifier System
- * Main Application Component
+ * IOPHIN — Poverty Hotspot Identifier
+ * Professional dark dashboard layout inspired by mappn / mapserve
  */
 
 import { useState, useEffect } from 'react';
@@ -12,12 +12,22 @@ import type { HotspotsGeoJSON, HotspotFeature, Stats } from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+/* ── Narrow icon rail (like mappn's left-hand icon strip) ── */
+const NAV_ICONS = [
+  { id: 'home', label: 'Dashboard', d: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1' },
+  { id: 'globe', label: 'Map', d: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { id: 'chart', label: 'Analytics', d: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+  { id: 'light', label: 'Nightlight', d: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
+  { id: 'data', label: 'Data', d: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4' },
+];
+
 function App() {
   const [hotspotsData, setHotspotsData] = useState<HotspotsGeoJSON | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [selectedLGA, setSelectedLGA] = useState<HotspotFeature | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeNav, setActiveNav] = useState('home');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,38 +57,37 @@ function App() {
   const handleFeatureClick = (feature: HotspotFeature) => setSelectedLGA(feature);
   const handleCloseLGA = () => setSelectedLGA(null);
 
-  /* Loading */
+  /* ── Loading screen ── */
   if (loading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+      <div className="app-bg h-screen w-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="relative w-20 h-20 mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20" />
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-400 animate-spin" />
-            <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-400 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
+          <div className="relative w-14 h-14 mx-auto mb-5">
+            <div className="absolute inset-0 rounded-full border-2 border-blue-500/20" />
+            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-blue-500 animate-spin" />
           </div>
-          <h2 className="text-white text-xl font-bold mb-2 tracking-tight">Loading IOPHIN Dashboard</h2>
-          <p className="text-white/40 text-sm">Fetching poverty hotspot data…</p>
+          <h2 className="text-white text-base font-semibold mb-1">Loading IOPHIN</h2>
+          <p className="text-white/40 text-xs">Fetching poverty hotspot data…</p>
         </div>
       </div>
     );
   }
 
-  /* Error */
+  /* ── Error screen ── */
   if (error) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-red-950 to-slate-900">
-        <div className="glass-card rounded-3xl p-10 max-w-md text-center border-red-500/20">
-          <div className="w-16 h-16 rounded-2xl bg-red-500/20 flex items-center justify-center mx-auto mb-5">
-            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="app-bg h-screen w-screen flex items-center justify-center">
+        <div className="panel rounded-2xl p-10 max-w-md text-center">
+          <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 className="text-white text-xl font-bold mb-2">Connection Error</h2>
-          <p className="text-white/50 text-sm mb-6 leading-relaxed">{error}</p>
+          <h2 className="text-white text-base font-semibold mb-2">Connection Error</h2>
+          <p className="text-white/50 text-sm mb-5 leading-relaxed">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-8 py-3 rounded-xl font-semibold text-sm hover:shadow-lg hover:shadow-red-500/30 transition-all"
+            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-medium text-sm transition-colors"
           >
             Retry Connection
           </button>
@@ -87,88 +96,83 @@ function App() {
     );
   }
 
-  /* Main Layout */
+  /* ══════════════════════════════════════════════════════════════
+     Main Layout: [Icon Rail] [Sidebar Panel] [Map]
+     ══════════════════════════════════════════════════════════════ */
   return (
-    <div className="h-screen w-screen overflow-hidden bg-slate-900 flex">
-      {/* Sidebar */}
-      <div className="w-[380px] h-full flex-shrink-0 z-10 shadow-2xl shadow-black/40">
+    <div className="app-bg h-screen w-screen overflow-hidden flex">
+      {/* ── Left Icon Rail ── */}
+      <div className="icon-rail">
+        {/* Brand mark */}
+        <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center mb-6 flex-shrink-0">
+          <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+        </div>
+
+        {/* Nav icons */}
+        <div className="flex flex-col gap-1 flex-1">
+          {NAV_ICONS.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveNav(item.id)}
+              className={`nav-icon-btn ${activeNav === item.id ? 'active' : ''}`}
+              title={item.label}
+            >
+              <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.d} />
+              </svg>
+            </button>
+          ))}
+        </div>
+
+        {/* Bottom power icon (decorative) */}
+        <button className="nav-icon-btn mt-auto flex-shrink-0" title="Settings">
+          <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* ── Sidebar Panel ── */}
+      <div className="sidebar-panel">
         <Sidebar stats={stats} selectedLGA={selectedLGA} onClose={handleCloseLGA} />
       </div>
 
-      {/* Map area */}
+      {/* ── Map Area ── */}
       <div className="flex-1 relative">
-        {/* ── Floating Header ── */}
-        <div className="absolute top-4 left-4 right-4 z-[1000]">
-          <div
-            className="rounded-2xl shadow-2xl shadow-black/10 px-5 py-3 flex items-center justify-between"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.92))',
-              backdropFilter: 'blur(24px) saturate(2)',
-              WebkitBackdropFilter: 'blur(24px) saturate(2)',
-              border: '1px solid rgba(255,255,255,0.6)',
-              boxShadow: '0 8px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06)',
-            }}
-          >
-            <div className="flex items-center gap-3.5">
-              {/* Brand icon */}
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 ring-2 ring-white/50">
-                <svg className="w-5 h-5 text-white drop-shadow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-lg font-extrabold text-slate-800 tracking-tight leading-tight">
-                  IOPHIN Poverty Hotspot Identifier
-                </h1>
-                <p className="text-slate-500 text-[11px] font-medium">
-                  {stats
-                    ? `${stats.totalLGAs} LGAs Monitored across ${stats.statesCount} States · Nigeria`
-                    : 'Loading…'}
-                </p>
-              </div>
+        {/* Compact top-right info strip */}
+        <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
+          {stats && (
+            <div className="info-chip">
+              Average load in this area&ensp;
+              <span className="text-white font-semibold">
+                {((parseFloat(stats.averageMPI) / 0.5) * 100).toFixed(0)}%
+              </span>
             </div>
-
-            <div className="flex items-center gap-3">
-              {/* Stat pills */}
-              {stats && (
-                <div className="hidden md:flex items-center gap-2">
-                  <div className="bg-amber-50 border border-amber-200/60 px-3 py-1 rounded-full">
-                    <span className="text-amber-700 font-semibold text-[10px] tracking-wide">MPI {stats.averageMPI}</span>
-                  </div>
-                  <div className="bg-cyan-50 border border-cyan-200/60 px-3 py-1 rounded-full">
-                    <span className="text-cyan-700 font-semibold text-[10px] tracking-wide">☄ {stats.averageNightlight}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Live pill */}
-              <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200/60 px-3.5 py-1.5 rounded-full">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-                </span>
-                <span className="text-emerald-700 font-semibold text-[11px] tracking-wide">LIVE</span>
-              </div>
-            </div>
+          )}
+          <div className="info-chip">
+            <span className="relative flex h-1.5 w-1.5 mr-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+            </span>
+            <span className="text-emerald-400 font-semibold text-[10px]">LIVE</span>
           </div>
         </div>
 
-        {/* Map attribution overlay (bottom-left) */}
-        <div className="absolute bottom-5 left-5 z-[1000]">
-          <div
-            className="rounded-xl px-3.5 py-2 flex items-center gap-2"
-            style={{
-              background: 'rgba(15, 23, 42, 0.75)',
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}
-          >
-            <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-            <span className="text-white/50 text-[10px] font-medium">
-              {stats ? `${stats.totalLGAs} regions` : '…'} · Click any LGA for details
-            </span>
-          </div>
+        {/* Top-left toggles (dark/light icons) */}
+        <div className="absolute top-4 left-4 z-[1000] flex items-center gap-1.5">
+          <button title="Dark mode" className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+          <button title="Light mode" className="w-9 h-9 rounded-xl bg-white/[0.06] flex items-center justify-center text-white/50 hover:bg-white/[0.1] transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </button>
         </div>
 
         {/* Map */}
