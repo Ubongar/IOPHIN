@@ -43,10 +43,20 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Middleware
+const isProduction = process.env.NODE_ENV === 'production';
+
+const allowedOrigins = isProduction
+  ? (() => {
+      const clientUrl = process.env.CLIENT_URL;
+      if (!clientUrl) {
+        throw new Error('CLIENT_URL environment variable must be defined in production for CORS configuration.');
+      }
+      return clientUrl;
+    })()
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CLIENT_URL 
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: allowedOrigins,
   credentials: true
 }));
 
