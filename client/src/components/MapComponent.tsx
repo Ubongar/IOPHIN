@@ -10,10 +10,12 @@ import { LatLngBounds } from 'leaflet';
 import type { GeoJSON as GeoJSONType, PathOptions } from 'leaflet';
 import { RISK_COLORS } from '../types';
 import type { HotspotsGeoJSON, HotspotFeature, RiskLevel } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface MapComponentProps {
   data: HotspotsGeoJSON | null;
   onFeatureClick: (feature: HotspotFeature) => void;
+  selectedLGA?: HotspotFeature | null;
 }
 
 /**
@@ -53,14 +55,32 @@ const FitBounds: React.FC<{ data: HotspotsGeoJSON | null }> = ({ data }) => {
   return null;
 };
 
-const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selectedLGA }) => {
   const geoJsonLayerRef = useRef<GeoJSONType | null>(null);
   const mapRef = useRef<any>(null);
   const [featureCount, setFeatureCount] = useState(0);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (data) setFeatureCount(data.features.length);
   }, [data]);
+
+  // Zoom to selected LGA when it changes (from search or map click)
+  useEffect(() => {
+    if (selectedLGA && mapRef.current && geoJsonLayerRef.current) {
+      // Find the layer that corresponds to the selected LGA
+      geoJsonLayerRef.current.eachLayer((layer: any) => {
+        if (layer.feature.properties.LGA_Name === selectedLGA.properties.LGA_Name &&
+            layer.feature.properties.State === selectedLGA.properties.State) {
+          const bounds = layer.getBounds();
+          mapRef.current.fitBounds(bounds, { 
+            padding: [100, 100],
+            maxZoom: 10 
+          });
+        }
+      });
+    }
+  }, [selectedLGA]);
 
   /**
    * Component to capture map instance
@@ -284,10 +304,14 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
     >
       <MapInstanceCapture />
 
-      {/* Premium dark base layer */}
+      {/* Theme-aware base layer */}
       <TileLayer
+        key={theme}
         attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url={theme === 'dark' 
+          ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        }
         subdomains="abcd"
       />
 
