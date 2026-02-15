@@ -49,7 +49,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
   const handleClear = () => {
     setSearchTerm('');
     setShowResults(false);
-    onSelectLGA(null);
   };
 
   const handleFocus = () => {
