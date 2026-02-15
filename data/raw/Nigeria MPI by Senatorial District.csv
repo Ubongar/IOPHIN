@@ -1,0 +1,111 @@
+﻿Senatorial District,MPI Value,"Incidence (H, %)","Intensity (A, %)",Number of Poor (Thousand)
+Abia Central,0.089,26.4,33.7,467
+Abia North,0.094,28.8,32.6,246
+Abia South,0.125,36,34.9,406
+Adamawa Central,0.257,63,40.8,967
+Adamawa North,0.288,70.9,40.7,"1,527"
+Adamawa South,0.305,71.8,42.6,944
+Akwa Ibom North East,0.283,69.3,40.8,"1,662"
+Akwa Ibom North West,0.288,71.3,40.4,"1,634"
+Akwa Ibom South,0.308,73.2,42.1,"1,784"
+Anambra Central,0.09,26,34.6,390
+Anambra North,0.105,30.7,34.3,536
+Anambra South,0.129,38.3,33.6,712
+Bauchi Central,0.329,78.5,42,"2,530"
+Bauchi North,0.318,79.8,39.8,"1,825"
+Bauchi South,0.233,61.1,38.2,"1,355"
+Bayelsa Central,0.353,85.2,41.4,798
+Bayelsa East,0.347,83.3,41.6,798
+Bayelsa West,0.494,96.3,51.3,"1,015"
+Benue North East,0.241,62.9,38.3,"1,267"
+Benue North West,0.308,75.2,40.9,"1,122"
+Benue South,0.366,83.7,43.7,"2,318"
+Borno Central,0.3,71.6,41.9,"1,427"
+Borno North,0.413,88.9,46.4,232
+Borno South,0.318,69.4,45.8,593
+Cross River Central,0.29,73.6,39.4,"1,402"
+Cross River North,0.335,83.5,40.2,"1,384"
+Cross River South,0.256,65.5,39.1,651
+Delta Central,0.174,47.9,36.3,945
+Delta North,0.156,43.2,36.1,891
+Delta South,0.194,52.5,36.9,899
+Ebonyi Central,0.341,83.3,40.9,"1,541"
+Ebonyi North,0.339,79,42.9,"1,448"
+Ebonyi South,0.248,66.2,37.5,668
+Edo Central,0.128,35.8,35.8,487
+Edo North,0.169,46.3,36.5,493
+Edo South,0.094,27.6,34.3,424
+Ekiti Central,0.122,34.7,35.2,338
+Ekiti North,0.125,35.9,34.9,374
+Ekiti South,0.128,36.7,34.7,599
+Enugu East,0.297,75.3,39.5,589
+Enugu North,0.236,63.9,37,"1,301"
+Enugu West,0.195,54.7,35.7,743
+FCT Abuja,0.186,48.3,38.6,"1,591"
+Gombe Central,0.396,88.8,44.6,"1,341"
+Gombe North,0.394,88.5,44.5,797
+Gombe South,0.346,80.9,42.8,886
+Imo East,0.132,38.7,34.1,695
+Imo North,0.172,48.8,35.3,793
+Imo West,0.113,31.2,36.2,314
+Jigawa North East,0.426,87.6,48.6,"1,326"
+Jigawa North West,0.374,83.3,44.9,"3,322"
+Jigawa South West,0.373,83.7,44.5,"1,117"
+Kaduna Central,0.263,65.6,40.1,"1,566"
+Kaduna North,0.322,79.4,40.5,"3,837"
+Kaduna South,0.289,72.1,40.1,"2,639"
+Kano Central,0.192,49.8,38.6,"2,956"
+Kano North,0.308,75,41.1,"3,224"
+Kano South,0.324,77,42.1,"4,328"
+Katsina Central,0.324,77.9,41.6,"2,735"
+Katsina North,0.334,76.1,43.9,"2,388"
+Katsina South,0.245,62.7,39,"1,795"
+Kebbi Central,0.373,83.1,44.9,"1,559"
+Kebbi North,0.362,80.3,45.1,"1,548"
+Kebbi South,0.431,83.8,51.5,"1,169"
+Kogi Central,0.179,49.5,36.1,607
+Kogi East,0.333,77,43.3,"1,701"
+Kogi West,0.173,45.5,38.1,575
+Kwara Central,0.155,42.7,36.3,536
+Kwara North,0.227,56.7,40.1,840
+Kwara South,0.153,41.7,36.7,346
+Lagos Central,0.077,22.6,33.9,882
+Lagos East,0.129,35.5,36.3,"1,420"
+Lagos West,0.098,29.7,33,"1,915"
+Nassarawa Central,0.211,54,39.1,535
+Nassarawa North,0.235,58.8,40,644
+Nassarawa South,0.277,68.5,40.4,364
+Nassarawa West,0.202,51.8,39,354
+Niger East,0.26,64.5,40.3,"1,874"
+Niger North,0.313,76.4,41,"1,170"
+Niger South,0.277,72.3,38.3,554
+Ogun Central,0.18,46.4,38.7,484
+Ogun East,0.172,48.9,35.1,676
+Ogun West,0.377,83.9,44.9,"2,623"
+Ondo Central,0.072,20.1,35.6,321
+Ondo North,0.079,23.5,33.7,315
+Ondo South,0.127,36.2,35.1,659
+Osun Central,0.142,38,37.3,716
+Osun East,0.134,38.3,35,430
+Osun West,0.171,45.5,37.5,733
+Oyo Central,0.167,44.8,37.4,"1,368"
+Oyo North,0.256,60.1,42.6,"1,402"
+Oyo South,0.154,42.4,36.4,"1,016"
+Plateau Central,0.349,83.6,41.8,"1,597"
+Plateau North,0.353,79.1,44.6,812
+Plateau South,0.384,86.5,44.4,"1,914"
+Rivers East,0.186,52,35.7,"1,750"
+Rivers South East,0.299,73.5,40.7,"1,204"
+Rivers West,0.288,70.6,40.7,"1,442"
+Sokoto East,0.408,90.3,45.2,"1,859"
+Sokoto North,0.42,89.4,47,"1,876"
+Sokoto South,0.401,91.8,43.7,"2,076"
+Taraba Central,0.306,75.5,40.6,781
+Taraba North,0.394,83.6,47.1,"1,021"
+Taraba South,0.316,78.6,40.1,"1,012"
+Yobe East,0.345,80.8,42.8,"1,894"
+Yobe North,0.394,87.6,45,724
+Yobe South,0.425,88.1,48.3,613
+Zamfara Central,0.286,73.1,39.1,"1,432"
+Zamfara North,0.315,75.4,41.8,604
+Zamfara West,0.365,82.6,44.1,"2,133"

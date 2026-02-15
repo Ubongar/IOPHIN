@@ -1,6 +1,4 @@
 # Ignore large data files
-data/raw/*
-data/processed/*
 *.tif
 *.gz
 __pycache__/
