@@ -2,7 +2,6 @@
 Configuration module for Nigeria Poverty Hotspot Identifier System.
 Defines all file paths and system parameters.
 """
-import os
 from pathlib import Path
 
 # Base directory (project root)
