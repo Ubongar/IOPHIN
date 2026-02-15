@@ -10,6 +10,7 @@ import express from 'express';
 import cors from 'cors';
 import compression from 'compression';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 import { createReadStream, existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
@@ -28,6 +29,18 @@ const DATA_PATH = join(__dirname, process.env.DATA_PATH || '../data/processed/ho
 
 // Initialize Express app
 const app = express();
+
+// Rate limiting to prevent abuse
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Apply rate limiter to all routes
+app.use(limiter);
 
 // Middleware
 app.use(cors({
