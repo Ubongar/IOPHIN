@@ -1,14 +1,15 @@
 /**
  * MapComponent - Core Interactive Map
  * Renders Nigeria's LGAs with risk-based color coding using React-Leaflet
+ * Premium dark cartography with glowing risk boundaries
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import { LatLngBounds } from 'leaflet';
 import type { GeoJSON as GeoJSONType, PathOptions } from 'leaflet';
 import { RISK_COLORS } from '../types';
-import type { HotspotsGeoJSON, HotspotFeature } from '../types';
+import type { HotspotsGeoJSON, HotspotFeature, RiskLevel } from '../types';
 
 interface MapComponentProps {
   data: HotspotsGeoJSON | null;
@@ -55,6 +56,11 @@ const FitBounds: React.FC<{ data: HotspotsGeoJSON | null }> = ({ data }) => {
 const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => {
   const geoJsonLayerRef = useRef<GeoJSONType | null>(null);
   const mapRef = useRef<any>(null);
+  const [featureCount, setFeatureCount] = useState(0);
+
+  useEffect(() => {
+    if (data) setFeatureCount(data.features.length);
+  }, [data]);
 
   /**
    * Component to capture map instance
@@ -65,33 +71,48 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
     return null;
   };
 
+  /** Darken a hex colour for borders */
+  const darkenColor = (hex: string, amount: number): string => {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.max(0, (num >> 16) - amount);
+    const g = Math.max(0, ((num >> 8) & 0x00ff) - amount);
+    const b = Math.max(0, (num & 0x0000ff) - amount);
+    return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+  };
+
   /**
-   * Style function: Color LGAs based on risk level
+   * Style function: Color LGAs based on risk level with refined visuals
    */
   const styleFeature = (feature?: any): PathOptions => {
     if (!feature || !feature.properties) return {};
 
-    const riskLevel = feature.properties.risk_level;
-    const color = RISK_COLORS[riskLevel as keyof typeof RISK_COLORS] || '#999999';
+    const riskLevel = feature.properties.risk_level as RiskLevel;
+    const color = RISK_COLORS[riskLevel] || '#999999';
+    const borderColor = darkenColor(color, 40);
 
     return {
       fillColor: color,
-      weight: 1,
-      opacity: 1,
-      color: 'white',
-      fillOpacity: 0.7,
+      weight: 1.5,
+      opacity: 0.85,
+      color: borderColor,
+      fillOpacity: 0.55,
+      dashArray: '',
     };
   };
 
   /**
-   * Highlight feature on hover
+   * Highlight feature on hover — bright glow effect
    */
   const highlightFeature = (e: any) => {
     const layer = e.target;
+    const riskLevel = layer.feature?.properties?.risk_level as RiskLevel;
+    const color = RISK_COLORS[riskLevel] || '#ffffff';
+
     layer.setStyle({
       weight: 3,
       color: '#ffffff',
-      fillOpacity: 0.9,
+      fillOpacity: 0.85,
+      fillColor: color,
     });
     layer.bringToFront();
   };
@@ -127,57 +148,103 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
   };
 
   /**
-   * Bind events to each feature
+   * Bind events to each feature — rich tooltip & interaction
    */
   const onEachFeature = (feature: any, layer: any) => {
     const typedFeature = feature as HotspotFeature;
-    const { LGA_Name, State, risk_level, MPI, mean_nightlight_intensity } = typedFeature.properties;
+    const { LGA_Name, State, risk_level, MPI, mean_nightlight_intensity, Headcount_Ratio, cluster_label } = typedFeature.properties;
+    const riskColor = RISK_COLORS[risk_level as RiskLevel] || '#999';
 
-    // Tooltip with LGA info (build DOM to avoid XSS from interpolated HTML)
+    // Poverty probability (same formula as sidebar)
+    const mpiScore = Math.min(MPI * 100, 100);
+    const nightlightScore = Math.max(0, 100 - (mean_nightlight_intensity / 60) * 100);
+    const povertyProb = Math.min(Math.max(mpiScore * 0.7 + nightlightScore * 0.3, 0), 100);
+
+    // Build rich tooltip DOM
     const container = document.createElement('div');
-    container.className = 'font-sans';
+    container.className = 'map-tooltip-inner';
 
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'font-bold text-base mb-1';
-    titleDiv.textContent = LGA_Name ?? '';
-    container.appendChild(titleDiv);
+    // Header row with risk dot
+    const header = document.createElement('div');
+    header.className = 'tooltip-header';
 
-    const stateDiv = document.createElement('div');
-    stateDiv.className = 'text-sm text-gray-600 mb-2';
-    stateDiv.textContent = `${State ?? ''} State`;
-    container.appendChild(stateDiv);
+    const titleBlock = document.createElement('div');
+    const titleEl = document.createElement('div');
+    titleEl.className = 'tooltip-title';
+    titleEl.textContent = LGA_Name ?? '';
+    titleBlock.appendChild(titleEl);
+    const subtitleEl = document.createElement('div');
+    subtitleEl.className = 'tooltip-subtitle';
+    subtitleEl.textContent = `${State ?? ''} State`;
+    titleBlock.appendChild(subtitleEl);
+    header.appendChild(titleBlock);
 
-    const riskRow = document.createElement('div');
-    riskRow.className = 'flex items-center gap-2 mb-1';
+    const badge = document.createElement('div');
+    badge.className = 'tooltip-badge';
+    badge.style.background = riskColor;
+    badge.style.boxShadow = `0 0 8px ${riskColor}88`;
+    badge.textContent = risk_level;
+    header.appendChild(badge);
 
-    const riskDot = document.createElement('span');
-    riskDot.className = 'inline-block w-3 h-3 rounded-full';
-    riskDot.style.backgroundColor = RISK_COLORS[risk_level];
-    riskRow.appendChild(riskDot);
+    container.appendChild(header);
 
-    const riskLabel = document.createElement('span');
-    riskLabel.className = 'font-semibold text-sm';
-    riskLabel.textContent = `${risk_level} Risk`;
-    riskRow.appendChild(riskLabel);
+    // Divider
+    const divider = document.createElement('div');
+    divider.className = 'tooltip-divider';
+    container.appendChild(divider);
 
-    container.appendChild(riskRow);
+    // Metrics grid
+    const grid = document.createElement('div');
+    grid.className = 'tooltip-grid';
 
-    const metricsContainer = document.createElement('div');
-    metricsContainer.className = 'text-xs text-gray-700 mt-2';
+    const makeMetric = (label: string, value: string, accent: string) => {
+      const cell = document.createElement('div');
+      cell.className = 'tooltip-metric';
+      const valEl = document.createElement('div');
+      valEl.className = 'tooltip-metric-value';
+      valEl.style.color = accent;
+      valEl.textContent = value;
+      cell.appendChild(valEl);
+      const labEl = document.createElement('div');
+      labEl.className = 'tooltip-metric-label';
+      labEl.textContent = label;
+      cell.appendChild(labEl);
+      return cell;
+    };
 
-    const mpiDiv = document.createElement('div');
-    mpiDiv.textContent = `MPI: ${MPI.toFixed(4)}`;
-    metricsContainer.appendChild(mpiDiv);
+    grid.appendChild(makeMetric('MPI Score', MPI.toFixed(4), '#f59e0b'));
+    grid.appendChild(makeMetric('Nightlight', mean_nightlight_intensity.toFixed(2), '#06b6d4'));
+    grid.appendChild(makeMetric('Poverty Prob.', `${povertyProb.toFixed(1)}%`, riskColor));
+    grid.appendChild(makeMetric('Headcount', Headcount_Ratio != null ? `${(Headcount_Ratio * 100).toFixed(1)}%` : 'N/A', '#a78bfa'));
 
-    const nightlightDiv = document.createElement('div');
-    nightlightDiv.textContent = `Nightlight: ${mean_nightlight_intensity.toFixed(2)}`;
-    metricsContainer.appendChild(nightlightDiv);
+    container.appendChild(grid);
 
-    container.appendChild(metricsContainer);
+    // Cluster label
+    if (cluster_label) {
+      const clusterDiv = document.createElement('div');
+      clusterDiv.className = 'tooltip-cluster';
+      clusterDiv.textContent = cluster_label;
+      container.appendChild(clusterDiv);
+    }
+
+    // Mini progress bar for poverty probability
+    const barWrap = document.createElement('div');
+    barWrap.className = 'tooltip-bar-wrap';
+    const barBg = document.createElement('div');
+    barBg.className = 'tooltip-bar-bg';
+    const barFill = document.createElement('div');
+    barFill.className = 'tooltip-bar-fill';
+    barFill.style.width = `${povertyProb}%`;
+    barFill.style.background = `linear-gradient(90deg, ${riskColor}, ${riskColor}99)`;
+    barBg.appendChild(barFill);
+    barWrap.appendChild(barBg);
+    container.appendChild(barWrap);
 
     layer.bindTooltip(container, {
       sticky: true,
       className: 'custom-tooltip',
+      direction: 'top',
+      offset: [0, -10],
     });
 
     // Event handlers
@@ -192,10 +259,14 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
 
   if (!data) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading map data...</p>
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20" />
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-indigo-400 animate-spin" />
+          </div>
+          <p className="text-white/60 text-sm font-medium">Loading map data…</p>
+          <p className="text-white/30 text-xs mt-1">Fetching {featureCount || ''} LGA boundaries</p>
         </div>
       </div>
     );
@@ -203,17 +274,24 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
 
   return (
     <MapContainer
-      center={[9.0820, 8.6753]} // Nigeria center
+      center={[9.0820, 8.6753]}
       zoom={6}
       style={{ height: '100%', width: '100%' }}
-      zoomControl={true}
-      className="z-0"
+      zoomControl={false}
+      className="z-0 map-container"
+      minZoom={5}
+      maxZoom={13}
     >
       <MapInstanceCapture />
+
+      {/* Premium dark base layer */}
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        subdomains="abcd"
       />
+
+      {/* GeoJSON risk overlay */}
       <GeoJSON
         data={data}
         style={styleFeature}
