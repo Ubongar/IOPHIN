@@ -185,9 +185,9 @@ Update `VITE_API_URL` to point to your production API.
 - Rate limiting: 100 requests per 15 minutes per IP
 
 ### Frontend
-- Code splitting for faster initial load
-- React.memo for component optimization
-- Lazy loading for charts and heavy components
+- Single-page React application suitable for dashboard-style interactions
+- Production builds use standard React tooling optimizations (minification, bundling)
+- Architecture allows adding code splitting, memoization, and lazy loading for heavy components if needed
 
 ## Security Features
 
