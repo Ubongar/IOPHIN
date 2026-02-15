@@ -1,0 +1,111 @@
+/**
+ * SearchBar - Component for searching and filtering LGAs
+ */
+
+import { useState, useEffect, useRef } from 'react';
+import type { HotspotFeature } from '../types';
+
+interface SearchBarProps {
+  data: HotspotFeature[] | null;
+  onSelectLGA: (feature: HotspotFeature | null) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredResults, setFilteredResults] = useState<HotspotFeature[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!searchTerm || !data) {
+      setFilteredResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    const term = searchTerm.toLowerCase();
+    const results = data.filter(feature => 
+      feature.properties.LGA_Name.toLowerCase().includes(term) ||
+      feature.properties.State.toLowerCase().includes(term)
+    ).slice(0, 10); // Limit to 10 results
+
+    setFilteredResults(results);
+    setShowResults(results.length > 0);
+  }, [searchTerm, data]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (feature: HotspotFeature) => {
+    setSearchTerm('');
+    setShowResults(false);
+    onSelectLGA(feature);
+  };
+
+  const handleClear = () => {
+    setSearchTerm('');
+    setShowResults(false);
+    onSelectLGA(null);
+  };
+
+  return (
+    <div ref={searchRef} className="relative w-full max-w-md">
+      <div className="relative">
+        <div className="search-input-wrapper">
+          <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={() => filteredResults.length > 0 && setShowResults(true)}
+            placeholder="Search LGAs or States..."
+            className="search-input"
+          />
+          {searchTerm && (
+            <button onClick={handleClear} className="search-clear-btn" aria-label="Clear search">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {showResults && (
+        <div className="search-results">
+          {filteredResults.map((feature, index) => (
+            <button
+              key={`${feature.properties.LGA_Name}-${index}`}
+              onClick={() => handleSelect(feature)}
+              className="search-result-item"
+            >
+              <div className="flex-1">
+                <div className="search-result-title">{feature.properties.LGA_Name}</div>
+                <div className="search-result-subtitle">{feature.properties.State} State</div>
+              </div>
+              <div className="search-result-badge" style={{ 
+                backgroundColor: feature.properties.risk_level === 'High' ? '#EF4444' :
+                                 feature.properties.risk_level === 'Medium' ? '#F59E0B' :
+                                 feature.properties.risk_level === 'Low' ? '#10B981' : '#3B82F6'
+              }}>
+                {feature.properties.risk_level}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchBar;

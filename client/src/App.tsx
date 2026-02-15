@@ -8,6 +8,8 @@ import axios from 'axios';
 import MapComponent from './components/MapComponent';
 import Sidebar from './components/Sidebar';
 import Legend from './components/Legend';
+import SearchBar from './components/SearchBar';
+import { useTheme } from './contexts/ThemeContext';
 import type { HotspotsGeoJSON, HotspotFeature, Stats } from './types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -28,6 +30,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeNav, setActiveNav] = useState('home');
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,6 +59,12 @@ function App() {
 
   const handleFeatureClick = (feature: HotspotFeature) => setSelectedLGA(feature);
   const handleCloseLGA = () => setSelectedLGA(null);
+
+  const handleSearchSelect = (feature: HotspotFeature | null) => {
+    if (feature) {
+      setSelectedLGA(feature);
+    }
+  };
 
   /* ── Loading screen ── */
   if (loading) {
@@ -142,6 +151,14 @@ function App() {
 
       {/* ── Map Area ── */}
       <div className="flex-1 relative">
+        {/* Search bar at the top center */}
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] w-full max-w-md px-4">
+          <SearchBar 
+            data={hotspotsData?.features || null} 
+            onSelectLGA={handleSearchSelect}
+          />
+        </div>
+
         {/* Compact top-right info strip */}
         <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
           {stats && (
@@ -163,12 +180,28 @@ function App() {
 
         {/* Top-left toggles (dark/light icons) */}
         <div className="absolute top-4 left-4 z-[1000] flex items-center gap-1.5">
-          <button title="Dark mode" className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+          <button 
+            title={theme === 'dark' ? 'Dark mode (active)' : 'Switch to dark mode'}
+            onClick={() => theme === 'light' && toggleTheme()} 
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+              theme === 'dark' 
+                ? 'bg-blue-600 text-white hover:bg-blue-500' 
+                : 'bg-white/[0.06] text-white/50 hover:bg-white/[0.1]'
+            }`}
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
             </svg>
           </button>
-          <button title="Light mode" className="w-9 h-9 rounded-xl bg-white/[0.06] flex items-center justify-center text-white/50 hover:bg-white/[0.1] transition-colors">
+          <button 
+            title={theme === 'light' ? 'Light mode (active)' : 'Switch to light mode'}
+            onClick={() => theme === 'dark' && toggleTheme()} 
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+              theme === 'light' 
+                ? 'bg-blue-600 text-white hover:bg-blue-500' 
+                : 'bg-white/[0.06] text-white/50 hover:bg-white/[0.1]'
+            }`}
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>

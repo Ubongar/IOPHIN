@@ -10,6 +10,7 @@ import { LatLngBounds } from 'leaflet';
 import type { GeoJSON as GeoJSONType, PathOptions } from 'leaflet';
 import { RISK_COLORS } from '../types';
 import type { HotspotsGeoJSON, HotspotFeature, RiskLevel } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface MapComponentProps {
   data: HotspotsGeoJSON | null;
@@ -57,6 +58,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
   const geoJsonLayerRef = useRef<GeoJSONType | null>(null);
   const mapRef = useRef<any>(null);
   const [featureCount, setFeatureCount] = useState(0);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (data) setFeatureCount(data.features.length);
@@ -284,12 +286,20 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
     >
       <MapInstanceCapture />
 
-      {/* Premium dark base layer */}
-      <TileLayer
-        attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        subdomains="abcd"
-      />
+      {/* Theme-aware base layer */}
+      {theme === 'dark' ? (
+        <TileLayer
+          attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+        />
+      ) : (
+        <TileLayer
+          attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+        />
+      )}
 
       {/* GeoJSON risk overlay */}
       <GeoJSON
