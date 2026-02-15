@@ -61,9 +61,7 @@ function App() {
   const handleCloseLGA = () => setSelectedLGA(null);
 
   const handleSearchSelect = (feature: HotspotFeature | null) => {
-    if (feature) {
-      setSelectedLGA(feature);
-    }
+    setSelectedLGA(feature);
   };
 
   /* ── Loading screen ── */
@@ -182,7 +180,7 @@ function App() {
         <div className="absolute top-4 left-4 z-[1000] flex items-center gap-1.5">
           <button 
             title={theme === 'dark' ? 'Dark mode (active)' : 'Switch to dark mode'}
-            onClick={() => theme === 'light' && toggleTheme()} 
+            onClick={toggleTheme} 
             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
               theme === 'dark' 
                 ? 'bg-blue-600 text-white hover:bg-blue-500' 
@@ -195,7 +193,7 @@ function App() {
           </button>
           <button 
             title={theme === 'light' ? 'Light mode (active)' : 'Switch to light mode'}
-            onClick={() => theme === 'dark' && toggleTheme()} 
+            onClick={toggleTheme} 
             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
               theme === 'light' 
                 ? 'bg-blue-600 text-white hover:bg-blue-500' 
@@ -209,7 +207,11 @@ function App() {
         </div>
 
         {/* Map */}
-        <MapComponent data={hotspotsData} onFeatureClick={handleFeatureClick} />
+        <MapComponent 
+          data={hotspotsData} 
+          onFeatureClick={handleFeatureClick}
+          selectedLGA={selectedLGA}
+        />
 
         {/* Legend */}
         <Legend />

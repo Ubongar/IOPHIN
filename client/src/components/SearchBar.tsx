@@ -4,6 +4,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import type { HotspotFeature } from '../types';
+import { RISK_COLORS } from '../types';
 
 interface SearchBarProps {
   data: HotspotFeature[] | null;
@@ -16,7 +17,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const filteredResults = useMemo(() => {
-    if (!searchTerm || !data) {
+    if (!searchTerm || searchTerm.length < 2 || !data) {
       return [];
     }
 
@@ -87,11 +88,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
         </div>
       </div>
 
-      {showResults && (
+      {showResults && filteredResults.length > 0 && (
         <div className="search-results">
-          {filteredResults.map((feature, index) => (
+          {filteredResults.map((feature) => (
             <button
-              key={`${feature.properties.LGA_Name}-${index}`}
+              key={`${feature.properties.State}-${feature.properties.LGA_Name}`}
               onClick={() => handleSelect(feature)}
               className="search-result-item"
             >
@@ -100,9 +101,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
                 <div className="search-result-subtitle">{feature.properties.State} State</div>
               </div>
               <div className="search-result-badge" style={{ 
-                backgroundColor: feature.properties.risk_level === 'High' ? '#EF4444' :
-                                 feature.properties.risk_level === 'Medium' ? '#F59E0B' :
-                                 feature.properties.risk_level === 'Low' ? '#10B981' : '#3B82F6'
+                backgroundColor: RISK_COLORS[feature.properties.risk_level]
               }}>
                 {feature.properties.risk_level}
               </div>

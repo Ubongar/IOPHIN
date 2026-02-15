@@ -21,7 +21,7 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('iophin-theme');
-    return (saved as Theme) || 'dark';
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
   });
 
   useEffect(() => {
