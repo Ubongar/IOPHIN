@@ -40,7 +40,7 @@ npm run preview
 
 ## Technology Stack
 
-- **React 18** - UI framework
+- **React 19** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Tailwind CSS** - Styling with glassmorphism effects

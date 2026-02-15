@@ -27,6 +27,120 @@ const __dirname = dirname(__filename);
 const PORT = process.env.PORT || 5000;
 const DATA_PATH = join(__dirname, process.env.DATA_PATH || '../data/processed/hotspots.geojson');
 
+// Cache for GeoJSON data and stats
+let cachedGeoJSON = null;
+let cachedStats = null;
+let lgaIndex = new Map();
+let cacheTimestamp = null;
+
+/**
+ * Load and cache GeoJSON data
+ */
+async function loadGeoJSONData() {
+  try {
+    const { stat } = await import('fs/promises');
+    const fileStat = await stat(DATA_PATH);
+    const fileModTime = fileStat.mtime.getTime();
+    
+    // Check if cache is still valid
+    if (cachedGeoJSON && cacheTimestamp === fileModTime) {
+      return cachedGeoJSON;
+    }
+    
+    // Read and parse file
+    const data = await readFile(DATA_PATH, 'utf8');
+    const geoJSON = JSON.parse(data);
+    
+    // Update cache
+    cachedGeoJSON = geoJSON;
+    cacheTimestamp = fileModTime;
+    
+    // Build LGA index
+    lgaIndex.clear();
+    if (geoJSON.features) {
+      geoJSON.features.forEach((feature, index) => {
+        if (feature.properties && feature.properties.LGA_Name) {
+          lgaIndex.set(feature.properties.LGA_Name, index);
+        }
+      });
+    }
+    
+    // Invalidate stats cache when data changes
+    cachedStats = null;
+    
+    return geoJSON;
+  } catch (error) {
+    console.error('Error loading GeoJSON:', error);
+    throw error;
+  }
+}
+
+/**
+ * Calculate and cache statistics
+ */
+async function calculateStats() {
+  // Return cached stats if available
+  if (cachedStats) {
+    return cachedStats;
+  }
+  
+  const geoJSON = await loadGeoJSONData();
+  const features = geoJSON.features || [];
+  
+  const stats = {
+    totalLGAs: features.length,
+    riskDistribution: {
+      high: 0,
+      medium: 0,
+      low: 0,
+      minimal: 0
+    },
+    averageMPI: 0,
+    averageNightlight: 0,
+    states: new Set(),
+    timestamp: new Date().toISOString()
+  };
+  
+  let totalMPI = 0;
+  let mpiCount = 0;
+  let totalNightlight = 0;
+  let nightlightCount = 0;
+  
+  features.forEach(feature => {
+    const { risk_level, MPI, mean_nightlight_intensity, State } = feature.properties;
+    
+    // Count risk levels
+    if (risk_level === 'High') stats.riskDistribution.high++;
+    else if (risk_level === 'Medium') stats.riskDistribution.medium++;
+    else if (risk_level === 'Low') stats.riskDistribution.low++;
+    else if (risk_level === 'Minimal') stats.riskDistribution.minimal++;
+    
+    // Accumulate for averages (check for numeric values, including 0)
+    if (typeof MPI === 'number') {
+      totalMPI += MPI;
+      mpiCount++;
+    }
+    if (typeof mean_nightlight_intensity === 'number') {
+      totalNightlight += mean_nightlight_intensity;
+      nightlightCount++;
+    }
+    
+    // Track unique states
+    if (State) stats.states.add(State);
+  });
+  
+  // Calculate averages using actual counts
+  stats.averageMPI = mpiCount > 0 ? (totalMPI / mpiCount).toFixed(4) : '0';
+  stats.averageNightlight = nightlightCount > 0 ? (totalNightlight / nightlightCount).toFixed(2) : '0';
+  stats.statesCount = stats.states.size;
+  delete stats.states; // Remove Set from response
+  
+  // Cache the results
+  cachedStats = stats;
+  
+  return stats;
+}
+
 // Initialize Express app
 const app = express();
 
@@ -126,6 +240,7 @@ app.get('/api/hotspots', async (req, res) => {
 /**
  * GET /api/stats
  * Calculates and returns summary statistics from the hotspots data
+ * Uses caching for performance
  * 
  * Returns:
  * - Total number of LGAs monitored
@@ -143,52 +258,8 @@ app.get('/api/stats', async (req, res) => {
       });
     }
 
-    // Read and parse GeoJSON file
-    const data = await readFile(DATA_PATH, 'utf8');
-    const geoJSON = JSON.parse(data);
-    const features = geoJSON.features || [];
-
-    // Calculate statistics
-    const stats = {
-      totalLGAs: features.length,
-      riskDistribution: {
-        high: 0,
-        medium: 0,
-        low: 0,
-        minimal: 0
-      },
-      averageMPI: 0,
-      averageNightlight: 0,
-      states: new Set(),
-      timestamp: new Date().toISOString()
-    };
-
-    let totalMPI = 0;
-    let totalNightlight = 0;
-
-    features.forEach(feature => {
-      const { risk_level, MPI, mean_nightlight_intensity, State } = feature.properties;
-      
-      // Count risk levels
-      if (risk_level === 'High') stats.riskDistribution.high++;
-      else if (risk_level === 'Medium') stats.riskDistribution.medium++;
-      else if (risk_level === 'Low') stats.riskDistribution.low++;
-      else if (risk_level === 'Minimal') stats.riskDistribution.minimal++;
-
-      // Accumulate for averages
-      if (MPI) totalMPI += MPI;
-      if (mean_nightlight_intensity) totalNightlight += mean_nightlight_intensity;
-      
-      // Track unique states
-      if (State) stats.states.add(State);
-    });
-
-    // Calculate averages
-    stats.averageMPI = features.length > 0 ? (totalMPI / features.length).toFixed(4) : 0;
-    stats.averageNightlight = features.length > 0 ? (totalNightlight / features.length).toFixed(2) : 0;
-    stats.statesCount = stats.states.size;
-    delete stats.states; // Remove Set from response
-
+    // Use cached stats
+    const stats = await calculateStats();
     res.json(stats);
 
   } catch (error) {
@@ -203,6 +274,7 @@ app.get('/api/stats', async (req, res) => {
 /**
  * GET /api/lga/:name
  * Get detailed information for a specific LGA
+ * Uses indexed cache for O(1) lookup performance
  */
 app.get('/api/lga/:name', async (req, res) => {
   try {
@@ -215,19 +287,18 @@ app.get('/api/lga/:name', async (req, res) => {
       });
     }
 
-    const data = await readFile(DATA_PATH, 'utf8');
-    const geoJSON = JSON.parse(data);
-    const feature = geoJSON.features.find(
-      f => f.properties.LGA_Name === lgaName
-    );
-
-    if (!feature) {
+    // Load cached data with index
+    const geoJSON = await loadGeoJSONData();
+    const featureIndex = lgaIndex.get(lgaName);
+    
+    if (featureIndex === undefined) {
       return res.status(404).json({
         error: 'Not Found',
         message: `LGA '${lgaName}' not found`
       });
     }
-
+    
+    const feature = geoJSON.features[featureIndex];
     res.json(feature);
 
   } catch (error) {

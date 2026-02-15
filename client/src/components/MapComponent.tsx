@@ -54,6 +54,16 @@ const FitBounds: React.FC<{ data: HotspotsGeoJSON | null }> = ({ data }) => {
 
 const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => {
   const geoJsonLayerRef = useRef<GeoJSONType | null>(null);
+  const mapRef = useRef<any>(null);
+
+  /**
+   * Component to capture map instance
+   */
+  const MapInstanceCapture: React.FC = () => {
+    const map = useMap();
+    mapRef.current = map;
+    return null;
+  };
 
   /**
    * Style function: Color LGAs based on risk level
@@ -101,12 +111,14 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
   const clickFeature = (feature: HotspotFeature, layer: any) => {
     layer.on({
       click: () => {
-        // Zoom to feature
-        const bounds = layer.getBounds();
-        layer._map.fitBounds(bounds, { 
-          padding: [100, 100],
-          maxZoom: 10 
-        });
+        // Zoom to feature using captured map instance
+        if (mapRef.current) {
+          const bounds = layer.getBounds();
+          mapRef.current.fitBounds(bounds, { 
+            padding: [100, 100],
+            maxZoom: 10 
+          });
+        }
 
         // Trigger sidebar update
         onFeatureClick(feature);
@@ -197,6 +209,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick }) => 
       zoomControl={true}
       className="z-0"
     >
+      <MapInstanceCapture />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
