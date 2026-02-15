@@ -12,9 +12,9 @@ from pathlib import Path
 
 from . import config
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Module-level logger; configuration is handled by the application entrypoint.
 logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 def check_and_reproject_shapefile(gdf, raster_crs):
