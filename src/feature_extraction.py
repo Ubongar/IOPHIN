@@ -205,11 +205,17 @@ def extract_nightlight_from_processed_csv(processed_df, gdf):
         if lga_col_shapefile:
             # Merge nightlight data into processed_df
             merge_data = gdf_with_nightlight[[lga_col_shapefile, 'mean_nightlight_intensity']].copy()
-            merge_data.columns = ['LGA_Name_merge', 'mean_nightlight_intensity']
+            # Normalize LGA names for merging (strip + lowercase) to match CSV processing
+            merge_data['LGA_Name_merge'] = (
+                merge_data[lga_col_shapefile].astype(str).str.strip().str.lower()
+            )
+            merge_data = merge_data[['LGA_Name_merge', 'mean_nightlight_intensity']]
             
             # Try to match on LGA name
             result = processed_df.copy()
-            result['LGA_Name_merge'] = result['LGA_Name'].str.strip()
+            result['LGA_Name_merge'] = (
+                result['LGA_Name'].astype(str).str.strip().str.lower()
+            )
             result = result.merge(merge_data, on='LGA_Name_merge', how='left')
             result.drop(columns=['LGA_Name_merge'], inplace=True)
         else:
