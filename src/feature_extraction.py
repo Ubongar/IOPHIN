@@ -248,7 +248,7 @@ def extract_nightlight_features_from_raster(gdf, raster_path):
             logger.info("Replacing NaN values with 0.0 to prevent downstream errors")
             gdf_aligned['mean_nightlight_intensity'] = gdf_aligned['mean_nightlight_intensity'].fillna(0.0)
         
-        logger.info(f"Nightlight extraction complete")
+        logger.info("Nightlight extraction complete")
         logger.info(f"Valid values: {(gdf_aligned['mean_nightlight_intensity'] > 0).sum()}/{total_lgas}")
         logger.info(f"Zero values: {(gdf_aligned['mean_nightlight_intensity'] == 0).sum()}/{total_lgas}")
         logger.info(f"Mean nightlight intensity: {gdf_aligned['mean_nightlight_intensity'].mean():.2f}")
@@ -295,7 +295,7 @@ def generate_synthetic_nightlight_data(gdf):
     
     result['mean_nightlight_intensity'] = synthetic_values
     
-    logger.info(f"Generated synthetic nightlight values")
+    logger.info("Generated synthetic nightlight values")
     logger.info(f"Mean: {result['mean_nightlight_intensity'].mean():.2f}")
     logger.info(f"Range: {result['mean_nightlight_intensity'].min():.2f} - {result['mean_nightlight_intensity'].max():.2f}")
     
@@ -328,22 +328,67 @@ def extract_nightlight_from_processed_csv(processed_df, gdf):
                 lga_col_shapefile = col
                 break
         
+        # Find state name column in shapefile using config constant
+        state_col_shapefile = None
+        for col in config.STATE_NAME_COLUMNS:
+            if col in gdf_with_nightlight.columns:
+                state_col_shapefile = col
+                break
         if lga_col_shapefile:
-            # Merge nightlight data into processed_df
-            merge_data = gdf_with_nightlight[[lga_col_shapefile, 'mean_nightlight_intensity']].copy()
-            # Normalize LGA names for merging (strip + lowercase) to match CSV processing
+            # Build merge columns list
+            merge_cols = [lga_col_shapefile, 'mean_nightlight_intensity']
+            if state_col_shapefile:
+                merge_cols.append(state_col_shapefile)
+            merge_data = gdf_with_nightlight[merge_cols].copy()
+            # Normalize LGA names for merging (strip + lowercase)
             merge_data['LGA_Name_merge'] = (
                 merge_data[lga_col_shapefile].astype(str).str.strip().str.lower()
             )
-            merge_data = merge_data[['LGA_Name_merge', 'mean_nightlight_intensity']]
             
-            # Try to match on LGA name
             result = processed_df.copy()
             result['LGA_Name_merge'] = (
                 result['LGA_Name'].astype(str).str.strip().str.lower()
             )
-            result = result.merge(merge_data, on='LGA_Name_merge', how='left')
-            result.drop(columns=['LGA_Name_merge'], inplace=True)
+            # Merge on BOTH LGA name AND state to avoid duplicates
+            if state_col_shapefile and 'State' in result.columns:
+                merge_data['State_merge'] = (
+                    merge_data[state_col_shapefile].astype(str).str.strip().str.lower()
+                )
+                result['State_merge'] = (
+                    result['State'].astype(str).str.strip().str.lower()
+                )
+                merge_data_final = merge_data[['LGA_Name_merge', 'State_merge', 'mean_nightlight_intensity']]
+                # Drop duplicates to be safe (in case shapefile has exact dupes)
+                merge_data_final = merge_data_final.drop_duplicates(
+                    subset=['LGA_Name_merge', 'State_merge']
+                )
+                result = result.merge(
+                    merge_data_final,
+                    on=['LGA_Name_merge', 'State_merge'],
+                    how='left'
+                )
+                result.drop(columns=['LGA_Name_merge', 'State_merge'], inplace=True)
+            else:
+                # Fallback: LGA name only, but deduplicate merge_data first
+                logger.warning(
+                    "State column not found in shapefile — merging on LGA name only. "
+                    "Duplicates may occur for LGAs with the same name in different states."
+                )
+                merge_data_final = merge_data[['LGA_Name_merge', 'mean_nightlight_intensity']]
+                merge_data_final = merge_data_final.drop_duplicates(subset=['LGA_Name_merge'])
+                result = result.merge(merge_data_final, on='LGA_Name_merge', how='left')
+                result.drop(columns=['LGA_Name_merge'], inplace=True)
+            logger.info(f"Merged nightlight data: {len(result)} records (expected {len(processed_df)})")
+            # Safety check: ensure no row inflation
+            if len(result) != len(processed_df):
+                logger.error(
+                    f"Row count mismatch after merge! "
+                    f"Expected {len(processed_df)}, got {len(result)}. "
+                    f"Dropping duplicates to recover."
+                )
+                result = result.drop_duplicates(
+                    subset=['LGA_Name', 'State'], keep='first'
+                )
         else:
             logger.warning("Could not find LGA name column for merging")
             result = processed_df.copy()
