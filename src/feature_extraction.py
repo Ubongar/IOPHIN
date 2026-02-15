@@ -47,43 +47,71 @@ def extract_nightlight_for_lga(geometry, raster_src):
     Extract mean nightlight intensity for a single LGA polygon using masked reading.
     This method reads only the pixels within the polygon, not the entire raster.
     
+    VIIRS Median Masked dataset convention:
+    - NaN / nodata values represent DARK areas (no detectable light = extreme poverty)
+    - These are converted to 0.0 intensity, NOT discarded.
+    - Only pixels outside the raster bounds are truly missing.
     Args:
         geometry: Shapely geometry of the LGA polygon
         raster_src: Open rasterio dataset
     
     Returns:
-        float: Mean nightlight intensity for the LGA, or 0.0 if no valid pixels found
+        float: Mean nightlight intensity for the LGA, or 0.0 if geometry is outside raster bounds
     """
     try:
-        # Use rasterio.mask to extract only pixels within the polygon
-        # This is memory-efficient as it only reads the windowed area
-        out_image, out_transform = mask(raster_src, [geometry], crop=True, nodata=0)
+        # Check if the geometry intersects the raster bounds at all
+        from shapely.geometry import box
+        raster_bounds = box(
+            raster_src.bounds.left, raster_src.bounds.bottom,
+            raster_src.bounds.right, raster_src.bounds.top
+        )
+        if not geometry.intersects(raster_bounds):
+            logger.warning("Geometry is completely outside raster bounds - returning 0.0")
+            return 0.0
+
+        # Use rasterio.mask to extract only pixels within the polygon.
+        # filled=False returns a numpy masked array so we can distinguish
+        # between the raster's native nodata and the mask's fill area.
+        out_image, out_transform = mask(
+            raster_src, [geometry], crop=True, filled=False
+        )
         
-        # Get the first band (VIIRS typically has a single band)
-        data = out_image[0]
+        # Get the first band as a masked array
+        masked_data = out_image[0]  # numpy.ma.MaskedArray
         
-        # Check total pixels extracted
-        total_pixels = data.size
+        # Total pixels in the cropped window
+        total_pixels = masked_data.size
         
-        # Filter out nodata values
-        # VIIRS nightlight values typically range from 0 to ~100 nW/cm²/sr
-        # Negative values and very high values (>9999) are likely errors
-        valid_data = data[(data > 0) & (data < 9999)]
+        if total_pixels == 0:
+            logger.warning("Cropped window has 0 pixels - geometry may be too small")
+            return 0.0
         
-        if len(valid_data) > 0:
-            mean_intensity = float(np.mean(valid_data))
-            return mean_intensity
-        else:
-            # No valid pixels found - this could be:
-            # 1. Rural area with genuinely no nightlights
-            # 2. Masked/cloud-covered area in the raster
-            # 3. Spatial mismatch between shapefile and raster
-            logger.warning(f"No valid pixels found for geometry (extracted {total_pixels} pixels, all invalid)")
-            return 0.0  # Return 0.0 instead of NaN for better handling downstream
-            
+        # --- VIIRS Median Masked handling ---
+        # In this dataset NaN/nodata pixels represent DARK areas (0 light),
+        # NOT missing data. Convert the masked array to a regular array
+        # where masked (NaN/nodata) values become 0.0 (no light).
+        data = np.where(masked_data.mask, 0.0, masked_data.data).astype(np.float64)
+        # Sanitise: negative values are sensor artefacts → clamp to 0
+        data = np.clip(data, 0.0, None)
+        # Discard only extreme outlier values (>9999) which are sensor errors
+        data[data > 9999] = 0.0
+        # Compute mean over ALL pixels (including the 0s that represent darkness)
+        mean_intensity = float(np.mean(data))
+        # Diagnostic logging for the first few calls
+        n_dark = int(np.sum(data == 0.0))
+        n_lit = int(np.sum(data > 0.0))
+        logger.debug(
+            f"LGA pixels: {total_pixels} total, {n_lit} lit, {n_dark} dark "
+            f"→ mean intensity = {mean_intensity:.4f}"
+        )
+        return mean_intensity
+    except ValueError as ve:
+        # rasterio raises ValueError when the geometry doesn't overlap the raster
+        logger.warning(f"Geometry does not overlap raster: {ve}")
+        return 0.0
     except Exception as e:
         logger.error(f"Error extracting nightlight data: {str(e)}")
-        return 0.0  # Return 0.0 instead of NaN
+        return 0.0
 
 
 def extract_nightlight_features_from_raster(gdf, raster_path):
@@ -120,7 +148,7 @@ def extract_nightlight_features_from_raster(gdf, raster_path):
     
     # Open the raster file
     with rasterio.open(raster_path) as src:
-        logger.info(f"Raster opened successfully")
+        logger.info("Raster opened successfully")
         logger.info(f"Raster dimensions: {src.width} x {src.height}")
         logger.info(f"Raster CRS: {src.crs}")
         logger.info(f"Raster bounds: {src.bounds}")
@@ -150,9 +178,9 @@ def extract_nightlight_features_from_raster(gdf, raster_path):
         overlap_y = not (shapefile_maxy < raster_miny or shapefile_miny > raster_maxy)
         
         if overlap_x and overlap_y:
-            logger.info("✓ Bounds overlap confirmed - Shapefile and Raster intersect spatially")
+            logger.info("Bounds overlap confirmed - Shapefile and Raster intersect spatially")
         else:
-            logger.error("✗ NO SPATIAL OVERLAP DETECTED!")
+            logger.error("NO SPATIAL OVERLAP DETECTED!")
             logger.error("  This likely indicates a coordinate system mismatch (lat/lon flip)")
             logger.error("  Shapefile and Raster do not intersect - extraction will fail")
         logger.info("=" * 80)
@@ -172,13 +200,21 @@ def extract_nightlight_features_from_raster(gdf, raster_path):
                 )
                 window = rasterio.windows.Window(0, 0, src.width, src.height)
             sample_data = src.read(1, window=window)
-            sample_valid = sample_data[(sample_data > 0) & (sample_data < 9999)]
             
+            # Count NaN/nodata pixels in the sample to show dataset characteristics
+            n_nan = int(np.isnan(sample_data).sum()) if np.issubdtype(sample_data.dtype, np.floating) else 0
+            n_zero = int((sample_data == 0).sum())
+            n_positive = int((sample_data > 0).sum())
+            logger.info(
+                f"Sample window stats: {sample_data.size} pixels total, "
+                f"{n_positive} positive, {n_zero} zero, {n_nan} NaN/nodata"
+            )
+            sample_valid = sample_data[np.isfinite(sample_data) & (sample_data > 0) & (sample_data < 9999)]
             if len(sample_valid) > 0:
-                logger.info(f"Sample pixels: min={sample_valid.min():.2f}, max={sample_valid.max():.2f}, "
+                logger.info(f"Lit pixel stats: min={sample_valid.min():.2f}, max={sample_valid.max():.2f}, "
                           f"mean={sample_valid.mean():.2f}, count={len(sample_valid)}")
             else:
-                logger.warning("Sample window contains no valid pixel values")
+                logger.info("Sample window contains no lit pixels (all dark or nodata - expected for VIIRS Median Masked)")
         except Exception as e:
             logger.warning(f"Could not sample raster data: {e}")
         
