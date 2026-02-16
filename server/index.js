@@ -15,6 +15,7 @@ import { createReadStream, existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import * as db from './database.js';
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +27,7 @@ const __dirname = dirname(__filename);
 // Configuration
 const PORT = process.env.PORT || 5000;
 const DATA_PATH = join(__dirname, process.env.DATA_PATH || '../data/processed/hotspots.geojson');
+const USE_DATABASE = process.env.USE_DATABASE === 'true' || true; // Default to true for dynamic mode
 
 // Cache for GeoJSON data and stats
 let cachedGeoJSON = null;
@@ -190,15 +192,33 @@ app.get('/api/health', (req, res) => {
 
 /**
  * GET /api/hotspots
- * Streams the GeoJSON hotspots data to the client
+ * Returns GeoJSON hotspots data from database (dynamic) or file (static fallback)
  * 
  * Features:
  * - GZIP compression enabled via compression middleware
- * - Efficient streaming for large files
+ * - Real-time data from database when available
+ * - Fallback to static file for compatibility
  * - User-friendly error handling
  */
 app.get('/api/hotspots', async (req, res) => {
   try {
+    // Try database first if enabled
+    if (USE_DATABASE && db.isDatabaseAvailable()) {
+      console.log('📊 Serving hotspots from database (real-time data)');
+      
+      const geoJSON = db.getHotspotsAsGeoJSON();
+      
+      if (geoJSON) {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Cache-Control', 'public, max-age=60'); // Cache for 1 minute (real-time)
+        res.setHeader('X-Data-Source', 'database');
+        return res.json(geoJSON);
+      }
+    }
+    
+    // Fallback to file-based approach
+    console.log('📁 Serving hotspots from static file (fallback)');
+    
     // Check if file exists
     if (!existsSync(DATA_PATH)) {
       console.error(`GeoJSON file not found at: ${DATA_PATH}`);
@@ -212,6 +232,7 @@ app.get('/api/hotspots', async (req, res) => {
     // Set appropriate headers
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+    res.setHeader('X-Data-Source', 'file');
 
     // Stream the file to client (memory-efficient for large files)
     const fileStream = createReadStream(DATA_PATH, { encoding: 'utf8' });
@@ -240,16 +261,32 @@ app.get('/api/hotspots', async (req, res) => {
 /**
  * GET /api/stats
  * Calculates and returns summary statistics from the hotspots data
- * Uses caching for performance
+ * Uses database for real-time stats or file-based cache for static mode
  * 
  * Returns:
  * - Total number of LGAs monitored
  * - Count of each risk level (High, Medium, Low, Minimal)
  * - Average MPI score
  * - Average nightlight intensity
+ * - Conflict zones count (dynamic mode only)
  */
 app.get('/api/stats', async (req, res) => {
   try {
+    // Try database first if enabled
+    if (USE_DATABASE && db.isDatabaseAvailable()) {
+      console.log('📊 Serving stats from database (real-time)');
+      
+      const stats = db.getStatistics();
+      
+      if (stats) {
+        res.setHeader('X-Data-Source', 'database');
+        return res.json(stats);
+      }
+    }
+    
+    // Fallback to file-based approach
+    console.log('📁 Serving stats from static file (fallback)');
+    
     // Check if file exists
     if (!existsSync(DATA_PATH)) {
       return res.status(503).json({
@@ -260,6 +297,7 @@ app.get('/api/stats', async (req, res) => {
 
     // Use cached stats
     const stats = await calculateStats();
+    res.setHeader('X-Data-Source', 'file');
     res.json(stats);
 
   } catch (error) {
@@ -274,11 +312,31 @@ app.get('/api/stats', async (req, res) => {
 /**
  * GET /api/lga/:name
  * Get detailed information for a specific LGA
- * Uses indexed cache for O(1) lookup performance
+ * Uses database for real-time data or indexed cache for static mode
  */
 app.get('/api/lga/:name', async (req, res) => {
   try {
     const lgaName = decodeURIComponent(req.params.name);
+
+    // Try database first if enabled
+    if (USE_DATABASE && db.isDatabaseAvailable()) {
+      console.log(`📊 Fetching LGA '${lgaName}' from database`);
+      
+      const lga = db.getLGAByName(lgaName);
+      
+      if (lga) {
+        res.setHeader('X-Data-Source', 'database');
+        return res.json(lga);
+      } else {
+        return res.status(404).json({
+          error: 'Not Found',
+          message: `LGA '${lgaName}' not found`
+        });
+      }
+    }
+    
+    // Fallback to file-based approach
+    console.log(`📁 Fetching LGA '${lgaName}' from static file (fallback)`);
 
     if (!existsSync(DATA_PATH)) {
       return res.status(503).json({
@@ -299,6 +357,7 @@ app.get('/api/lga/:name', async (req, res) => {
     }
     
     const feature = geoJSON.features[featureIndex];
+    res.setHeader('X-Data-Source', 'file');
     res.json(feature);
 
   } catch (error) {
@@ -337,9 +396,16 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Initialize database connection
+if (USE_DATABASE) {
+  console.log('🔄 Initializing database connection...');
+  db.initDatabase();
+}
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 IOPHIN API Server running on port ${PORT}`);
+  console.log(`📊 Data Mode: ${USE_DATABASE && db.isDatabaseAvailable() ? 'DATABASE (Real-Time)' : 'FILE (Static)'}`);
   console.log(`📊 Data path: ${DATA_PATH}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`✅ GZIP compression: enabled`);
@@ -348,6 +414,11 @@ app.listen(PORT, () => {
   console.log(`   - GET http://localhost:${PORT}/api/hotspots`);
   console.log(`   - GET http://localhost:${PORT}/api/stats`);
   console.log(`   - GET http://localhost:${PORT}/api/lga/:name`);
+  
+  if (USE_DATABASE && db.isDatabaseAvailable()) {
+    console.log(`\n✨ Dynamic Real-Time Mode Active`);
+    console.log(`   Data updates automatically from scheduler service`);
+  }
 });
 
 export default app;
