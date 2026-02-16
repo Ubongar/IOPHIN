@@ -148,6 +148,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
               onClick={() => handleSelect(feature)}
               className={`search-result-item ${index === focusedIndex ? 'focused' : ''}`}
               role="option"
+              type="button"
               aria-selected={index === focusedIndex}
             >
               <div className="flex-1">
