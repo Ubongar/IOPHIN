@@ -2,6 +2,8 @@
 
 A geospatial machine learning system for identifying poverty hotspots across Nigeria's Local Government Areas (LGAs) using nighttime satellite imagery and multidimensional poverty indicators.
 
+**✨ NEW: Dynamic Real-Time Monitoring System** - The system now supports automated data pipelines with continuous monitoring. See [DYNAMIC_MONITORING.md](DYNAMIC_MONITORING.md) for details.
+
 **Note:** Nigeria has 774 official LGAs, but the current dataset contains 720 LGAs with complete data for analysis.
 
 ## Overview
@@ -16,6 +18,20 @@ The analytical engine uses unsupervised machine learning to classify LGAs into 4
 - **Medium Risk - Poor**: Moderate indicators
 - **Low Risk - Vulnerable**: Improving indicators
 - **Minimal Risk - Wealthy**: High nightlights + Low poverty indicators
+
+## Architecture Modes
+
+### Static Mode (Original)
+- One-time data processing from local files
+- Manual updates required
+- Good for research and analysis
+
+### Dynamic Mode (NEW ✨)
+- Continuous monitoring with automated data fetching
+- Database-backed real-time updates
+- Conflict detection and alert system
+- Automated ML model retraining
+- **See [DYNAMIC_MONITORING.md](DYNAMIC_MONITORING.md) for setup**
 
 ## Project Structure
 
@@ -36,9 +52,14 @@ IOPHIN/
 │   ├── data_loader.py                         (Data loading utilities)
 │   ├── feature_extraction.py                  (Memory-safe raster processing)
 │   ├── model_engine.py                        (ML pipeline: KNN, PCA, K-means)
-│   └── main.py                                (Main orchestration script)
+│   ├── main.py                                (Main orchestration script)
+│   ├── db_config.py                           (NEW: Database configuration)
+│   ├── db_utils.py                            (NEW: Database operations)
+│   ├── scheduler_service.py                   (NEW: Real-time monitoring)
+│   └── migrate_to_db.py                       (NEW: Data migration script)
 ├── server/                                    (Node.js Backend API)
 │   ├── index.js                               (Express server with endpoints)
+│   ├── database.js                            (NEW: Database query module)
 │   ├── package.json                           (Dependencies)
 │   └── .env                                   (Configuration)
 ├── client/                                    (React Frontend Dashboard)
@@ -52,7 +73,9 @@ IOPHIN/
 │   │   └── index.css                          (Tailwind styles)
 │   ├── package.json                           (Dependencies)
 │   └── .env                                   (Configuration)
-└── requirements.txt                           (Python dependencies)
+├── requirements.txt                           (Python dependencies)
+├── DYNAMIC_MONITORING.md                      (NEW: Real-time system guide)
+└── poverty_hotspots.db                        (NEW: SQLite database)
 ```
 
 ## Installation
@@ -64,12 +87,39 @@ pip install -r requirements.txt
 
 ## Usage
 
+### Static Mode (Traditional)
+
 ```bash
 # Run the analytical engine
 python -m src.main
 ```
 
 The pipeline executes in 3 phases:
+
+### Dynamic Mode (Real-Time Monitoring) ✨
+
+For continuous monitoring with automated updates:
+
+```bash
+# 1. Run the ML model to generate initial data
+python -m src.main
+
+# 2. Migrate data to database
+python -m src.migrate_to_db
+
+# 3. Start the real-time monitoring service
+python -m src.scheduler_service
+```
+
+The scheduler will:
+- Check for conflict events every 1 hour
+- Update nightlight data every 24 hours  
+- Retrain ML model every 6 hours
+- Display system status hourly
+
+**Full documentation:** See [DYNAMIC_MONITORING.md](DYNAMIC_MONITORING.md)
+
+## Pipeline Phases
 
 ### Phase 1: Feature Extraction (Memory-Safe)
 - Loads LGA shapefiles and boundaries

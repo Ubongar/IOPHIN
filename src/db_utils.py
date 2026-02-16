@@ -29,60 +29,71 @@ def upsert_hotspots_from_dataframe(df, data_source='ML_MODEL'):
     
     session = SessionLocal()
     upserted_count = 0
+    errors = 0
     
     try:
         for idx, row in df.iterrows():
-            # Extract LGA name
-            lga_name = row.get('LGA_Name', row.get('lganame', row.get('LGA_NAME')))
-            
-            if not lga_name:
-                logger.warning(f"Skipping row {idx}: No LGA name found")
+            try:
+                # Extract LGA name
+                lga_name = row.get('LGA_Name', row.get('lganame', row.get('LGA_NAME')))
+                
+                if not lga_name:
+                    logger.warning(f"Skipping row {idx}: No LGA name found")
+                    continue
+                
+                # Check if record exists
+                existing = session.query(PovertyHotspot).filter_by(lga_name=lga_name).first()
+                
+                # Prepare data
+                data = {
+                    'lga_name': lga_name,
+                    'state': row.get('State', row.get('state')),
+                    'latitude': row.get('Latitude', row.get('latitude')),
+                    'longitude': row.get('Longitude', row.get('longitude')),
+                    'mean_nightlight_intensity': row.get('mean_nightlight_intensity'),
+                    'mpi': row.get('MPI', row.get('mpi')),
+                    'headcount_ratio': row.get('Headcount_Ratio', row.get('headcount_ratio')),
+                    'intensity_of_deprivation': row.get('Intensity_of_Deprivation', row.get('intensity_of_deprivation')),
+                    'in_severe_poverty': row.get('In_Severe_Poverty', row.get('in_severe_poverty')),
+                    'vulnerable_to_poverty': row.get('Vulnerable_to_Poverty', row.get('vulnerable_to_poverty')),
+                    'cluster': int(row.get('cluster')) if pd.notna(row.get('cluster')) else None,
+                    'cluster_label': row.get('cluster_label'),
+                    'risk_level': row.get('risk_level'),
+                    'conflict_flag': row.get('conflict_flag', 'NORMAL'),
+                    'geometry': row.get('geometry'),
+                    'last_updated': datetime.utcnow(),
+                    'data_source': data_source
+                }
+                
+                # Clean None values and convert numpy types
+                data = {k: (None if pd.isna(v) else float(v) if isinstance(v, (int, float)) and k != 'cluster' else v) 
+                       for k, v in data.items()}
+                
+                if existing:
+                    # Update existing record
+                    for key, value in data.items():
+                        if key != 'lga_name':  # Don't update the primary key
+                            setattr(existing, key, value)
+                    logger.debug(f"Updated: {lga_name}")
+                else:
+                    # Insert new record
+                    new_record = PovertyHotspot(**data)
+                    session.add(new_record)
+                    logger.debug(f"Inserted: {lga_name}")
+                
+                # Commit after each record to avoid bulk failure
+                session.commit()
+                upserted_count += 1
+                
+            except Exception as e:
+                session.rollback()
+                errors += 1
+                logger.warning(f"Error upserting {lga_name}: {str(e)}")
                 continue
-            
-            # Check if record exists
-            existing = session.query(PovertyHotspot).filter_by(lga_name=lga_name).first()
-            
-            # Prepare data
-            data = {
-                'lga_name': lga_name,
-                'state': row.get('State', row.get('state')),
-                'latitude': row.get('Latitude', row.get('latitude')),
-                'longitude': row.get('Longitude', row.get('longitude')),
-                'mean_nightlight_intensity': row.get('mean_nightlight_intensity'),
-                'mpi': row.get('MPI', row.get('mpi')),
-                'headcount_ratio': row.get('Headcount_Ratio', row.get('headcount_ratio')),
-                'intensity_of_deprivation': row.get('Intensity_of_Deprivation', row.get('intensity_of_deprivation')),
-                'in_severe_poverty': row.get('In_Severe_Poverty', row.get('in_severe_poverty')),
-                'vulnerable_to_poverty': row.get('Vulnerable_to_Poverty', row.get('vulnerable_to_poverty')),
-                'cluster': int(row.get('cluster')) if pd.notna(row.get('cluster')) else None,
-                'cluster_label': row.get('cluster_label'),
-                'risk_level': row.get('risk_level'),
-                'conflict_flag': row.get('conflict_flag', 'NORMAL'),
-                'geometry': row.get('geometry'),
-                'last_updated': datetime.utcnow(),
-                'data_source': data_source
-            }
-            
-            # Clean None values and convert numpy types
-            data = {k: (None if pd.isna(v) else float(v) if isinstance(v, (int, float)) and k != 'cluster' else v) 
-                   for k, v in data.items()}
-            
-            if existing:
-                # Update existing record
-                for key, value in data.items():
-                    if key != 'lga_name':  # Don't update the primary key
-                        setattr(existing, key, value)
-                logger.debug(f"Updated: {lga_name}")
-            else:
-                # Insert new record
-                new_record = PovertyHotspot(**data)
-                session.add(new_record)
-                logger.debug(f"Inserted: {lga_name}")
-            
-            upserted_count += 1
         
-        # Commit all changes
-        session.commit()
+        if errors > 0:
+            logger.warning(f"⚠️  {errors} records had errors and were skipped")
+        
         logger.info(f"✅ Successfully upserted {upserted_count} records")
         
     except Exception as e:

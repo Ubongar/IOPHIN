@@ -5,6 +5,12 @@ __pycache__/
 .env
 *.log
 
+# Database files (generated at runtime)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
 # Node.js
 node_modules/
 npm-debug.log*
