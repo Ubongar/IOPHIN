@@ -328,8 +328,15 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
     <div className="h-full overflow-y-auto sidebar-surface">
       {/* Brand header */}
       <div className="px-6 pt-6 pb-4 border-b border-white/[0.06]">
-        <h1 className="text-base font-bold text-white tracking-tight">IOPHIN</h1>
-        <p className="text-[10px] font-medium text-white/35 tracking-widest uppercase mt-0.5">Analytics Panel</p>
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md">
+            <span className="text-white font-black text-[10px]">P</span>
+          </div>
+          <div>
+            <h1 className="text-base font-bold text-white tracking-tight">PHIS</h1>
+            <p className="text-[9px] font-medium text-white/35 tracking-wider">National Intelligence</p>
+          </div>
+        </div>
       </div>
 
       {/* Content */}

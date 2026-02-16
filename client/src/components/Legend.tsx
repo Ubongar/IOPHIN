@@ -19,14 +19,14 @@ const Legend: React.FC = () => {
 
   return (
     <div
-      className="absolute bottom-5 right-5 z-[1000] rounded-xl overflow-hidden transition-all duration-300"
+      className="absolute bottom-5 right-5 z-[1000] rounded-xl overflow-hidden transition-all duration-300 shadow-xl"
       style={{
         width: collapsed ? '44px' : '250px',
-        background: 'rgba(13, 13, 13, 0.92)',
+        background: 'rgba(19, 19, 26, 0.95)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.07)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
       }}
     >
       {/* Toggle */}

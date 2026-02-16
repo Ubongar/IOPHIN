@@ -14,31 +14,31 @@
    ============================================================ */
 
 :root {
-  --bg: #0d0d0d;
-  --bg-rail: #0d0d0d;
-  --bg-sidebar: #111111;
+  --bg: #0a0a0f;
+  --bg-rail: #0a0a0f;
+  --bg-sidebar: #13131a;
   --bg-panel: rgba(255, 255, 255, 0.04);
-  --bg-panel-hover: rgba(255, 255, 255, 0.065);
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.14);
-  --blue: #2563eb;
-  --blue-light: #3b82f6;
+  --bg-panel-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --blue: #4f46e5;
+  --blue-light: #6366f1;
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-tertiary: rgba(255, 255, 255, 0.55);
   --text-quaternary: rgba(255, 255, 255, 0.4);
 }
 
 [data-theme='light'] {
-  --bg: #f8fafc;
+  --bg: #f5f7fa;
   --bg-rail: #ffffff;
   --bg-sidebar: #ffffff;
-  --bg-panel: rgba(15, 23, 42, 0.04);
-  --bg-panel-hover: rgba(15, 23, 42, 0.08);
-  --border: rgba(15, 23, 42, 0.1);
-  --border-hover: rgba(15, 23, 42, 0.2);
-  --blue: #2563eb;
-  --blue-light: #3b82f6;
+  --bg-panel: rgba(15, 23, 42, 0.03);
+  --bg-panel-hover: rgba(15, 23, 42, 0.06);
+  --border: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(15, 23, 42, 0.16);
+  --blue: #4f46e5;
+  --blue-light: #6366f1;
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-tertiary: #64748b;
@@ -110,11 +110,13 @@
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: 12px;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .panel:hover {
   background: var(--bg-panel-hover);
   border-color: var(--border-hover);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Info chips (top-right on map) */
@@ -131,6 +133,7 @@
   font-size: 11px;
   font-weight: 500;
   font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Search component styles */
@@ -160,6 +163,7 @@
   font-weight: 500;
   outline: none;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .search-input::placeholder {
@@ -169,6 +173,7 @@
 .search-input:focus {
   background: var(--bg-panel-hover);
   border-color: var(--blue);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
 }
 
 .search-clear-btn {
