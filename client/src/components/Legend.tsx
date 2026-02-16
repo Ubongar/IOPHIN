@@ -54,7 +54,7 @@ const Legend: React.FC = () => {
           {/* Header */}
           <div className="mb-3 pb-2.5 border-b border-white/[0.07]">
             <h3 className="text-white/80 font-bold text-[11px] tracking-wide">Risk Classification</h3>
-            <p className="text-white/30 text-[9px] mt-0.5">K-Means poverty clustering</p>
+            <p className="text-white/30 text-[10px] mt-0.5">K-Means poverty clustering</p>
           </div>
 
           {/* Risk items */}
@@ -64,7 +64,7 @@ const Legend: React.FC = () => {
                 <div className="w-4 h-4 rounded flex-shrink-0" style={{ backgroundColor: RISK_COLORS[level] }} />
                 <div className="flex-1 min-w-0">
                   <span className="text-white/70 text-[10px] font-semibold block">{label}</span>
-                  <span className="text-white/30 text-[9px] font-mono block">{mpiRange}</span>
+                  <span className="text-white/30 text-[10px] font-mono block">{mpiRange}</span>
                 </div>
               </div>
             ))}
@@ -72,7 +72,7 @@ const Legend: React.FC = () => {
 
           {/* Footer */}
           <div className="mt-3 pt-2.5 border-t border-white/[0.05]">
-            <p className="text-white/20 text-[8px]">VIIRS Nightlight + MPI clustering</p>
+            <p className="text-white/20 text-[10px]">VIIRS Nightlight + MPI clustering</p>
           </div>
         </div>
       )}

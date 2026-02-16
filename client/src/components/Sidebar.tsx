@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
             <div key={m.label} className="panel p-4">
               <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">{m.label}</span>
               <div className="text-[22px] font-bold text-white leading-none">{m.value}</div>
-              <div className="text-white/30 text-[9px] mt-1">{m.sub}</div>
+              <div className="text-white/30 text-[10px] mt-1">{m.sub}</div>
             </div>
           ))}
         </div>
@@ -240,12 +240,12 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
           <div className="panel p-4">
             <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">MPI</span>
             <div className="text-[22px] font-bold text-white leading-none">{MPI.toFixed(4)}</div>
-            <div className="text-white/30 text-[9px] mt-1">Poverty Index Score</div>
+            <div className="text-white/30 text-[10px] mt-1">Poverty Index Score</div>
           </div>
           <div className="panel p-4">
             <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">Light</span>
             <div className="text-[22px] font-bold text-white leading-none">{mean_nightlight_intensity.toFixed(2)}</div>
-            <div className="text-white/30 text-[9px] mt-1">VIIRS radiance</div>
+            <div className="text-white/30 text-[10px] mt-1">VIIRS radiance</div>
           </div>
         </div>
 
@@ -334,7 +334,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
           </div>
           <div>
             <h1 className="text-base font-bold text-white tracking-tight">PHIS</h1>
-            <p className="text-[9px] font-medium text-white/35 tracking-wider">National Intelligence</p>
+            <p className="text-[10px] font-medium text-white/35 tracking-wider">National Intelligence</p>
           </div>
         </div>
       </div>
