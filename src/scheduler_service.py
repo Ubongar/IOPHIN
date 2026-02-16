@@ -29,15 +29,16 @@ from src.db_utils import (
 )
 from src.model_engine import build_analytical_model
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler('scheduler_service.log')
-    ]
-)
+# Configure logging only if no handlers are already configured for the root logger
+if not logging.getLogger().handlers:
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler('scheduler_service.log')
+        ]
+    )
 logger = logging.getLogger(__name__)
 
 
