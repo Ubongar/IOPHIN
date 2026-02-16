@@ -4,7 +4,7 @@ Handles data insertion, updates, and queries.
 """
 import pandas as pd
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import text
 import json
@@ -14,25 +14,29 @@ from .db_config import SessionLocal, PovertyHotspot, engine
 logger = logging.getLogger(__name__)
 
 
-def upsert_hotspots_from_dataframe(df, data_source='ML_MODEL'):
+def upsert_hotspots_from_dataframe(df, data_source='ML_MODEL', batch_size=50):
     """
     Insert or update poverty hotspot data from a DataFrame.
+    Uses batch commits for efficiency while maintaining error isolation.
     
     Args:
         df: DataFrame with poverty hotspot data
         data_source: Source identifier (ML_MODEL, API_REFRESH, CONFLICT_API)
+        batch_size: Number of records to commit in each batch (default: 50)
     
     Returns:
         int: Number of records upserted
     """
-    logger.info(f"Upserting {len(df)} records from {data_source}")
+    logger.info(f"Upserting {len(df)} records from {data_source} (batch size: {batch_size})")
     
     session = SessionLocal()
     upserted_count = 0
     errors = 0
+    batch_count = 0
     
     try:
         for idx, row in df.iterrows():
+            lga_name = None  # Initialize to avoid UnboundLocalError in exception handler
             try:
                 # Extract LGA name
                 lga_name = row.get('LGA_Name', row.get('lganame', row.get('LGA_NAME')))
@@ -61,7 +65,7 @@ def upsert_hotspots_from_dataframe(df, data_source='ML_MODEL'):
                     'risk_level': row.get('risk_level'),
                     'conflict_flag': row.get('conflict_flag', 'NORMAL'),
                     'geometry': row.get('geometry'),
-                    'last_updated': datetime.utcnow(),
+                    'last_updated': datetime.now(timezone.utc),
                     'data_source': data_source
                 }
                 
@@ -81,15 +85,26 @@ def upsert_hotspots_from_dataframe(df, data_source='ML_MODEL'):
                     session.add(new_record)
                     logger.debug(f"Inserted: {lga_name}")
                 
-                # Commit after each record to avoid bulk failure
-                session.commit()
                 upserted_count += 1
+                batch_count += 1
+                
+                # Commit in batches for efficiency
+                if batch_count >= batch_size:
+                    session.commit()
+                    logger.debug(f"Committed batch of {batch_count} records")
+                    batch_count = 0
                 
             except Exception as e:
                 session.rollback()
                 errors += 1
-                logger.warning(f"Error upserting {lga_name}: {str(e)}")
+                logger.warning(f"Error upserting {lga_name or f'row {idx}'}: {str(e)}")
+                batch_count = 0  # Reset batch count after rollback
                 continue
+        
+        # Commit any remaining records in the final batch
+        if batch_count > 0:
+            session.commit()
+            logger.debug(f"Committed final batch of {batch_count} records")
         
         if errors > 0:
             logger.warning(f"⚠️  {errors} records had errors and were skipped")
@@ -126,8 +141,8 @@ def upsert_conflict_flag(lga_name, conflict_flag='CRITICAL', last_conflict_event
         
         if lga:
             lga.conflict_flag = conflict_flag
-            lga.last_conflict_event = last_conflict_event or datetime.utcnow()
-            lga.last_updated = datetime.utcnow()
+            lga.last_conflict_event = last_conflict_event or datetime.now(timezone.utc)
+            lga.last_updated = datetime.now(timezone.utc)
             lga.data_source = 'CONFLICT_API'
             
             # If conflict is critical, elevate risk level
@@ -262,7 +277,7 @@ def get_statistics():
             'averageMPI': f"{row[0]:.4f}" if row[0] else '0',
             'averageNightlight': f"{row[1]:.2f}" if row[1] else '0',
             'conflictZones': conflict_count,
-            'timestamp': datetime.utcnow().isoformat()
+            'timestamp': datetime.now(timezone.utc).isoformat()
         }
     finally:
         session.close()

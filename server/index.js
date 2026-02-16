@@ -402,6 +402,18 @@ if (USE_DATABASE) {
   db.initDatabase();
 }
 
+// Graceful shutdown handler
+const shutdown = (signal) => {
+  console.log(`\n${signal} received. Closing database and shutting down gracefully...`);
+  if (USE_DATABASE) {
+    db.closeDatabase();
+  }
+  process.exit(0);
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 IOPHIN API Server running on port ${PORT}`);

@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, Text
 from sqlalchemy.orm import declarative_base, sessionmaker
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class PovertyHotspot(Base):
     geometry = Column(Text, nullable=True)
     
     # Metadata
-    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_updated = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     data_source = Column(String(100), default='ML_MODEL')  # ML_MODEL, API_REFRESH, CONFLICT_API
     
     def to_dict(self):
