@@ -6,9 +6,11 @@
 import { useState } from 'react';
 import { RISK_COLORS } from '../types';
 import type { RiskLevel } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Legend: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { theme } = useTheme();
 
   const riskLevels: { level: RiskLevel; label: string; mpiRange: string }[] = [
     { level: 'High', label: 'Severe Poverty', mpiRange: 'MPI > 0.35' },
@@ -22,11 +24,17 @@ const Legend: React.FC = () => {
       className="absolute bottom-5 right-5 z-[1000] rounded-xl overflow-hidden transition-all duration-300 shadow-xl"
       style={{
         width: collapsed ? '44px' : '250px',
-        background: 'rgba(19, 19, 26, 0.95)',
+        background: theme === 'dark' 
+          ? 'rgba(19, 19, 26, 0.95)' 
+          : 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)',
+        border: theme === 'dark'
+          ? '1px solid rgba(255, 255, 255, 0.1)'
+          : '1px solid rgba(15, 23, 42, 0.1)',
+        boxShadow: theme === 'dark'
+          ? '0 12px 40px rgba(0, 0, 0, 0.5)'
+          : '0 12px 40px rgba(0, 0, 0, 0.12)',
       }}
     >
       {/* Toggle */}
