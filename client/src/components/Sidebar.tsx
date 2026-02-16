@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
             <div key={m.label} className="panel p-4">
               <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">{m.label}</span>
               <div className="text-[22px] font-bold text-white leading-none">{m.value}</div>
-              <div className="text-white/30 text-[9px] mt-1">{m.sub}</div>
+              <div className="text-white/30 text-[10px] mt-1">{m.sub}</div>
             </div>
           ))}
         </div>
@@ -240,12 +240,12 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
           <div className="panel p-4">
             <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">MPI</span>
             <div className="text-[22px] font-bold text-white leading-none">{MPI.toFixed(4)}</div>
-            <div className="text-white/30 text-[9px] mt-1">Poverty Index Score</div>
+            <div className="text-white/30 text-[10px] mt-1">Poverty Index Score</div>
           </div>
           <div className="panel p-4">
             <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">Light</span>
             <div className="text-[22px] font-bold text-white leading-none">{mean_nightlight_intensity.toFixed(2)}</div>
-            <div className="text-white/30 text-[9px] mt-1">VIIRS radiance</div>
+            <div className="text-white/30 text-[10px] mt-1">VIIRS radiance</div>
           </div>
         </div>
 
@@ -310,12 +310,12 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
         </div>
 
         {/* Download */}
-        <button className="w-full rounded-xl px-4 py-3 text-white font-medium text-sm transition-colors flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500">
+        <button className="w-full rounded-xl px-4 py-3 text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg hover:shadow-xl">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          Download LGA Report
+          Download Intelligence Report
         </button>
       </div>
     );
@@ -328,8 +328,15 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
     <div className="h-full overflow-y-auto sidebar-surface">
       {/* Brand header */}
       <div className="px-6 pt-6 pb-4 border-b border-white/[0.06]">
-        <h1 className="text-base font-bold text-white tracking-tight">IOPHIN</h1>
-        <p className="text-[10px] font-medium text-white/35 tracking-widest uppercase mt-0.5">Analytics Panel</p>
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md">
+            <span className="text-white font-black text-[10px]">P</span>
+          </div>
+          <div>
+            <h1 className="text-base font-bold text-white tracking-tight">PHIS</h1>
+            <p className="text-[10px] font-medium text-white/35 tracking-wider">National Intelligence</p>
+          </div>
+        </div>
       </div>
 
       {/* Content */}
