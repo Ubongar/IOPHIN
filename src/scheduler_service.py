@@ -76,13 +76,17 @@ class DataPipeline:
             
             # Simulate conflict detection (10% chance of detecting a conflict)
             if random.random() < 0.1:
-                # Simulate conflict in a random LGA
+                # Simulate conflict in a random LGA.
+                # NOTE: These LGA names are placeholders used to exercise the pipeline.
+                # In production, replace this list with valid LGA names sourced from the
+                # database or from real ACLED/GDELT responses to avoid creating entries
+                # for non-existent LGAs.
                 conflict_lgas = [
                     "Zamfara North",
-                    "Borno South", 
+                    "Borno South",
                     "Yobe East",
                     "Kaduna Central",
-                    "Katsina North"
+                    "Katsina North",
                 ]
                 
                 affected_lga = random.choice(conflict_lgas)
