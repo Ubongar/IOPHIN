@@ -70,8 +70,8 @@ function App() {
       <div className="app-bg h-screen w-screen flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full border-3 border-blue-500/10" />
-            <div className="absolute inset-0 rounded-full border-3 border-transparent border-t-blue-500 animate-spin" />
+            <div className="absolute inset-0 rounded-full border-2 border-blue-500/10" />
+            <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-blue-500 animate-spin" />
             <div className="absolute inset-2 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg">
               <span className="text-white font-black text-sm">P</span>
             </div>
