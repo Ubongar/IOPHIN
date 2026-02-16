@@ -14,3 +14,9 @@ pyproj>=3.0.0
 # Visualization (optional, for validation)
 matplotlib>=3.7.0
 seaborn>=0.12.0
+
+# Database & Real-Time Monitoring
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+apscheduler>=3.10.0
+requests>=2.31.0
