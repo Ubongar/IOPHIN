@@ -27,7 +27,7 @@ const __dirname = dirname(__filename);
 // Configuration
 const PORT = process.env.PORT || 5000;
 const DATA_PATH = join(__dirname, process.env.DATA_PATH || '../data/processed/hotspots.geojson');
-const USE_DATABASE = process.env.USE_DATABASE === 'true' || true; // Default to true for dynamic mode
+const USE_DATABASE = (process.env.USE_DATABASE ?? 'true') === 'true'; // Default to true for dynamic mode
 
 // Cache for GeoJSON data and stats
 let cachedGeoJSON = null;
