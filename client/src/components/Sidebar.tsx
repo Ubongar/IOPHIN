@@ -1,7 +1,6 @@
-/**
- * Sidebar — Clean Professional Analytics Panel
- * Solid dark background, white text, blue accent only for interactive elements.
- * Pie chart + breakdown bars keep multicolor (data viz).
+﻿/**
+ * Sidebar  Production Analytics Panel
+ * Clean hierarchy, consistent spacing, working report download.
  */
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
@@ -14,72 +13,158 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-/* ── Helpers ── */
+/* -- Helpers -- */
 
-const riskDescription = (level: string) => {
-  const desc: Record<string, string> = {
-    High: 'Severe poverty indicators. Immediate intervention required.',
-    Medium: 'Significant deprivation. Targeted support recommended.',
-    Low: 'Moderate vulnerability. Monitoring & prevention needed.',
-    Minimal: 'Relatively stable. Maintenance programs in place.',
-  };
-  return desc[level] ?? '';
+const fmt = (n: number, d = 2) => n.toFixed(d);
+
+const riskDescription: Record<string, string> = {
+  High: 'Severe poverty indicators with critical deprivation levels. Immediate humanitarian intervention required.',
+  Medium: 'Significant deprivation across multiple dimensions. Targeted support programs recommended.',
+  Low: 'Moderate vulnerability with emerging risk factors. Continued monitoring and prevention needed.',
+  Minimal: 'Relatively stable conditions. Maintenance programs and early-warning systems in place.',
 };
 
+/* -- Section divider -- */
+const Divider = () => <div className="sidebar-divider" />;
+
+/* -- Stat card -- */
+const MetricCard = ({ label, value, sub }: { label: string; value: string | number; sub: string }) => (
+  <div className="metric-card">
+    <span className="metric-label">{label}</span>
+    <div className="metric-value">{value}</div>
+    <span className="metric-sub">{sub}</span>
+  </div>
+);
+
+/* -- PDF / Report Generation -- */
+const generateReport = (selectedLGA: HotspotFeature | null, stats: Stats | null) => {
+  const now = new Date().toLocaleString();
+  const isLGA = !!selectedLGA;
+
+  let content = '';
+  const line = '='.repeat(64);
+  const thin = '-'.repeat(64);
+
+  content += line + '\n';
+  content += '  IOPHIN  -  Poverty Hotspot Intelligence Report\n';
+  content += '  Generated: ' + now + '\n';
+  content += line + '\n\n';
+
+  if (isLGA) {
+    const p = selectedLGA!.properties;
+    const mpiScore = Math.min(p.MPI * 100, 100);
+    const nlScore = Math.max(0, 100 - (p.mean_nightlight_intensity / 60) * 100);
+    const prob = Math.min(Math.max(mpiScore * 0.7 + nlScore * 0.3, 0), 100);
+
+    content += '  LGA PROFILE\n';
+    content += thin + '\n';
+    content += '  Name:            ' + p.LGA_Name + '\n';
+    content += '  State:           ' + p.State + '\n';
+    content += '  Risk Level:      ' + p.risk_level + ' (' + p.cluster_label + ')\n';
+    content += '  MPI Score:       ' + p.MPI.toFixed(4) + '\n';
+    content += '  Nightlight:      ' + p.mean_nightlight_intensity.toFixed(2) + ' (VIIRS radiance)\n';
+    content += '  Poverty Prob.:   ' + prob.toFixed(1) + '%\n';
+    if (p.Headcount_Ratio != null)
+      content += '  Headcount Ratio: ' + (p.Headcount_Ratio * 100).toFixed(1) + '%\n';
+    if (p.conflict_flag && p.conflict_flag !== 'NORMAL') {
+      content += '  Conflict Status: ' + p.conflict_flag + '\n';
+      if (p.last_conflict_event) content += '  Last Event:      ' + p.last_conflict_event + '\n';
+    }
+    if (p.last_updated) content += '  Last Updated:    ' + new Date(p.last_updated).toLocaleDateString() + '\n';
+
+    content += '\n  RISK ASSESSMENT\n';
+    content += thin + '\n';
+    content += '  ' + (riskDescription[p.risk_level] || 'N/A') + '\n';
+
+    if (stats) {
+      const mpiPct = ((p.MPI / parseFloat(stats.averageMPI)) * 100).toFixed(0);
+      const nlPct = ((p.mean_nightlight_intensity / parseFloat(stats.averageNightlight)) * 100).toFixed(0);
+      content += '\n  COMPARATIVE ANALYSIS (vs. National Average)\n';
+      content += thin + '\n';
+      content += '  MPI Score:       ' + mpiPct + '% of national average (' + stats.averageMPI + ')\n';
+      content += '  Nightlight:      ' + nlPct + '% of national average (' + stats.averageNightlight + ')\n';
+    }
+  }
+
+  if (stats) {
+    content += '\n  NATIONAL SUMMARY\n';
+    content += thin + '\n';
+    content += '  Total LGAs:      ' + stats.totalLGAs + '\n';
+    content += '  States Covered:  ' + stats.statesCount + '\n';
+    content += '  Average MPI:     ' + stats.averageMPI + '\n';
+    content += '  Avg Nightlight:  ' + stats.averageNightlight + '\n';
+    if (stats.conflictZones) content += '  Conflict Zones:  ' + stats.conflictZones + '\n';
+    const rd = stats.riskDistribution;
+    const total = stats.totalLGAs || 1;
+    content += '\n  RISK DISTRIBUTION\n';
+    content += thin + '\n';
+    content += '  High Risk:       ' + rd.high + ' LGAs (' + ((rd.high / total) * 100).toFixed(1) + '%)\n';
+    content += '  Medium Risk:     ' + rd.medium + ' LGAs (' + ((rd.medium / total) * 100).toFixed(1) + '%)\n';
+    content += '  Low Risk:        ' + rd.low + ' LGAs (' + ((rd.low / total) * 100).toFixed(1) + '%)\n';
+    content += '  Minimal Risk:    ' + rd.minimal + ' LGAs (' + ((rd.minimal / total) * 100).toFixed(1) + '%)\n';
+  }
+
+  content += '\n  DATA SOURCES\n';
+  content += thin + '\n';
+  content += '  * VIIRS Nighttime Lights (NOAA) 2024\n';
+  content += '  * Nigeria Multidimensional Poverty Index Survey\n';
+  content += '  * GRID3 LGA Boundary Data\n';
+  content += '  * ACLED Conflict Events Database\n';
+  content += '  * Senatorial District Poverty Data\n';
+  content += '\n' + line + '\n';
+  content += '  IOPHIN Poverty Hotspot Intelligence System v1.0\n';
+  content += '  Classification: UNCLASSIFIED // FOR OFFICIAL USE\n';
+  content += line + '\n';
+
+  const filename = isLGA
+    ? 'IOPHIN_Report_' + selectedLGA!.properties.LGA_Name + '_' + selectedLGA!.properties.State + '.txt'
+    : 'IOPHIN_National_Report_' + new Date().toISOString().slice(0, 10) + '.txt';
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+/* ============================================================ */
+
 const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
-  /* ── Pie data ── */
+
+  /* -- Pie data helper -- */
   const getPieData = () => {
     if (!stats) return [];
     return [
-      { name: 'High Risk', value: stats.riskDistribution.high, color: RISK_COLORS.High },
-      { name: 'Medium Risk', value: stats.riskDistribution.medium, color: RISK_COLORS.Medium },
-      { name: 'Low Risk', value: stats.riskDistribution.low, color: RISK_COLORS.Low },
-      { name: 'Minimal Risk', value: stats.riskDistribution.minimal, color: RISK_COLORS.Minimal },
+      { name: 'High', value: stats.riskDistribution.high, color: RISK_COLORS.High },
+      { name: 'Medium', value: stats.riskDistribution.medium, color: RISK_COLORS.Medium },
+      { name: 'Low', value: stats.riskDistribution.low, color: RISK_COLORS.Low },
+      { name: 'Minimal', value: stats.riskDistribution.minimal, color: RISK_COLORS.Minimal },
     ];
   };
 
-  const renderCustomLabel = ({
-    cx, cy, midAngle, innerRadius, outerRadius, percent,
-  }: {
-    cx: number; cy: number; midAngle?: number; innerRadius: number; outerRadius: number; percent?: number;
-  }) => {
-    if (midAngle === undefined) return null;
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    if ((percent ?? 0) < 0.05) return null;
-    return (
-      <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="central"
-        fontWeight={700} fontSize={12} style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
-        {`${((percent ?? 0) * 100).toFixed(0)}%`}
-      </text>
-    );
+  const povertyProb = (mpi: number, nl: number) => {
+    const s1 = Math.min(mpi * 100, 100);
+    const s2 = Math.max(0, 100 - (nl / 60) * 100);
+    return Math.min(Math.max(s1 * 0.7 + s2 * 0.3, 0), 100);
   };
 
-  const calculatePovertyProbability = (mpi: number, nightlight: number): number => {
-    const mpiScore = Math.min(mpi * 100, 100);
-    const nightlightScore = Math.max(0, 100 - (nightlight / 60) * 100);
-    return Math.min(Math.max(mpiScore * 0.7 + nightlightScore * 0.3, 0), 100);
-  };
-
-  const gaugeColor = (p: number) => {
-    if (p >= 70) return '#ef4444';
-    if (p >= 45) return '#f59e0b';
-    if (p >= 20) return '#10b981';
-    return '#3b82f6';
-  };
+  const probColor = (p: number) =>
+    p >= 70 ? '#ef4444' : p >= 45 ? '#f59e0b' : p >= 20 ? '#10b981' : '#3b82f6';
 
   /* ================================================================
-     National Summary
+     NATIONAL SUMMARY
      ================================================================ */
   const renderNationalSummary = () => {
     if (!stats) {
       return (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500/30 border-t-blue-400 mx-auto mb-4" />
-            <p className="text-white/50 text-sm">Loading statistics…</p>
+            <div className="spinner mx-auto mb-4" />
+            <p style={{ color: 'var(--text-quaternary)', fontSize: 14 }}>Loading statistics...</p>
           </div>
         </div>
       );
@@ -89,258 +174,301 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
     const total = stats.totalLGAs;
 
     return (
-      <div className="space-y-5 fade-in-up">
-        {/* Section header — clean white text */}
-        <div>
-          <h2 className="text-[15px] font-bold text-white tracking-tight">National Overview</h2>
-          <p className="text-white/40 text-[11px] mt-0.5 uppercase tracking-wider font-medium">
-            Poverty Hotspot Distribution — Nigeria
-          </p>
+      <div className="sidebar-content fade-in-up">
+        {/* Section title */}
+        <div className="sidebar-section-header">
+          <h2 className="sidebar-title">National Overview</h2>
+          <p className="sidebar-subtitle">Poverty Hotspot Distribution - Nigeria</p>
         </div>
 
-        {/* Key Metrics — 2x2 grid */}
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: 'LGAs', value: stats.totalLGAs, sub: 'Local Govt. Areas tracked' },
-            { label: 'States', value: stats.statesCount, sub: 'Federal states covered' },
-            { label: 'Avg MPI', value: stats.averageMPI, sub: 'Multidimensional Poverty Index' },
-            { label: 'Nightlight', value: stats.averageNightlight, sub: 'VIIRS mean radiance' },
-          ].map((m) => (
-            <div key={m.label} className="panel p-4">
-              <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">{m.label}</span>
-              <div className="text-[22px] font-bold text-white leading-none">{m.value}</div>
-              <div className="text-white/30 text-[10px] mt-1">{m.sub}</div>
-            </div>
-          ))}
+        {/* Key metrics */}
+        <div className="grid grid-cols-2 gap-2.5">
+          <MetricCard label="LGAs" value={stats.totalLGAs} sub="Areas tracked" />
+          <MetricCard label="States" value={stats.statesCount} sub="States covered" />
+          <MetricCard label="Avg MPI" value={stats.averageMPI} sub="Poverty Index" />
+          <MetricCard label="Nightlight" value={stats.averageNightlight} sub="VIIRS radiance" />
         </div>
 
-        {/* Risk Distribution — Donut (multicolor OK) */}
-        <div className="panel p-5">
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="text-[13px] font-bold text-white">Risk Distribution</h3>
-            <span className="text-[10px] text-white/30 font-mono">{total} total</span>
-          </div>
-          <p className="text-white/35 text-[10px] mb-4">
-            K-Means clustering — nightlight intensity &amp; MPI score
-          </p>
-
-          <div className="flex items-center gap-4">
-            <div className="w-[140px] h-[140px] flex-shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={36} outerRadius={64}
-                    paddingAngle={3} dataKey="value" strokeWidth={0} labelLine={false} label={renderCustomLabel}>
-                    {pieData.map((entry, i) => (
-                      <Cell key={`cell-${i}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      background: '#111827', border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 10, color: '#f1f5f9', fontSize: 12, fontWeight: 600,
-                    }}
-                    itemStyle={{ color: '#f1f5f9' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+        {/* Conflict alert */}
+        {stats.conflictZones != null && stats.conflictZones > 0 && (
+          <div className="alert-banner alert-danger">
+            <div className="alert-icon danger">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
             </div>
-
-            <div className="flex-1 space-y-2">
-              {pieData.map((item) => (
-                <div key={item.name} className="flex items-center gap-2.5">
-                  <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: item.color }} />
-                  <span className="text-white/60 text-[11px] truncate flex-1">{item.name}</span>
-                  <span className="text-white font-bold text-[12px] tabular-nums">{item.value}</span>
-                </div>
-              ))}
+            <div>
+              <div className="alert-title">{stats.conflictZones} Active Conflict Zone{stats.conflictZones > 1 ? 's' : ''}</div>
+              <div className="alert-sub">ACLED verified incidents</div>
             </div>
           </div>
+        )}
+
+        <Divider />
+
+        {/* Risk Distribution Donut */}
+        <div className="sidebar-section-header">
+          <h3 className="sidebar-section-title">Risk Distribution</h3>
+          <span className="sidebar-section-count">{total} LGAs</span>
         </div>
 
-        {/* Detailed Breakdown — Bars (multicolor OK) */}
-        <div className="panel p-5">
-          <h3 className="text-[13px] font-bold text-white mb-1">Detailed Breakdown</h3>
-          <p className="text-white/35 text-[10px] mb-4">LGA count per risk category with relative share</p>
+        <div className="flex items-center gap-3">
+          <div style={{ width: 120, height: 120, flexShrink: 0 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData} cx="50%" cy="50%"
+                  innerRadius={32} outerRadius={56}
+                  paddingAngle={2} dataKey="value"
+                  strokeWidth={0}
+                >
+                  {pieData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    background: 'var(--bg-sidebar)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 8,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: 'var(--text-primary)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,.25)',
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
 
-          <div className="space-y-3.5">
+          <div className="flex-1 space-y-1.5">
             {pieData.map((item) => {
-              const pct = total > 0 ? (item.value / total) * 100 : 0;
+              const pct = total > 0 ? ((item.value / total) * 100).toFixed(0) : '0';
               return (
-                <div key={item.name}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-white/70 text-[11px] font-medium">{item.name}</span>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-white font-bold text-[13px] tabular-nums">{item.value}</span>
-                      <span className="text-white/35 text-[10px] font-mono">({pct.toFixed(1)}%)</span>
-                    </div>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700 ease-out"
-                      style={{ width: `${pct}%`, backgroundColor: item.color }}
-                    />
-                  </div>
+                <div key={item.name} className="pie-legend-row">
+                  <span className="pie-dot" style={{ background: item.color }} />
+                  <span className="pie-label">{item.name}</span>
+                  <span className="pie-value">{item.value}</span>
+                  <span className="pie-pct">{pct}%</span>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Data Sources */}
-        <div className="panel p-4">
-          <h4 className="text-white/60 text-[10px] font-semibold mb-1 uppercase tracking-wider">Data Sources</h4>
-          <p className="text-white/35 text-[10px] leading-relaxed">
-            VIIRS Nighttime Lights 2024 · Nigeria MPI Survey ·
-            GRID3 LGA Boundaries · Senatorial District Poverty Data
-          </p>
+        <Divider />
+
+        {/* Breakdown bars */}
+        <div className="sidebar-section-header">
+          <h3 className="sidebar-section-title">Detailed Breakdown</h3>
         </div>
-      </div>
-    );
-  };
 
-  /* ================================================================
-     LGA Profile
-     ================================================================ */
-  const renderLGAProfile = () => {
-    if (!selectedLGA) return null;
+        <div className="space-y-3">
+          {pieData.map((item) => {
+            const pct = total > 0 ? (item.value / total) * 100 : 0;
+            return (
+              <div key={item.name}>
+                <div className="bar-header">
+                  <span className="bar-label">{item.name} Risk</span>
+                  <span className="bar-stats">
+                    <strong>{item.value}</strong> <span className="bar-pct">({pct.toFixed(1)}%)</span>
+                  </span>
+                </div>
+                <div className="bar-track">
+                  <div className="bar-fill" style={{ width: pct + '%', background: item.color }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
-    const { LGA_Name, State, risk_level, MPI, mean_nightlight_intensity, cluster_label } =
-      selectedLGA.properties;
-    const povertyProbability = calculatePovertyProbability(MPI, mean_nightlight_intensity);
-    const riskColor = RISK_COLORS[risk_level as RiskLevel] ?? '#999';
+        <Divider />
 
-    return (
-      <div className="space-y-5 fade-in-up">
-        {/* Header */}
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-[17px] font-bold text-white tracking-tight leading-tight">
-              {LGA_Name}
-            </h2>
-            <p className="text-white/45 text-[11px] font-medium mt-0.5">{State} State, Nigeria</p>
-          </div>
-          {onClose && (
-            <button onClick={onClose} className="panel rounded-lg p-1.5 hover:bg-white/10 transition-colors" aria-label="Close">
-              <svg className="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        {/* Data source footer */}
+        <div className="sidebar-footer">
+          <h4 className="sidebar-footer-title">Data Sources</h4>
+          <p className="sidebar-footer-text">
+            VIIRS Nighttime Lights &middot; Nigeria MPI Survey &middot; GRID3 LGA Boundaries &middot; ACLED Conflict Data
+          </p>
+          {stats.dataSource && (
+            <div className="source-chip">
+              <span className="source-label">Source</span>
+              <span className="source-value">{stats.dataSource}</span>
+            </div>
           )}
         </div>
 
-        {/* Risk Badge (multicolor OK) */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs text-white"
-          style={{ background: `linear-gradient(135deg, ${riskColor}dd, ${riskColor}88)`, boxShadow: `0 4px 16px ${riskColor}40` }}>
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-          {cluster_label}
-        </div>
-
-        {/* Key Indicators */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="panel p-4">
-            <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">MPI</span>
-            <div className="text-[22px] font-bold text-white leading-none">{MPI.toFixed(4)}</div>
-            <div className="text-white/30 text-[10px] mt-1">Poverty Index Score</div>
-          </div>
-          <div className="panel p-4">
-            <span className="text-white/45 text-[10px] font-semibold uppercase tracking-widest block mb-1.5">Light</span>
-            <div className="text-[22px] font-bold text-white leading-none">{mean_nightlight_intensity.toFixed(2)}</div>
-            <div className="text-white/30 text-[10px] mt-1">VIIRS radiance</div>
-          </div>
-        </div>
-
-        {/* Poverty Probability Gauge */}
-        <div className="panel p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[13px] font-bold text-white">Poverty Probability</h3>
-            <span className="text-[16px] font-bold tabular-nums" style={{ color: gaugeColor(povertyProbability) }}>
-              {povertyProbability.toFixed(1)}%
-            </span>
-          </div>
-          <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
-            <div className="h-full rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${povertyProbability}%`, backgroundColor: gaugeColor(povertyProbability) }} />
-          </div>
-          <p className="text-white/35 text-[10px] mt-2">
-            Composite of MPI (70%) and inverse nightlight (30%)
-          </p>
-        </div>
-
-        {/* Risk Description */}
-        <div className="panel p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-3 h-3 rounded-full flex-shrink-0 mt-0.5" style={{ backgroundColor: riskColor }} />
-            <div>
-              <h4 className="text-white/70 text-[11px] font-semibold mb-0.5">Risk Assessment</h4>
-              <p className="text-white/45 text-[10px] leading-relaxed">{riskDescription(risk_level)}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Comparative Analysis */}
-        <div className="panel p-5">
-          <h3 className="text-[13px] font-bold text-white mb-0.5">Comparative Analysis</h3>
-          <p className="text-white/35 text-[10px] mb-3">vs. national average</p>
-          <div className="space-y-3.5">
-            <div>
-              <div className="flex justify-between text-[11px] mb-1.5">
-                <span className="text-white/60 font-medium">MPI Score</span>
-                <span className="text-white font-bold tabular-nums">
-                  {stats ? `${((MPI / parseFloat(stats.averageMPI)) * 100).toFixed(0)}%` : '—'}
-                </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                <div className="bg-blue-500 h-full rounded-full transition-all duration-500"
-                  style={{ width: `${stats ? Math.min((MPI / parseFloat(stats.averageMPI)) * 100, 100) : 0}%` }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-[11px] mb-1.5">
-                <span className="text-white/60 font-medium">Nightlight Intensity</span>
-                <span className="text-white font-bold tabular-nums">
-                  {stats ? `${((mean_nightlight_intensity / parseFloat(stats.averageNightlight)) * 100).toFixed(0)}%` : '—'}
-                </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                <div className="bg-blue-400 h-full rounded-full transition-all duration-500"
-                  style={{ width: `${stats ? Math.min((mean_nightlight_intensity / parseFloat(stats.averageNightlight)) * 100, 100) : 0}%` }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Download */}
-        <button className="w-full rounded-xl px-4 py-3 text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg hover:shadow-xl">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button className="download-btn" onClick={() => generateReport(null, stats)}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
-          Download Intelligence Report
+          Download National Report
         </button>
       </div>
     );
   };
 
   /* ================================================================
-     Render
+     LGA PROFILE
+     ================================================================ */
+  const renderLGAProfile = () => {
+    if (!selectedLGA) return null;
+
+    const p = selectedLGA.properties;
+    const prob = povertyProb(p.MPI, p.mean_nightlight_intensity);
+    const pColor = probColor(prob);
+    const riskColor = RISK_COLORS[p.risk_level as RiskLevel] ?? '#999';
+
+    return (
+      <div className="sidebar-content fade-in-up">
+        {/* Header with close */}
+        <div className="lga-header">
+          <div className="flex-1 min-w-0">
+            <h2 className="lga-name">{p.LGA_Name}</h2>
+            <p className="lga-state">{p.State} State, Nigeria</p>
+          </div>
+          {onClose && (
+            <button onClick={onClose} className="close-btn" aria-label="Close profile">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Risk badge */}
+        <div className="risk-badge" style={{ background: riskColor + 'cc', boxShadow: '0 4px 14px ' + riskColor + '30' }}>
+          <span className="risk-dot-white" />
+          <span>{p.cluster_label}</span>
+        </div>
+
+        {/* Conflict alert */}
+        {p.conflict_flag && p.conflict_flag !== 'NORMAL' && (
+          <div className="alert-banner alert-danger">
+            <div className="alert-icon danger">
+              <span className="conflict-pulse" />
+            </div>
+            <div className="flex-1">
+              <div className="alert-title">Active Conflict Zone</div>
+              {p.last_conflict_event && (
+                <div className="alert-sub">Latest: {p.last_conflict_event}</div>
+              )}
+            </div>
+            <span className="conflict-severity">{p.conflict_flag}</span>
+          </div>
+        )}
+
+        {/* Key indicators */}
+        <div className="grid grid-cols-2 gap-2.5">
+          <MetricCard label="MPI" value={fmt(p.MPI, 4)} sub="Poverty Index" />
+          <MetricCard label="Nightlight" value={fmt(p.mean_nightlight_intensity)} sub="VIIRS radiance" />
+        </div>
+
+        {/* Freshness */}
+        {p.last_updated && (
+          <div className="source-chip">
+            <span className="source-label">Updated</span>
+            <span className="source-value">{new Date(p.last_updated).toLocaleDateString()}</span>
+          </div>
+        )}
+
+        <Divider />
+
+        {/* Poverty probability gauge */}
+        <div className="sidebar-section-header">
+          <h3 className="sidebar-section-title">Poverty Probability</h3>
+          <span className="prob-value" style={{ color: pColor }}>{prob.toFixed(1)}%</span>
+        </div>
+
+        <div className="gauge-track">
+          <div className="gauge-fill" style={{ width: prob + '%', background: pColor }} />
+        </div>
+        <p className="gauge-caption">Composite of MPI (70%) and inverse nightlight (30%)</p>
+
+        <Divider />
+
+        {/* Risk assessment */}
+        <div className="risk-assessment">
+          <span className="risk-assessment-dot" style={{ background: riskColor }} />
+          <div>
+            <h4 className="risk-assessment-title">Risk Assessment</h4>
+            <p className="risk-assessment-text">{riskDescription[p.risk_level] || ''}</p>
+          </div>
+        </div>
+
+        <Divider />
+
+        {/* Comparative analysis */}
+        <div className="sidebar-section-header">
+          <h3 className="sidebar-section-title">Comparative Analysis</h3>
+          <span className="sidebar-section-count">vs. national avg</span>
+        </div>
+
+        <div className="space-y-3">
+          {[
+            {
+              label: 'MPI Score',
+              value: p.MPI,
+              avg: stats ? parseFloat(stats.averageMPI) : 0,
+              color: '#6366f1',
+            },
+            {
+              label: 'Nightlight',
+              value: p.mean_nightlight_intensity,
+              avg: stats ? parseFloat(stats.averageNightlight) : 0,
+              color: '#06b6d4',
+            },
+          ].map((m) => {
+            const pct = m.avg > 0 ? (m.value / m.avg) * 100 : 0;
+            return (
+              <div key={m.label}>
+                <div className="bar-header">
+                  <span className="bar-label">{m.label}</span>
+                  <span className="bar-stats"><strong>{pct.toFixed(0)}%</strong></span>
+                </div>
+                <div className="bar-track">
+                  <div className="bar-fill" style={{ width: Math.min(pct, 100) + '%', background: m.color }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <Divider />
+
+        {/* Download */}
+        <button className="download-btn" onClick={() => generateReport(selectedLGA, stats)}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download LGA Report
+        </button>
+      </div>
+    );
+  };
+
+  /* ================================================================
+     RENDER
      ================================================================ */
   return (
-    <div className="h-full overflow-y-auto sidebar-surface">
+    <div className="sidebar-root">
       {/* Brand header */}
-      <div className="px-6 pt-6 pb-4 border-b border-white/[0.06]">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md">
-            <span className="text-white font-black text-[10px]">P</span>
-          </div>
-          <div>
-            <h1 className="text-base font-bold text-white tracking-tight">PHIS</h1>
-            <p className="text-[10px] font-medium text-white/35 tracking-wider">National Intelligence</p>
-          </div>
+      <div className="sidebar-brand">
+        <div className="brand-logo">
+          <span className="brand-letter">P</span>
+        </div>
+        <div>
+          <h1 className="brand-name">PHIS</h1>
+          <p className="brand-sub">National Intelligence</p>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="px-6 py-5">
+      {/* Scrollable content */}
+      <div className="sidebar-scroll">
         {selectedLGA ? renderLGAProfile() : renderNationalSummary()}
       </div>
     </div>

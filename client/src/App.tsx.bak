@@ -1,0 +1,165 @@
+/**
+ * IOPHIN — Poverty Hotspot Identifier (Production)
+ * Features live polling and real connection status.
+ */
+
+import { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import MapComponent from './components/MapComponent';
+import Sidebar from './components/Sidebar';
+import Legend from './components/Legend';
+import SearchBar from './components/SearchBar';
+import { useTheme } from './contexts/ThemeContext';
+import type { HotspotsGeoJSON, HotspotFeature, Stats } from './types';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const NAV_ICONS = [
+  { id: 'home', label: 'Dashboard', d: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1' },
+  { id: 'globe', label: 'Map', d: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+];
+
+function App() {
+  const [hotspotsData, setHotspotsData] = useState<HotspotsGeoJSON | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [selectedLGA, setSelectedLGA] = useState<HotspotFeature | null>(null);
+  
+  // Real System Status
+  const [loading, setLoading] = useState(true);
+  const [systemStatus, setSystemStatus] = useState<'online' | 'offline' | 'syncing'>('syncing');
+  const [dataSource, setDataSource] = useState<string>('Connecting...');
+  const [activeNav, setActiveNav] = useState('home');
+  
+  const { theme, toggleTheme } = useTheme();
+
+  const fetchData = async (isBackground = false) => {
+    try {
+      if (!isBackground) setLoading(true);
+      setSystemStatus('syncing');
+
+      const [hotspotsRes, statsRes, healthRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/hotspots`),
+        axios.get(`${API_BASE_URL}/stats`),
+        axios.get(`${API_BASE_URL}/health`)
+      ]);
+
+      setHotspotsData(hotspotsRes.data);
+      setStats(statsRes.data);
+      
+      // Check Headers for Source
+      const source = hotspotsRes.headers['x-data-source'];
+      setDataSource(source === 'database' ? 'Live Database' : 'Cached Mode');
+      setSystemStatus('online');
+
+    } catch (err) {
+      console.error('Connection failed:', err);
+      setSystemStatus('offline');
+      if (!isBackground) setDataSource('Connection Failed');
+    } finally {
+      if (!isBackground) setLoading(false);
+    }
+  };
+
+  // Initial Load + Polling Interval
+  useEffect(() => {
+    fetchData(); // Initial
+    const interval = setInterval(() => fetchData(true), 60000); // Poll every 60s
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleFeatureClick = (feature: HotspotFeature) => setSelectedLGA(feature);
+  const handleCloseLGA = () => setSelectedLGA(null);
+  const handleSearchSelect = (feature: HotspotFeature | null) => setSelectedLGA(feature);
+
+  // Status Badge Logic
+  const getStatusColor = () => {
+    if (systemStatus === 'online') return 'text-emerald-400';
+    if (systemStatus === 'syncing') return 'text-blue-400';
+    return 'text-red-400';
+  };
+
+  const getStatusText = () => {
+    if (systemStatus === 'online') return 'System Live';
+    if (systemStatus === 'syncing') return 'Syncing...';
+    return 'Offline';
+  };
+
+  if (loading) {
+    return (
+      <div className="app-bg h-screen w-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-white/60 text-sm font-medium">Initializing IOPHIN Intelligence...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-bg h-screen w-screen overflow-hidden flex">
+      {/* Icon Rail */}
+      <div className="icon-rail">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center mb-6 shadow-lg">
+          <span className="text-white font-black text-xs">P</span>
+        </div>
+        <div className="flex flex-col gap-1 flex-1">
+          {NAV_ICONS.map((item) => (
+            <button key={item.id} onClick={() => setActiveNav(item.id)} className={`nav-icon-btn ${activeNav === item.id ? 'active' : ''}`}>
+              <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.d} /></svg>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <div className="sidebar-panel">
+        <Sidebar stats={stats} selectedLGA={selectedLGA} onClose={handleCloseLGA} />
+      </div>
+
+      {/* Map Area */}
+      <div className="flex-1 relative">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] w-full max-w-md px-4">
+          <SearchBar data={hotspotsData?.features || null} onSelectLGA={handleSearchSelect} />
+        </div>
+
+        {/* Real Status Strip */}
+        <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
+          <div className="info-chip shadow-lg">
+            <span className="text-white/60">Source:</span>&ensp;
+            <span className={`font-semibold ${dataSource === 'Live Database' ? 'text-blue-400' : 'text-amber-400'}`}>
+              {dataSource}
+            </span>
+          </div>
+          {stats?.conflictZones != null && stats.conflictZones > 0 && (
+            <div className="info-chip shadow-lg border border-red-500/30">
+              <span className="text-red-400 font-semibold text-[10px] uppercase tracking-wide">
+                {stats.conflictZones} Conflict Zone{stats.conflictZones > 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
+          <div className="info-chip shadow-lg">
+            <span className="relative flex h-1.5 w-1.5 mr-1.5">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${systemStatus === 'online' ? 'bg-emerald-400' : 'bg-red-400'} opacity-75`} />
+              <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${systemStatus === 'online' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+            </span>
+            <span className={`${getStatusColor()} font-semibold text-[10px] uppercase tracking-wide`}>
+              {getStatusText()}
+            </span>
+          </div>
+        </div>
+
+        {/* Theme Toggle */}
+        <div className="absolute top-4 left-4 z-[1000] flex items-center gap-1.5">
+          <button onClick={toggleTheme} className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg">
+            {theme === 'dark' ? '🌙' : '☀️'}
+          </button>
+        </div>
+
+        <MapComponent data={hotspotsData} onFeatureClick={handleFeatureClick} selectedLGA={selectedLGA} />
+        <Legend />
+      </div>
+    </div>
+  );
+}
+
+export default App;

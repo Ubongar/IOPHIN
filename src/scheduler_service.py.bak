@@ -1,0 +1,168 @@
+"""
+IOPHIN Scheduler Service (Production)
+Orchestrates data fetching, modeling, and database updates.
+"""
+import os
+import time
+import logging
+import schedule
+import pandas as pd
+import requests
+from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
+
+# Import database utilities
+from src.db_utils import (
+    upsert_conflict_flag,
+    upsert_hotspots_from_dataframe,
+    get_all_hotspots
+)
+
+# Load environment variables
+load_dotenv()
+
+# Configure Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("scheduler_service.log", encoding='utf-8'), # Added encoding here
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+class IOPHINScheduler:
+    def __init__(self):
+        self.is_running = False
+        self.acled_email = os.getenv('ACLED_EMAIL')
+        self.acled_password = os.getenv('ACLED_PASSWORD')
+
+    def get_acled_token(self):
+        """Authenticate with ACLED to get a session token."""
+        token_url = "https://acleddata.com/oauth/token"
+        payload = {
+            'username': self.acled_email,
+            'password': self.acled_password,
+            'grant_type': 'password',
+            'client_id': 'acled'
+        }
+        try:
+            response = requests.post(token_url, data=payload, timeout=30)
+            if response.status_code == 200:
+                return response.json().get('access_token')
+            logger.error(f"❌ ACLED Auth Failed: {response.status_code}")
+        except Exception as e:
+            logger.error(f"❌ ACLED Auth Error: {str(e)}")
+        return None
+
+    def fetch_conflict_data(self):
+        """
+        Task 1: Real Conflict Listener
+        Fetches live conflict data from ACLED and updates risk flags.
+        """
+        logger.info("="*60)
+        logger.info("🔍 CONFLICT LISTENER: Connecting to ACLED API...")
+        
+        if not self.acled_email or not self.acled_password:
+            logger.warning("⚠️  ACLED credentials missing in .env")
+            return
+
+        token = self.get_acled_token()
+        if not token: return
+
+        try:
+            # Fetch last 14 days of data for Nigeria
+            start_date = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
+            headers = {'Authorization': f'Bearer {token}', 'User-Agent': 'IOPHIN/1.0'}
+            params = {
+                'country': 'Nigeria',
+                'event_date': start_date,
+                'event_date_where': '>=',
+                'limit': 0
+            }
+            response = requests.get("https://acleddata.com/api/acled/read", headers=headers, params=params)
+            data = response.json().get('data', [])
+            logger.info(f"📅 Analyzing {len(data)} events since {start_date}...")
+            updates = 0
+            for event in data:
+                lga = event.get('admin2')
+                fatalities = int(event.get('fatalities', 0))
+                event_type = event.get('event_type')
+                date = datetime.strptime(event.get('event_date'), '%Y-%m-%d')
+                
+                # Risk Logic
+                severity = 'NORMAL'
+                if fatalities > 5: severity = 'CRITICAL'
+                elif fatalities > 0 or event_type in ['Battles', 'Explosions/Remote violence']: severity = 'HIGH'
+                elif event_type in ['Riots', 'Violence against civilians']: severity = 'MEDIUM'
+                
+                if severity != 'NORMAL':
+                    upsert_conflict_flag(lga, severity, date)
+                    updates += 1
+            
+            if updates > 0:
+                logger.info(f"✅ Updated conflict status for {updates} LGAs")
+            else:
+                logger.info("✅ No new significant conflicts detected.")
+        except Exception as e:
+            logger.error(f"❌ Conflict Fetch Error: {str(e)}")
+
+    def update_infrastructure_model(self):
+        """
+        Task 2: Infrastructure Impact Model
+        Dynamically adjusts nightlight data based on real conflict events.
+        """
+        logger.info("="*60)
+        logger.info("qh  INFRASTRUCTURE MODEL: Calculating grid impact...")
+        
+        try:
+            hotspots = get_all_hotspots()
+            updates = []
+            for lga in hotspots:
+                current_light = lga.get('mean_nightlight_intensity') or 0.0
+                status = lga.get('conflict_flag', 'NORMAL')
+                
+                # Impact Logic
+                new_light = current_light
+                if status == 'CRITICAL':
+                    new_light *= 0.85  # 15% drop (Grid damage)
+                elif status == 'HIGH':
+                    new_light *= 0.95  # 5% drop
+                elif status == 'NORMAL':
+                    if current_light < 63.0: new_light *= 1.005  # Slow recovery
+                
+                if abs(new_light - current_light) > 0.001:
+                    # Prepare row for bulk update
+                    row = lga.copy()
+                    row['mean_nightlight_intensity'] = new_light
+                    updates.append(row)
+            
+            if updates:
+                df = pd.DataFrame(updates)
+                upsert_hotspots_from_dataframe(df, data_source='INFRASTRUCTURE_MODEL')
+                logger.info(f"✅ Modeled impact for {len(updates)} LGAs")
+            else:
+                logger.info("✅ Grid stability maintained.")
+                
+        except Exception as e:
+            logger.error(f"❌ Model Error: {str(e)}")
+
+    def start(self):
+        logger.info("🚀 IOPHIN Scheduler Started (Production Mode)")
+        
+        # Initial Run
+        self.fetch_conflict_data()
+        self.update_infrastructure_model()
+        
+        # Schedule
+        schedule.every(1).hours.do(self.fetch_conflict_data)
+        schedule.every(6).hours.do(self.update_infrastructure_model)
+        
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
+if __name__ == "__main__":
+    service = IOPHINScheduler()
+    service.start()

@@ -10,6 +10,12 @@ export interface HotspotProperties {
   mean_nightlight_intensity: number;
   MPI: number;
   Headcount_Ratio?: number;
+  Intensity_of_Deprivation?: number;
+  In_Severe_Poverty?: number;
+  conflict_flag?: 'NORMAL' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  last_conflict_event?: string;
+  last_updated?: string;
+  data_source?: string;
 }
 
 export interface HotspotFeature {
@@ -39,6 +45,8 @@ export interface Stats {
   averageMPI: string;
   averageNightlight: string;
   statesCount: number;
+  conflictZones?: number;
+  dataSource?: string;
   timestamp: string;
 }
 
