@@ -40,10 +40,16 @@ const Legend: React.FC = () => {
       {/* Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute top-2.5 right-2.5 w-5 h-5 rounded-md bg-white/[0.06] hover:bg-white/[0.12] flex items-center justify-center transition-all z-10"
+        className="absolute top-2.5 right-2.5 w-5 h-5 rounded-md flex items-center justify-center transition-all z-10"
+        style={{
+          background: 'var(--bg-panel)',
+          color: 'var(--text-quaternary)'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-panel-hover)'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-panel)'}
         aria-label={collapsed ? 'Expand legend' : 'Collapse legend'}
       >
-        <svg className={`w-2.5 h-2.5 text-white/40 transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
+        <svg className={`w-2.5 h-2.5 transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
           fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
@@ -52,9 +58,9 @@ const Legend: React.FC = () => {
       {!collapsed && (
         <div className="p-4">
           {/* Header */}
-          <div className="mb-3 pb-2.5 border-b border-white/[0.07]">
-            <h3 className="text-white/80 font-bold text-[11px] tracking-wide">Risk Classification</h3>
-            <p className="text-white/30 text-[10px] mt-0.5">K-Means poverty clustering</p>
+          <div className="mb-3 pb-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
+            <h3 className="font-bold text-[11px] tracking-wide" style={{ color: 'var(--text-secondary)' }}>Risk Classification</h3>
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-quaternary)' }}>K-Means poverty clustering</p>
           </div>
 
           {/* Risk items */}
@@ -63,16 +69,16 @@ const Legend: React.FC = () => {
               <div key={level} className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded flex-shrink-0" style={{ backgroundColor: RISK_COLORS[level] }} />
                 <div className="flex-1 min-w-0">
-                  <span className="text-white/70 text-[10px] font-semibold block">{label}</span>
-                  <span className="text-white/30 text-[10px] font-mono block">{mpiRange}</span>
+                  <span className="text-[10px] font-semibold block" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+                  <span className="text-[10px] font-mono block" style={{ color: 'var(--text-quaternary)' }}>{mpiRange}</span>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Footer */}
-          <div className="mt-3 pt-2.5 border-t border-white/[0.05]">
-            <p className="text-white/20 text-[10px]">VIIRS Nightlight + MPI clustering</p>
+          <div className="mt-3 pt-2.5" style={{ borderTop: '1px solid var(--border)' }}>
+            <p className="text-[10px]" style={{ color: 'var(--text-quaternary)', opacity: 0.5 }}>VIIRS Nightlight + MPI clustering</p>
           </div>
         </div>
       )}
