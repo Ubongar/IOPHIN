@@ -187,7 +187,7 @@
    - Minimal Risk
    │
    ▼
-6. 💾 Database Update: All 704 LGAs with new clusters
+6. 💾 Database Update: All 774 LGAs with new clusters
    │
    ▼
 7. 📊 Frontend Refresh: Updated risk distribution

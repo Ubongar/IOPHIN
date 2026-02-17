@@ -39,7 +39,7 @@ npm start
 ## API Endpoints
 
 ### GET /api/hotspots
-Returns the complete GeoJSON dataset with all 720 LGAs.
+Returns the complete GeoJSON dataset with all 774 LGAs.
 
 **Response**: `application/json` with GZIP compression
 
@@ -49,12 +49,12 @@ Returns summary statistics.
 **Response**:
 ```json
 {
-  "totalLGAs": 720,
+  "totalLGAs": 774,
   "riskDistribution": {
     "high": 222,
     "medium": 269,
     "low": 208,
-    "minimal": 21
+    "minimal": 75
   },
   "averageMPI": "0.1723",
   "averageNightlight": "0.40",

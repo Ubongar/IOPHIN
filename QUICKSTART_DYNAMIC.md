@@ -39,7 +39,7 @@ python -m src.migrate_to_db
 Expected output:
 ```
 ✅ Database schema created
-✅ Migration complete: 720 records
+✅ Migration complete: 774 records
 ```
 
 This creates `poverty_hotspots.db` in the project root.
@@ -55,12 +55,12 @@ You'll see:
 🚀 STARTING DYNAMIC MONITORING SERVICE
 ================================================================================
 📊 SYSTEM STATUS
-Total LGAs monitored: 720
+Total LGAs monitored: 774
 Risk Distribution:
   - High Risk: 221 LGAs
   - Medium Risk: 263 LGAs
   - Low Risk: 201 LGAs
-  - Minimal Risk: 19 LGAs
+  - Minimal Risk: 89 LGAs
 Conflict Zones: 0 LGAs
 Average MPI: 0.1741
 Average Nightlight: 0.38
@@ -144,7 +144,7 @@ Example output:
 Re-runs K-Means clustering on updated data:
 ```
 🤖 ML ENGINE - Retraining model
-📊 Retraining model with 720 LGAs and 5 features
+📊 Retraining model with 774 LGAs and 5 features
 ✅ Model retrained successfully
    Silhouette Score: 0.4350
 ✅ Database updated with new risk classifications

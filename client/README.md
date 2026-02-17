@@ -1,6 +1,6 @@
 # IOPHIN Web Dashboard
 
-Production-grade React + TypeScript dashboard for visualizing poverty hotspots across Nigeria's 720 LGAs.
+Production-grade React + TypeScript dashboard for visualizing poverty hotspots across Nigeria's 774 LGAs.
 
 ## Features
 
@@ -9,6 +9,8 @@ Production-grade React + TypeScript dashboard for visualizing poverty hotspots a
 - 🎨 **Modern UI** - Glassmorphism design with Tailwind CSS
 - 📈 **Data Visualization** - Recharts pie charts and progress bars
 - ⚡ **Fast & Responsive** - Built with Vite and optimized for performance
+- 🔍 **Search Functionality** - SearchBar component for finding specific LGAs
+- 🌓 **Theme Support** - Dark/light mode with ThemeContext
 
 ## Installation
 
@@ -51,7 +53,7 @@ npm run preview
 ## Components
 
 ### MapComponent
-Renders Nigeria's 720 LGAs with color-coded risk levels:
+Renders Nigeria's 774 LGAs with color-coded risk levels:
 - **Red (#EF4444)** - High Risk
 - **Amber (#F59E0B)** - Medium Risk  
 - **Green (#10B981)** - Low Risk
@@ -80,6 +82,12 @@ Displays analytics in two modes:
 ### Legend
 Floating legend explaining the risk level color codes.
 
+### SearchBar
+Allows users to search and filter LGAs by name.
+
+### ThemeContext
+Manages theme state (dark/light mode) across the application.
+
 ## Browser Support
 
 Modern browsers with ES6+ support:
@@ -93,7 +101,11 @@ The app uses hot module replacement (HMR) for instant updates during development
 
 Key files:
 - `src/App.tsx` - Main layout
+- `src/main.tsx` - Application entry point
 - `src/components/MapComponent.tsx` - Interactive map
 - `src/components/Sidebar.tsx` - Analytics panel
 - `src/components/Legend.tsx` - Risk level legend
+- `src/components/SearchBar.tsx` - LGA search functionality
+- `src/contexts/ThemeContext.tsx` - Theme management
 - `src/types.ts` - TypeScript definitions
+- `src/index.css` - Global styles with Tailwind

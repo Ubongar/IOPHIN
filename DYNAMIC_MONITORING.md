@@ -323,12 +323,12 @@ Example log output:
 The scheduler displays system status hourly:
 ```
 📊 SYSTEM STATUS
-Total LGAs monitored: 720
+Total LGAs monitored: 774
 Risk Distribution:
   - High Risk: 180 LGAs
   - Medium Risk: 215 LGAs
   - Low Risk: 200 LGAs
-  - Minimal Risk: 125 LGAs
+  - Minimal Risk: 179 LGAs
 Conflict Zones: 3 LGAs
 Average MPI: 0.0567
 Average Nightlight: 12.34

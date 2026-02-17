@@ -79,8 +79,8 @@ Sample pixels: min=0.05, max=245.67, mean=12.34, count=15234
 
 ```
 Nightlight extraction complete
-Valid values: 727/774
-Zero values: 47/774
+Valid values: 774/774
+Zero values: 0/774
 Mean nightlight intensity: 15.23
 Range: 0.00 - 58.45
 ```
@@ -180,7 +180,7 @@ For a successful run, you should see:
 - ✓ File size: ~10-11 GB
 - ✓ Bounds overlap confirmed
 - ✓ Sample pixels show valid data
-- ✓ Valid values: 650-750 out of 774 LGAs
+- ✓ Valid values: 700-774 out of 774 LGAs
 - ✓ Mean nightlight: 10-30 for Nigeria
 - ✓ Range: 0 to 50-100
 
