@@ -118,13 +118,15 @@ app.get('/api/health', (req, res) => {
 
 /**
  * GET /api/hotspots
+ * Query params: ?state=Lagos&risk=High
  */
 app.get('/api/hotspots', async (req, res) => {
   try {
+    const { state, risk } = req.query;
+
     if (USE_DATABASE && db.isDatabaseAvailable()) {
       console.log('📊 Serving hotspots from database (real-time data)');
-      // ADDED AWAIT HERE
-      const geoJSON = await db.getHotspotsAsGeoJSON();
+      const geoJSON = await db.getHotspotsAsGeoJSON(state || null, risk || null);
       
       if (geoJSON) {
         res.setHeader('Content-Type', 'application/json');
@@ -206,6 +208,72 @@ app.get('/api/lga/:name', async (req, res) => {
     res.json(feature);
   } catch (error) {
     console.error('Error in /api/lga/:name:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+/**
+ * GET /api/states — per-state aggregated stats
+ */
+app.get('/api/states', async (req, res) => {
+  try {
+    if (USE_DATABASE && db.isDatabaseAvailable()) {
+      const data = await db.getStateAggregation();
+      if (data) {
+        res.setHeader('X-Data-Source', 'database');
+        return res.json(data);
+      }
+    }
+    res.status(503).json({ error: 'Service Unavailable', message: 'Database not connected' });
+  } catch (error) {
+    console.error('Error in /api/states:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+/**
+ * GET /api/history/:lga — time-series for one LGA
+ * Query params: ?limit=30
+ */
+app.get('/api/history/:lga', async (req, res) => {
+  try {
+    const lgaName = decodeURIComponent(req.params.lga);
+    const limit = Math.min(parseInt(req.query.limit) || 30, 365);
+
+    if (USE_DATABASE && db.isDatabaseAvailable()) {
+      const data = await db.getHistoryForLGA(lgaName, limit);
+      if (data) {
+        res.setHeader('X-Data-Source', 'database');
+        return res.json(data);
+      }
+      return res.status(404).json({ error: 'Not Found', message: `No history for '${lgaName}'` });
+    }
+    res.status(503).json({ error: 'Service Unavailable', message: 'Database not connected' });
+  } catch (error) {
+    console.error('Error in /api/history:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+/**
+ * GET /api/rankings — top-N worst or best LGAs
+ * Query params: ?order=worst&limit=20
+ */
+app.get('/api/rankings', async (req, res) => {
+  try {
+    const order = req.query.order === 'best' ? 'best' : 'worst';
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+
+    if (USE_DATABASE && db.isDatabaseAvailable()) {
+      const data = await db.getRankings(order, limit);
+      if (data) {
+        res.setHeader('X-Data-Source', 'database');
+        return res.json(data);
+      }
+    }
+    res.status(503).json({ error: 'Service Unavailable', message: 'Database not connected' });
+  } catch (error) {
+    console.error('Error in /api/rankings:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

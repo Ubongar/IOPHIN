@@ -172,7 +172,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
    */
   const onEachFeature = (feature: any, layer: any) => {
     const typedFeature = feature as HotspotFeature;
-    const { LGA_Name, State, risk_level, MPI, mean_nightlight_intensity, Headcount_Ratio, cluster_label } = typedFeature.properties;
+    const { LGA_Name, State, risk_level, MPI, mean_nightlight_intensity, Headcount_Ratio, cluster_label, composite_poverty_score } = typedFeature.properties;
     const riskColor = RISK_COLORS[risk_level as RiskLevel] || '#999';
 
     // Poverty probability (same formula as sidebar)
@@ -234,6 +234,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
 
     grid.appendChild(makeMetric('MPI Score', MPI.toFixed(4), '#f59e0b'));
     grid.appendChild(makeMetric('Nightlight', mean_nightlight_intensity.toFixed(2), '#06b6d4'));
+    if (composite_poverty_score != null) {
+      grid.appendChild(makeMetric('Composite', composite_poverty_score.toFixed(4), '#8b5cf6'));
+    }
     grid.appendChild(makeMetric('Poverty Prob.', `${povertyProb.toFixed(1)}%`, riskColor));
     grid.appendChild(makeMetric('Headcount', Headcount_Ratio != null ? `${(Headcount_Ratio * 100).toFixed(1)}%` : 'N/A', '#a78bfa'));
 

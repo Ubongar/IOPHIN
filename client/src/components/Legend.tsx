@@ -13,10 +13,11 @@ const Legend: React.FC = () => {
   const { theme } = useTheme();
 
   const riskLevels: { level: RiskLevel; label: string; mpiRange: string }[] = [
-    { level: 'High', label: 'Severe Poverty', mpiRange: 'MPI > 0.35' },
-    { level: 'Medium', label: 'Significant Deprivation', mpiRange: 'MPI 0.20–0.35' },
-    { level: 'Low', label: 'Moderate Vulnerability', mpiRange: 'MPI 0.10–0.20' },
-    { level: 'Minimal', label: 'Relatively Stable', mpiRange: 'MPI < 0.10' },
+    { level: 'Critical', label: 'Extreme Deprivation', mpiRange: 'Composite > 0.80' },
+    { level: 'High', label: 'Severe Poverty', mpiRange: 'Composite 0.60–0.80' },
+    { level: 'Medium', label: 'Significant Deprivation', mpiRange: 'Composite 0.40–0.60' },
+    { level: 'Low', label: 'Moderate Vulnerability', mpiRange: 'Composite 0.20–0.40' },
+    { level: 'Minimal', label: 'Relatively Stable', mpiRange: 'Composite < 0.20' },
   ];
 
   return (
@@ -60,7 +61,7 @@ const Legend: React.FC = () => {
           {/* Header */}
           <div className="mb-3 pb-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
             <h3 className="font-bold text-[11px] tracking-wide" style={{ color: 'var(--text-secondary)' }}>Risk Classification</h3>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-quaternary)' }}>K-Means poverty clustering</p>
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-quaternary)' }}>HDBSCAN + Composite scoring</p>
           </div>
 
           {/* Risk items */}
@@ -78,7 +79,7 @@ const Legend: React.FC = () => {
 
           {/* Footer */}
           <div className="mt-3 pt-2.5" style={{ borderTop: '1px solid var(--border)' }}>
-            <p className="text-[10px]" style={{ color: 'var(--text-quaternary)', opacity: 0.5 }}>VIIRS Nightlight + MPI clustering</p>
+            <p className="text-[10px]" style={{ color: 'var(--text-quaternary)', opacity: 0.5 }}>Multi-source composite poverty model</p>
           </div>
         </div>
       )}

@@ -18,6 +18,7 @@ interface SidebarProps {
 const fmt = (n: number, d = 2) => n.toFixed(d);
 
 const riskDescription: Record<string, string> = {
+  Critical: 'Extreme multi-dimensional deprivation. Immediate large-scale humanitarian intervention required.',
   High: 'Severe poverty indicators with critical deprivation levels. Immediate humanitarian intervention required.',
   Medium: 'Significant deprivation across multiple dimensions. Targeted support programs recommended.',
   Low: 'Moderate vulnerability with emerging risk factors. Continued monitoring and prevention needed.',
@@ -64,13 +65,37 @@ const generateReport = (selectedLGA: HotspotFeature | null, stats: Stats | null)
     content += '  MPI Score:       ' + p.MPI.toFixed(4) + '\n';
     content += '  Nightlight:      ' + p.mean_nightlight_intensity.toFixed(2) + ' (VIIRS radiance)\n';
     content += '  Poverty Prob.:   ' + prob.toFixed(1) + '%\n';
+    if (p.composite_poverty_score != null)
+      content += '  Composite Score: ' + p.composite_poverty_score.toFixed(4) + '\n';
     if (p.Headcount_Ratio != null)
       content += '  Headcount Ratio: ' + (p.Headcount_Ratio * 100).toFixed(1) + '%\n';
+    if (p.senatorial_mpi != null)
+      content += '  Senatorial MPI:  ' + p.senatorial_mpi.toFixed(4) + '\n';
     if (p.conflict_flag && p.conflict_flag !== 'NORMAL') {
       content += '  Conflict Status: ' + p.conflict_flag + '\n';
       if (p.last_conflict_event) content += '  Last Event:      ' + p.last_conflict_event + '\n';
     }
     if (p.last_updated) content += '  Last Updated:    ' + new Date(p.last_updated).toLocaleDateString() + '\n';
+
+    // Infrastructure
+    if (p.health_facility_count != null || p.school_count != null || p.road_density_km != null) {
+      content += '\n  INFRASTRUCTURE\n';
+      content += thin + '\n';
+      if (p.health_facility_count != null) content += '  Health Facilities: ' + p.health_facility_count + '\n';
+      if (p.school_count != null)          content += '  Schools:           ' + p.school_count + '\n';
+      if (p.road_density_km != null)       content += '  Road Density:      ' + p.road_density_km.toFixed(1) + ' km/km²\n';
+    }
+
+    // Environmental & Displacement
+    if (p.ndvi_mean != null || p.rainfall_mm != null || p.idp_count != null || p.food_price_index != null) {
+      content += '\n  ENVIRONMENT & DISPLACEMENT\n';
+      content += thin + '\n';
+      if (p.ndvi_mean != null)        content += '  NDVI:             ' + p.ndvi_mean.toFixed(3) + '\n';
+      if (p.rainfall_mm != null)      content += '  Rainfall:         ' + p.rainfall_mm.toFixed(0) + ' mm/month\n';
+      if (p.population_density != null) content += '  Population Dens.: ' + p.population_density.toFixed(0) + ' per km²\n';
+      if (p.idp_count != null && p.idp_count > 0) content += '  IDPs:             ' + p.idp_count + '\n';
+      if (p.food_price_index != null) content += '  Food Price Index: ' + p.food_price_index.toFixed(0) + '\n';
+    }
 
     content += '\n  RISK ASSESSMENT\n';
     content += thin + '\n';
@@ -83,6 +108,8 @@ const generateReport = (selectedLGA: HotspotFeature | null, stats: Stats | null)
       content += thin + '\n';
       content += '  MPI Score:       ' + mpiPct + '% of national average (' + stats.averageMPI + ')\n';
       content += '  Nightlight:      ' + nlPct + '% of national average (' + stats.averageNightlight + ')\n';
+      if (p.composite_poverty_score != null && stats.averageCompositeScore)
+        content += '  Composite:       ' + ((p.composite_poverty_score / parseFloat(stats.averageCompositeScore)) * 100).toFixed(0) + '% of national average (' + stats.averageCompositeScore + ')\n';
     }
   }
 
@@ -98,6 +125,8 @@ const generateReport = (selectedLGA: HotspotFeature | null, stats: Stats | null)
     const total = stats.totalLGAs || 1;
     content += '\n  RISK DISTRIBUTION\n';
     content += thin + '\n';
+    if (rd.critical != null && rd.critical > 0)
+      content += '  Critical Risk:   ' + rd.critical + ' LGAs (' + ((rd.critical / total) * 100).toFixed(1) + '%)\n';
     content += '  High Risk:       ' + rd.high + ' LGAs (' + ((rd.high / total) * 100).toFixed(1) + '%)\n';
     content += '  Medium Risk:     ' + rd.medium + ' LGAs (' + ((rd.medium / total) * 100).toFixed(1) + '%)\n';
     content += '  Low Risk:        ' + rd.low + ' LGAs (' + ((rd.low / total) * 100).toFixed(1) + '%)\n';
@@ -108,11 +137,16 @@ const generateReport = (selectedLGA: HotspotFeature | null, stats: Stats | null)
   content += thin + '\n';
   content += '  * VIIRS Nighttime Lights (NOAA) 2024\n';
   content += '  * Nigeria Multidimensional Poverty Index Survey\n';
-  content += '  * GRID3 LGA Boundary Data\n';
-  content += '  * ACLED Conflict Events Database\n';
   content += '  * Senatorial District Poverty Data\n';
+  content += '  * GRID3 LGA Boundaries, Health Facilities & Schools\n';
+  content += '  * WorldPop Population Estimates\n';
+  content += '  * ACLED Conflict Events Database\n';
+  content += '  * IOM Displacement Tracking Matrix\n';
+  content += '  * WFP VAM Food Prices\n';
+  content += '  * Google Earth Engine (MODIS NDVI, CHIRPS Rainfall)\n';
+  content += '  * OpenStreetMap Road Network\n';
   content += '\n' + line + '\n';
-  content += '  IOPHIN Poverty Hotspot Intelligence System v1.0\n';
+  content += '  IOPHIN Poverty Hotspot Intelligence System v2.0\n';
   content += '  Classification: UNCLASSIFIED // FOR OFFICIAL USE\n';
   content += line + '\n';
 
@@ -139,6 +173,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
   const getPieData = () => {
     if (!stats) return [];
     return [
+      { name: 'Critical', value: stats.riskDistribution.critical ?? 0, color: RISK_COLORS.Critical },
       { name: 'High', value: stats.riskDistribution.high, color: RISK_COLORS.High },
       { name: 'Medium', value: stats.riskDistribution.medium, color: RISK_COLORS.Medium },
       { name: 'Low', value: stats.riskDistribution.low, color: RISK_COLORS.Low },
@@ -289,7 +324,8 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
         <div className="sidebar-footer">
           <h4 className="sidebar-footer-title">Data Sources</h4>
           <p className="sidebar-footer-text">
-            VIIRS Nighttime Lights &middot; Nigeria MPI Survey &middot; GRID3 LGA Boundaries &middot; ACLED Conflict Data
+            VIIRS Nighttime Lights &middot; Nigeria MPI &middot; Senatorial MPI &middot; GRID3 &middot;
+            WorldPop &middot; ACLED &middot; IOM DTM &middot; WFP &middot; GEE (NDVI/Rainfall) &middot; OSM
           </p>
           {stats.dataSource && (
             <div className="source-chip">
@@ -365,7 +401,50 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
         <div className="grid grid-cols-2 gap-2.5">
           <MetricCard label="MPI" value={fmt(p.MPI, 4)} sub="Poverty Index" />
           <MetricCard label="Nightlight" value={fmt(p.mean_nightlight_intensity)} sub="VIIRS radiance" />
+          {p.composite_poverty_score != null && (
+            <MetricCard label="Composite" value={fmt(p.composite_poverty_score, 4)} sub="Poverty Score" />
+          )}
+          {p.population_density != null && (
+            <MetricCard label="Pop. Density" value={fmt(p.population_density, 0)} sub="per km²" />
+          )}
         </div>
+
+        {/* Infrastructure indicators */}
+        {(p.health_facility_count != null || p.school_count != null || p.road_density_km != null) && (
+          <>
+            <Divider />
+            <div className="sidebar-section-header">
+              <h3 className="sidebar-section-title">Infrastructure</h3>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {p.health_facility_count != null && (
+                <MetricCard label="Health" value={p.health_facility_count} sub="facilities" />
+              )}
+              {p.school_count != null && (
+                <MetricCard label="Schools" value={p.school_count} sub="count" />
+              )}
+              {p.road_density_km != null && (
+                <MetricCard label="Roads" value={fmt(p.road_density_km, 1)} sub="km/km²" />
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Environmental + displacement */}
+        {(p.ndvi_mean != null || p.rainfall_mm != null || p.idp_count != null || p.food_price_index != null) && (
+          <>
+            <Divider />
+            <div className="sidebar-section-header">
+              <h3 className="sidebar-section-title">Environment &amp; Displacement</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {p.ndvi_mean != null && <MetricCard label="NDVI" value={fmt(p.ndvi_mean, 3)} sub="vegetation" />}
+              {p.rainfall_mm != null && <MetricCard label="Rainfall" value={fmt(p.rainfall_mm, 0)} sub="mm/month" />}
+              {p.idp_count != null && p.idp_count > 0 && <MetricCard label="IDPs" value={p.idp_count} sub="displaced" />}
+              {p.food_price_index != null && <MetricCard label="Food Price" value={fmt(p.food_price_index, 0)} sub="index" />}
+            </div>
+          </>
+        )}
 
         {/* Freshness */}
         {p.last_updated && (
@@ -421,6 +500,14 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
               avg: stats ? parseFloat(stats.averageNightlight) : 0,
               color: '#06b6d4',
             },
+            ...(p.composite_poverty_score != null && stats?.averageCompositeScore
+              ? [{
+                  label: 'Composite Score',
+                  value: p.composite_poverty_score,
+                  avg: parseFloat(stats.averageCompositeScore),
+                  color: '#8b5cf6',
+                }]
+              : []),
           ].map((m) => {
             const pct = m.avg > 0 ? (m.value / m.avg) * 100 : 0;
             return (

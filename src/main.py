@@ -13,10 +13,18 @@ from src.data_loader import (
     load_lga_shapefile,
     load_state_mpi_data,
     load_senatorial_mpi_data,
-    load_processed_hotspots
+    load_processed_hotspots,
 )
-from src.feature_extraction import extract_nightlight_from_processed_csv
+from src.feature_extraction import (
+    extract_nightlight_from_processed_csv,
+    enrich_all_external_features,
+)
 from src.model_engine import prepare_poverty_features, build_analytical_model
+from src.db_utils import (
+    upsert_hotspots_from_dataframe,
+    save_history_snapshot,
+    migrate_from_geojson,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -254,7 +262,7 @@ def main():
     Main execution function.
     """
     logger.info("=" * 100)
-    logger.info("NIGERIA POVERTY HOTSPOT IDENTIFIER - ANALYTICAL ENGINE")
+    logger.info("NIGERIA POVERTY HOTSPOT IDENTIFIER - ANALYTICAL ENGINE v2.0")
     logger.info("=" * 100)
     logger.info("")
     
@@ -291,11 +299,28 @@ def main():
         state_mpi = load_state_mpi_data()
         senatorial_mpi = load_senatorial_mpi_data()
         
-        # Merge poverty features
-        logger.info("Step 2.2: Merging poverty data")
+        # Merge poverty features (includes senatorial MPI fuzzy matching)
+        logger.info("Step 2.2: Merging poverty data (state + senatorial MPI)")
         df_enriched = prepare_poverty_features(df_with_nightlight, state_mpi, senatorial_mpi)
         
         logger.info(f"Phase 2 complete: {len(df_enriched)} LGAs with enriched features")
+        logger.info("")
+        
+        # ===================================================================
+        # PHASE 2.5: EXTERNAL DATA ENRICHMENT
+        # ===================================================================
+        logger.info("PHASE 2.5: EXTERNAL DATA ENRICHMENT")
+        logger.info("-" * 100)
+        logger.info("Fetching: GRID3 health/education, WorldPop, OSM roads, IDP, food prices")
+        
+        df_enriched = enrich_all_external_features(df_enriched)
+        
+        ext_cols = [
+            "health_facility_count", "school_count", "population_density",
+            "road_density_km", "idp_count", "food_price_index",
+        ]
+        available_ext = [c for c in ext_cols if c in df_enriched.columns and df_enriched[c].notna().sum() > 0]
+        logger.info(f"Phase 2.5 complete: {len(available_ext)} external features available")
         logger.info("")
         
         # ===================================================================
@@ -304,13 +329,14 @@ def main():
         logger.info("PHASE 3: UNSUPERVISED MACHINE LEARNING")
         logger.info("-" * 100)
         
-        # Build the analytical model (KNN Imputation, Standardization, PCA, K-Means)
+        # Build the analytical model (KNN Imputation, Composite Score, PCA, K-Means + HDBSCAN)
         final_df, models = build_analytical_model(df_enriched, use_pca=True)
         
         logger.info("")
         logger.info("=" * 100)
         logger.info("MODEL VALIDATION METRICS")
         logger.info("=" * 100)
+        logger.info(f"Clustering Method: {models.get('clustering_method', 'kmeans').upper()}")
         logger.info(f"Silhouette Score: {models['silhouette_score']:.4f}")
         logger.info("Interpretation: Scores > 0.5 indicate good cluster separation")
         logger.info("")
@@ -326,6 +352,22 @@ def main():
         
         # Save GeoJSON output
         save_geojson_output(final_df, lga_gdf, config.GEOJSON_OUTPUT)
+        
+        # ===================================================================
+        # DATABASE PERSISTENCE
+        # ===================================================================
+        logger.info("PERSISTING TO DATABASE")
+        logger.info("-" * 100)
+        
+        try:
+            upsert_hotspots_from_dataframe(final_df, data_source="INITIAL_PIPELINE")
+            logger.info(f"Upserted {len(final_df)} records to database")
+            
+            n = save_history_snapshot()
+            logger.info(f"History snapshot saved: {n} records")
+        except Exception as db_err:
+            logger.warning(f"Database write skipped: {db_err}")
+            logger.warning("Run 'python -m src.migrate_to_db' to initialise the database")
         
         logger.info("")
         logger.info("=" * 100)
@@ -345,8 +387,11 @@ def main():
             for label, count in final_df['cluster_label'].value_counts().items():
                 logger.info(f"  {label}: {count} LGAs ({count/len(final_df)*100:.1f}%)")
         
+        if 'composite_poverty_score' in final_df.columns:
+            logger.info(f"\nComposite Poverty Score: {final_df['composite_poverty_score'].mean():.4f} (mean)")
+        
         if 'mean_nightlight_intensity' in final_df.columns:
-            logger.info(f"\nNightlight Intensity: {final_df['mean_nightlight_intensity'].mean():.2f} (mean)")
+            logger.info(f"Nightlight Intensity: {final_df['mean_nightlight_intensity'].mean():.2f} (mean)")
         
         return final_df, models
         

@@ -1,33 +1,62 @@
 ﻿/**
- * IOPHIN - Poverty Hotspot Intelligence System
- * Main application with live polling, status indicators, and clean layout.
+ * IOPHIN - Poverty Hotspot Intelligence System v2
+ * State/risk filters, rankings view, enhanced analytics.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import MapComponent from './components/MapComponent';
 import Sidebar from './components/Sidebar';
 import Legend from './components/Legend';
 import SearchBar from './components/SearchBar';
+import RankingsTable from './components/RankingsTable';
+import StateOverview from './components/StateOverview';
 import { useTheme } from './contexts/ThemeContext';
-import type { HotspotsGeoJSON, HotspotFeature, Stats } from './types';
+import type { HotspotsGeoJSON, HotspotFeature, Stats, RankingEntry, StateAggregation, RiskLevel, ViewMode } from './types';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+const RISK_LEVELS: RiskLevel[] = ['Critical', 'High', 'Medium', 'Low', 'Minimal'];
+
 const NAV_ITEMS = [
-  { id: 'home', label: 'Dashboard', d: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1' },
-  { id: 'globe', label: 'Map View', d: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { id: 'map' as ViewMode, label: 'Map View', d: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { id: 'rankings' as ViewMode, label: 'Rankings', d: 'M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12' },
+  { id: 'states' as ViewMode, label: 'State Overview', d: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
 ];
 
 function App() {
   const [hotspotsData, setHotspotsData] = useState<HotspotsGeoJSON | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [rankings, setRankings] = useState<RankingEntry[]>([]);
+  const [stateAgg, setStateAgg] = useState<StateAggregation[]>([]);
   const [selectedLGA, setSelectedLGA] = useState<HotspotFeature | null>(null);
   const [loading, setLoading] = useState(true);
   const [systemStatus, setSystemStatus] = useState<'online' | 'offline' | 'syncing'>('syncing');
   const [dataSource, setDataSource] = useState<string>('Connecting...');
-  const [activeNav, setActiveNav] = useState('home');
+  const [activeView, setActiveView] = useState<ViewMode>('map');
+  const [stateFilter, setStateFilter] = useState<string>('');
+  const [riskFilter, setRiskFilter] = useState<RiskLevel | ''>('');
   const { theme, toggleTheme } = useTheme();
+
+  /* -- Distinct states for the dropdown -- */
+  const stateList = useMemo(() => {
+    if (!hotspotsData) return [];
+    const set = new Set<string>();
+    hotspotsData.features.forEach(f => { if (f.properties.State) set.add(f.properties.State); });
+    return Array.from(set).sort();
+  }, [hotspotsData]);
+
+  /* -- Filtered data for the map -- */
+  const filteredData = useMemo<HotspotsGeoJSON | null>(() => {
+    if (!hotspotsData) return null;
+    if (!stateFilter && !riskFilter) return hotspotsData;
+    const features = hotspotsData.features.filter(f => {
+      if (stateFilter && f.properties.State !== stateFilter) return false;
+      if (riskFilter && f.properties.risk_level !== riskFilter) return false;
+      return true;
+    });
+    return { ...hotspotsData, features };
+  }, [hotspotsData, stateFilter, riskFilter]);
 
   /* -- Data fetcher (initial + background polling) -- */
   const fetchData = async (isBackground = false) => {
@@ -46,6 +75,15 @@ function App() {
       const src = hotspotsRes.headers['x-data-source'];
       setDataSource(src === 'database' ? 'Live Database' : 'Cached Mode');
       setSystemStatus('online');
+
+      // Fetch rankings + state aggregation in background
+      Promise.all([
+        axios.get(API + '/rankings?order=worst&limit=50').catch(() => null),
+        axios.get(API + '/states').catch(() => null),
+      ]).then(([rankRes, stateRes]) => {
+        if (rankRes?.data) setRankings(rankRes.data);
+        if (stateRes?.data) setStateAgg(stateRes.data);
+      });
     } catch (err) {
       console.error('Fetch failed:', err);
       setSystemStatus('offline');
@@ -94,8 +132,8 @@ function App() {
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveNav(item.id)}
-              className={'nav-icon-btn' + (activeNav === item.id ? ' active' : '')}
+              onClick={() => setActiveView(item.id)}
+              className={'nav-icon-btn' + (activeView === item.id ? ' active' : '')}
               title={item.label}
             >
               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,11 +149,51 @@ function App() {
         <Sidebar stats={stats} selectedLGA={selectedLGA} onClose={handleCloseLGA} />
       </div>
 
-      {/* ---- Map Area ---- */}
+      {/* ---- Main Content Area ---- */}
       <div className="flex-1 relative">
-        {/* Search */}
+
+        {/* Top toolbar: Search + Filters */}
         <div className="map-search-wrapper">
-          <SearchBar data={hotspotsData?.features || null} onSelectLGA={handleSearchSelect} />
+          <div className="flex items-center gap-2 w-full">
+            <div className="flex-1">
+              <SearchBar data={hotspotsData?.features || null} onSelectLGA={handleSearchSelect} />
+            </div>
+
+            {/* State filter */}
+            <select
+              value={stateFilter}
+              onChange={(e) => setStateFilter(e.target.value)}
+              className="filter-select"
+              title="Filter by state"
+            >
+              <option value="">All States</option>
+              {stateList.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+
+            {/* Risk filter */}
+            <select
+              value={riskFilter}
+              onChange={(e) => setRiskFilter(e.target.value as RiskLevel | '')}
+              className="filter-select"
+              title="Filter by risk level"
+            >
+              <option value="">All Risks</option>
+              {RISK_LEVELS.map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+
+            {/* Clear filters */}
+            {(stateFilter || riskFilter) && (
+              <button
+                onClick={() => { setStateFilter(''); setRiskFilter(''); }}
+                className="filter-clear-btn"
+                title="Clear filters"
+              >
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Status chips */}
@@ -127,6 +205,17 @@ function App() {
               {dataSource}
             </span>
           </div>
+
+          {/* Filter indicator */}
+          {(stateFilter || riskFilter) && (
+            <div className="status-chip">
+              <span className="status-chip-label">Filter:</span>
+              <span className="status-chip-value text-purple-400">
+                {[stateFilter, riskFilter].filter(Boolean).join(' · ')}
+                {filteredData && ` (${filteredData.features.length})`}
+              </span>
+            </div>
+          )}
 
           {/* Conflict zones */}
           {stats?.conflictZones != null && stats.conflictZones > 0 && (
@@ -152,8 +241,28 @@ function App() {
           </button>
         </div>
 
-        <MapComponent data={hotspotsData} onFeatureClick={handleFeatureClick} selectedLGA={selectedLGA} />
-        <Legend />
+        {/* View content */}
+        {activeView === 'map' && (
+          <>
+            <MapComponent data={filteredData} onFeatureClick={handleFeatureClick} selectedLGA={selectedLGA} />
+            <Legend />
+          </>
+        )}
+
+        {activeView === 'rankings' && (
+          <div className="view-panel">
+            <RankingsTable rankings={rankings} onSelectLGA={(name: string) => {
+              const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
+              if (feat) { setSelectedLGA(feat); setActiveView('map'); }
+            }} />
+          </div>
+        )}
+
+        {activeView === 'states' && (
+          <div className="view-panel">
+            <StateOverview states={stateAgg} onSelectState={(s: string) => { setStateFilter(s); setActiveView('map'); }} />
+          </div>
+        )}
       </div>
     </div>
   );

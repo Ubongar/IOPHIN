@@ -22,5 +22,15 @@ requests>=2.31.0
 schedule>=1.2.0
 python-dotenv>=1.0.0
 
-# Google Earth Engine (VIIRS nightlight data)
+# Google Earth Engine (VIIRS nightlight data, NDVI, rainfall)
 earthengine-api>=0.1.370
+
+# Advanced Clustering
+hdbscan>=0.8.33
+
+# Fuzzy String Matching (for senatorial district to LGA mapping)
+thefuzz>=0.22.0
+python-Levenshtein>=0.25.0
+
+# Excel file reading (for DTM Baseline Assessment XLSX)
+openpyxl>=3.1.0
