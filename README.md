@@ -4,14 +4,14 @@ A geospatial machine learning system for identifying poverty hotspots across Nig
 
 **✨ NEW: Dynamic Real-Time Monitoring System** - The system now supports automated data pipelines with continuous monitoring. See [DYNAMIC_MONITORING.md](DYNAMIC_MONITORING.md) for details.
 
-**Note:** Nigeria has 774 official LGAs, but the current dataset contains 720 LGAs with complete data for analysis.
+**Note:** Nigeria has 774 official LGAs, and the current dataset contains all 774 LGAs with complete data for analysis.
 
 ## Overview
 
 This system combines:
 - **VIIRS Nighttime Lights Data** (10.8GB GeoTIFF) - Proxy for economic activity
 - **State-level MPI Data** - Multidimensional Poverty Index indicators
-- **LGA Boundary Shapefiles** - Geospatial boundaries (720 LGAs with complete data)
+- **LGA Boundary Shapefiles** - Geospatial boundaries (774 LGAs with complete data)
 
 The analytical engine uses unsupervised machine learning to classify LGAs into 4 risk categories:
 - **High Risk - Severe Poverty**: Low nightlights + High poverty indicators
@@ -47,35 +47,62 @@ IOPHIN/
 │       ├── processed_hotspots.csv             (Input: LGA coordinates)
 │       ├── final_model_output.csv             (Output: Model results)
 │       └── hotspots.geojson                   (Output: GeoJSON for frontend)
-├── src/                                       (Python ML Engine)
+├── src/                                       (Python ML Engine - 10 files)
+│   ├── __init__.py                            (Package initialization)
 │   ├── config.py                              (Configuration & paths)
 │   ├── data_loader.py                         (Data loading utilities)
 │   ├── feature_extraction.py                  (Memory-safe raster processing)
 │   ├── model_engine.py                        (ML pipeline: KNN, PCA, K-means)
 │   ├── main.py                                (Main orchestration script)
-│   ├── db_config.py                           (NEW: Database configuration)
-│   ├── db_utils.py                            (NEW: Database operations)
-│   ├── scheduler_service.py                   (NEW: Real-time monitoring)
-│   └── migrate_to_db.py                       (NEW: Data migration script)
+│   ├── db_config.py                           (Database configuration)
+│   ├── db_utils.py                            (Database operations)
+│   ├── scheduler_service.py                   (Real-time monitoring service)
+│   └── migrate_to_db.py                       (Data migration script)
 ├── server/                                    (Node.js Backend API)
 │   ├── index.js                               (Express server with endpoints)
-│   ├── database.js                            (NEW: Database query module)
+│   ├── database.js                            (Database query module)
 │   ├── package.json                           (Dependencies)
-│   └── .env                                   (Configuration)
+│   ├── package-lock.json                      (Dependency lock file)
+│   └── README.md                              (Server documentation)
 ├── client/                                    (React Frontend Dashboard)
 │   ├── src/
 │   │   ├── components/                        (React components)
 │   │   │   ├── MapComponent.tsx               (Interactive Leaflet map)
 │   │   │   ├── Sidebar.tsx                    (Analytics panel)
-│   │   │   └── Legend.tsx                     (Risk level legend)
+│   │   │   ├── Legend.tsx                     (Risk level legend)
+│   │   │   └── SearchBar.tsx                  (LGA search component)
+│   │   ├── contexts/                          (React contexts)
+│   │   │   └── ThemeContext.tsx               (Theme management)
+│   │   ├── assets/                            (Static assets)
 │   │   ├── App.tsx                            (Main layout)
+│   │   ├── main.tsx                           (Application entry point)
 │   │   ├── types.ts                           (TypeScript definitions)
 │   │   └── index.css                          (Tailwind styles)
+│   ├── public/                                (Public assets)
 │   ├── package.json                           (Dependencies)
-│   └── .env                                   (Configuration)
+│   ├── package-lock.json                      (Dependency lock file)
+│   ├── vite.config.ts                         (Vite configuration)
+│   ├── tsconfig.json                          (TypeScript configuration)
+│   ├── tailwind.config.js                     (Tailwind configuration)
+│   ├── eslint.config.js                       (ESLint configuration)
+│   ├── postcss.config.js                      (PostCSS configuration)
+│   └── README.md                              (Client documentation)
+├── docs/                                      (Documentation)
+│   └── EXAMPLE_OUTPUT.md                      (Sample diagnostic output)
+├── ui designs/                                (UI/UX design assets)
 ├── requirements.txt                           (Python dependencies)
-├── DYNAMIC_MONITORING.md                      (NEW: Real-time system guide)
-└── poverty_hotspots.db                        (NEW: SQLite database)
+├── README.md                                  (Main documentation)
+├── ARCHITECTURE.md                            (System architecture diagrams)
+├── SETUP.md                                   (Setup and installation guide)
+├── QUICKSTART.md                              (Quick start guide - static mode)
+├── QUICKSTART_DYNAMIC.md                      (Quick start guide - dynamic mode)
+├── DYNAMIC_MONITORING.md                      (Real-time monitoring system guide)
+├── IMPLEMENTATION_SUMMARY.md                  (Implementation details)
+├── TROUBLESHOOTING.md                         (Troubleshooting guide)
+├── DATA_LICENSE.md                            (Data attribution and licensing)
+├── license.md                                 (Software license)
+├── .gitignore                                 (Git ignore patterns)
+└── poverty_hotspots.db                        (SQLite database - generated)
 ```
 
 ## Installation
@@ -244,7 +271,7 @@ Open http://localhost:5173 in your browser
 
 ### Features
 
-- 🗺️ Interactive map with 720 LGAs color-coded by risk level
+- 🗺️ Interactive map with 774 LGAs color-coded by risk level
 - 📊 National statistics dashboard with pie charts
 - 🔍 Click any LGA to view detailed analytics
 - 💾 Poverty probability gauge and comparative analysis

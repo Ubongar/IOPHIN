@@ -173,9 +173,8 @@ Update `VITE_API_URL` to point to your production API.
 
 ## Data Notes
 
-- **720 LGAs** are included in the current dataset (out of 774 official LGAs)
-- The 54 missing LGAs lack complete data for analysis
-- The system can be updated when complete data becomes available
+- **774 LGAs** are included in the current dataset with complete data for analysis
+- The system can be updated when additional data becomes available
 
 ## Performance
 

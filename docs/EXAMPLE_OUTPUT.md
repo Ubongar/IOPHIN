@@ -40,8 +40,8 @@ This document shows what the enhanced diagnostic output looks like when running 
 2026-02-15 14:19:02 - INFO -   LGA bounds: (5.6789, 7.8901, 6.1234, 8.2345)
 ... processing continues ...
 2026-02-15 14:20:45 - INFO - Nightlight extraction complete
-2026-02-15 14:20:45 - INFO - Valid values: 720/774
-2026-02-15 14:20:45 - INFO - Zero values: 54/774
+2026-02-15 14:20:45 - INFO - Valid values: 774/774
+2026-02-15 14:20:45 - INFO - Zero values: 0/774
 2026-02-15 14:20:45 - INFO - Mean nightlight intensity: 18.45
 2026-02-15 14:20:45 - INFO - Range: 0.00 - 58.92
 ```
@@ -150,7 +150,7 @@ This document shows what the enhanced diagnostic output looks like when running 
 | File size | 10-11 GB | < 100 MB |
 | Bounds overlap | ✓ confirmed | ✗ NO SPATIAL OVERLAP |
 | Sample pixels | Valid data present | No valid values |
-| Valid LGAs | 650-750 / 774 | < 100 / 774 |
+| Valid LGAs | 700-774 / 774 | < 100 / 774 |
 | Mean nightlight | 10-30 | < 5 or > 100 |
 | Processing time | 15-45 minutes | < 5 seconds |
 
