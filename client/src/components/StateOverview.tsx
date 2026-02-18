@@ -28,11 +28,11 @@ const StateOverview: React.FC<Props> = ({ states, onSelectState }) => {
               <th>State</th>
               <th>LGAs</th>
               <th>Avg Composite</th>
-              <th>Avg MPI</th>
-              <th>Avg Nightlight</th>
+              <th className="hide-mobile">Avg MPI</th>
+              <th className="hide-mobile">Avg Nightlight</th>
               <th>High Risk</th>
-              <th>Health Fac.</th>
-              <th>Schools</th>
+              <th className="hide-mobile">Health Fac.</th>
+              <th className="hide-mobile">Schools</th>
             </tr>
           </thead>
           <tbody>
@@ -45,15 +45,15 @@ const StateOverview: React.FC<Props> = ({ states, onSelectState }) => {
                 <td className="lga-cell">{s.state}</td>
                 <td className="mono-cell">{s.lgaCount}</td>
                 <td className="mono-cell">{fmt(s.avgCompositeScore, 4)}</td>
-                <td className="mono-cell">{fmt(s.avgMPI, 4)}</td>
-                <td className="mono-cell">{fmt(s.avgNightlight)}</td>
+                <td className="mono-cell hide-mobile">{fmt(s.avgMPI, 4)}</td>
+                <td className="mono-cell hide-mobile">{fmt(s.avgNightlight)}</td>
                 <td className="mono-cell">
                   <span className={s.highRiskCount > 0 ? 'text-red-400 font-semibold' : ''}>
                     {s.highRiskCount}
                   </span>
                 </td>
-                <td className="mono-cell">{s.totalHealthFacilities}</td>
-                <td className="mono-cell">{s.totalSchools}</td>
+                <td className="mono-cell hide-mobile">{s.totalHealthFacilities}</td>
+                <td className="mono-cell hide-mobile">{s.totalSchools}</td>
               </tr>
             ))}
           </tbody>

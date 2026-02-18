@@ -36,6 +36,7 @@ function App() {
   const [activeView, setActiveView] = useState<ViewMode>('map');
   const [stateFilter, setStateFilter] = useState<string>('');
   const [riskFilter, setRiskFilter] = useState<RiskLevel | ''>('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   /* -- Distinct states for the dropdown -- */
@@ -99,9 +100,17 @@ function App() {
     return () => clearInterval(id);
   }, []);
 
-  const handleFeatureClick = (f: HotspotFeature) => setSelectedLGA(f);
+  const handleFeatureClick = (f: HotspotFeature) => { setSelectedLGA(f); setSidebarOpen(true); };
   const handleCloseLGA = () => setSelectedLGA(null);
-  const handleSearchSelect = (f: HotspotFeature | null) => setSelectedLGA(f);
+  const handleSearchSelect = (f: HotspotFeature | null) => {
+    if (f) {
+      setSelectedLGA(f);
+      setActiveView('map');
+      setSidebarOpen(true);
+    } else {
+      setSelectedLGA(null);
+    }
+  };
 
   /* -- Status helpers -- */
   const statusDot = systemStatus === 'online' ? 'bg-emerald-500' : systemStatus === 'syncing' ? 'bg-blue-500' : 'bg-red-500';
@@ -123,6 +132,26 @@ function App() {
 
   return (
     <div className="app-bg h-screen w-screen overflow-hidden flex">
+      {/* ---- Mobile hamburger button ---- */}
+      <button
+        className="mobile-menu-btn"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Toggle sidebar"
+      >
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {sidebarOpen
+            ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          }
+        </svg>
+      </button>
+
+      {/* ---- Mobile backdrop ---- */}
+      <div
+        className={'sidebar-backdrop' + (sidebarOpen ? ' visible' : '')}
+        onClick={() => setSidebarOpen(false)}
+      />
+
       {/* ---- Icon Rail ---- */}
       <div className="icon-rail">
         <div className="rail-brand">
@@ -132,7 +161,7 @@ function App() {
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveView(item.id)}
+              onClick={() => { setActiveView(item.id); setSidebarOpen(false); }}
               className={'nav-icon-btn' + (activeView === item.id ? ' active' : '')}
               title={item.label}
             >
@@ -144,8 +173,8 @@ function App() {
         </div>
       </div>
 
-      {/* ---- Sidebar ---- */}
-      <div className="sidebar-panel">
+      {/* ---- Sidebar (drawer on mobile) ---- */}
+      <div className={'sidebar-panel' + (sidebarOpen ? ' sidebar-open' : '')}>
         <Sidebar stats={stats} selectedLGA={selectedLGA} onClose={handleCloseLGA} />
       </div>
 
@@ -241,19 +270,17 @@ function App() {
           </button>
         </div>
 
-        {/* View content */}
-        {activeView === 'map' && (
-          <>
-            <MapComponent data={filteredData} onFeatureClick={handleFeatureClick} selectedLGA={selectedLGA} />
-            <Legend />
-          </>
-        )}
+        {/* View content — Map is always mounted (hidden via CSS) for zoom-on-navigate */}
+        <div className={'map-view-wrapper' + (activeView !== 'map' ? ' hidden' : '')}>
+          <MapComponent data={filteredData} onFeatureClick={handleFeatureClick} selectedLGA={selectedLGA} />
+          <Legend />
+        </div>
 
         {activeView === 'rankings' && (
           <div className="view-panel">
             <RankingsTable rankings={rankings} onSelectLGA={(name: string) => {
               const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
-              if (feat) { setSelectedLGA(feat); setActiveView('map'); }
+              if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
             }} />
           </div>
         )}

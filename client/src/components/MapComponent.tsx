@@ -65,20 +65,39 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     if (data) setFeatureCount(data.features.length);
   }, [data]);
 
-  // Zoom to selected LGA when it changes (from search or map click)
+  // Zoom to selected LGA when it changes (from search, rankings, or map click)
   useEffect(() => {
-    if (selectedLGA && mapRef.current && geoJsonLayerRef.current) {
-      // Find the layer that corresponds to the selected LGA
+    if (!selectedLGA || !mapRef.current) return;
+
+    const zoomToSelected = () => {
+      if (!geoJsonLayerRef.current) return false;
+      let found = false;
       geoJsonLayerRef.current.eachLayer((layer: any) => {
-        if (layer.feature.properties.LGA_Name === selectedLGA.properties.LGA_Name &&
-            layer.feature.properties.State === selectedLGA.properties.State) {
+        if (found) return;
+        if (layer.feature?.properties?.LGA_Name === selectedLGA.properties.LGA_Name &&
+            layer.feature?.properties?.State === selectedLGA.properties.State) {
           const bounds = layer.getBounds();
           mapRef.current.fitBounds(bounds, { 
             padding: [100, 100],
-            maxZoom: 10 
+            maxZoom: 10,
+            animate: true,
+            duration: 0.5,
           });
+          // Briefly highlight the selected feature
+          layer.setStyle({ weight: 3, color: '#ffffff', fillOpacity: 0.9 });
+          setTimeout(() => {
+            if (geoJsonLayerRef.current) geoJsonLayerRef.current.resetStyle(layer);
+          }, 2000);
+          found = true;
         }
       });
+      return found;
+    };
+
+    // Try immediately, retry after a short delay if layers aren't ready yet
+    if (!zoomToSelected()) {
+      const timer = setTimeout(zoomToSelected, 300);
+      return () => clearTimeout(timer);
     }
   }, [selectedLGA]);
 

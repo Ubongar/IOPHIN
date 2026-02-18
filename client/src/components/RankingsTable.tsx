@@ -52,10 +52,10 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA }) => {
               <th>State</th>
               <th>Composite</th>
               <th>MPI</th>
-              <th>Nightlight</th>
+              <th className="hide-mobile">Nightlight</th>
               <th>Risk</th>
-              <th>Health Fac.</th>
-              <th>Schools</th>
+              <th className="hide-mobile">Health Fac.</th>
+              <th className="hide-mobile">Schools</th>
             </tr>
           </thead>
           <tbody>
@@ -70,7 +70,7 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA }) => {
                 <td>{r.state}</td>
                 <td className="mono-cell">{fmt(r.compositeScore, 4)}</td>
                 <td className="mono-cell">{fmt(r.mpi, 4)}</td>
-                <td className="mono-cell">{fmt(r.nightlight)}</td>
+                <td className="mono-cell hide-mobile">{fmt(r.nightlight)}</td>
                 <td>
                   <span
                     className="risk-pill"
@@ -80,8 +80,8 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA }) => {
                     {r.riskLevel}
                   </span>
                 </td>
-                <td className="mono-cell">{r.healthFacilities}</td>
-                <td className="mono-cell">{r.schools}</td>
+                <td className="mono-cell hide-mobile">{r.healthFacilities}</td>
+                <td className="mono-cell hide-mobile">{r.schools}</td>
               </tr>
             ))}
           </tbody>

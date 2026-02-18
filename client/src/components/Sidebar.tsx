@@ -407,7 +407,34 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
           {p.population_density != null && (
             <MetricCard label="Pop. Density" value={fmt(p.population_density, 0)} sub="per km²" />
           )}
+          {p.Headcount_Ratio != null && (
+            <MetricCard label="Headcount" value={fmt(p.Headcount_Ratio * 100, 1) + '%'} sub="Poverty Rate" />
+          )}
+          {p.Intensity_of_Depravation != null && (
+            <MetricCard label="Intensity" value={fmt(p.Intensity_of_Depravation, 3)} sub="Deprivation" />
+          )}
         </div>
+
+        {/* Poverty depth indicators */}
+        {(p.In_Severe_Poverty != null || p.senatorial_mpi != null || p.distance_to_urban_km != null) && (
+          <>
+            <Divider />
+            <div className="sidebar-section-header">
+              <h3 className="sidebar-section-title">Poverty Depth</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {p.In_Severe_Poverty != null && (
+                <MetricCard label="Severe Poverty" value={fmt(p.In_Severe_Poverty, 1) + '%'} sub="in severe deprivation" />
+              )}
+              {p.senatorial_mpi != null && (
+                <MetricCard label="Senatorial MPI" value={fmt(p.senatorial_mpi, 4)} sub="district-level" />
+              )}
+              {p.distance_to_urban_km != null && (
+                <MetricCard label="Urban Dist." value={fmt(p.distance_to_urban_km, 1) + ' km'} sub="to nearest urban" />
+              )}
+            </div>
+          </>
+        )}
 
         {/* Infrastructure indicators */}
         {(p.health_facility_count != null || p.school_count != null || p.road_density_km != null) && (
