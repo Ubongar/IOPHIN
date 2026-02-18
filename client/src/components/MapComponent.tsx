@@ -16,6 +16,7 @@ interface MapComponentProps {
   data: HotspotsGeoJSON | null;
   onFeatureClick: (feature: HotspotFeature) => void;
   selectedLGA?: HotspotFeature | null;
+  filterKey?: string;
 }
 
 /**
@@ -55,19 +56,64 @@ const FitBounds: React.FC<{ data: HotspotsGeoJSON | null }> = ({ data }) => {
   return null;
 };
 
-const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selectedLGA }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selectedLGA, filterKey }) => {
   const geoJsonLayerRef = useRef<GeoJSONType | null>(null);
   const mapRef = useRef<any>(null);
+  const prevSelectedRef = useRef<HotspotFeature | null>(null);
   const [featureCount, setFeatureCount] = useState(0);
   const { theme } = useTheme();
+
+  /** Compute LatLngBounds from features */
+  const computeBounds = (features: HotspotFeature[]): LatLngBounds | null => {
+    if (!features.length) return null;
+    const bounds = new LatLngBounds([]);
+    features.forEach((feature) => {
+      if (feature.geometry.type === 'Polygon') {
+        feature.geometry.coordinates[0].forEach((coord) => {
+          if (Array.isArray(coord) && coord.length >= 2) {
+            bounds.extend([coord[1] as number, coord[0] as number]);
+          }
+        });
+      } else if (feature.geometry.type === 'MultiPolygon') {
+        feature.geometry.coordinates.forEach((polygon) => {
+          polygon[0].forEach((coord) => {
+            if (Array.isArray(coord) && coord.length >= 2) {
+              bounds.extend([coord[1] as number, coord[0] as number]);
+            }
+          });
+        });
+      }
+    });
+    return bounds.isValid() ? bounds : null;
+  };
 
   useEffect(() => {
     if (data) setFeatureCount(data.features.length);
   }, [data]);
 
-  // Zoom to selected LGA when it changes (from search, rankings, or map click)
+  // Zoom to selected LGA or zoom back to full bounds when cleared
   useEffect(() => {
-    if (!selectedLGA || !mapRef.current) return;
+    const wasSelected = prevSelectedRef.current !== null;
+    prevSelectedRef.current = selectedLGA ?? null;
+
+    if (!mapRef.current) return;
+
+    // If LGA was deselected, zoom back to full data bounds
+    if (!selectedLGA && wasSelected) {
+      if (data) {
+        const bounds = computeBounds(data.features);
+        if (bounds) {
+          mapRef.current.fitBounds(bounds, {
+            padding: [50, 50],
+            animate: true,
+            duration: 0.5,
+          });
+        }
+      }
+      return;
+    }
+
+    if (!selectedLGA) return;
 
     const zoomToSelected = () => {
       if (!geoJsonLayerRef.current) return false;
@@ -352,8 +398,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
         subdomains="abcd"
       />
 
-      {/* GeoJSON risk overlay */}
+      {/* GeoJSON risk overlay — keyed to re-render on filter changes */}
       <GeoJSON
+        key={filterKey || 'all'}
         data={data}
         style={styleFeature}
         onEachFeature={onEachFeature}

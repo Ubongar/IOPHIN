@@ -101,7 +101,7 @@ function App() {
   }, []);
 
   const handleFeatureClick = (f: HotspotFeature) => { setSelectedLGA(f); setSidebarOpen(true); };
-  const handleCloseLGA = () => setSelectedLGA(null);
+  const handleCloseLGA = () => { setSelectedLGA(null); setSidebarOpen(false); };
   const handleSearchSelect = (f: HotspotFeature | null) => {
     if (f) {
       setSelectedLGA(f);
@@ -175,6 +175,15 @@ function App() {
 
       {/* ---- Sidebar (drawer on mobile) ---- */}
       <div className={'sidebar-panel' + (sidebarOpen ? ' sidebar-open' : '')}>
+        <button
+          className="sidebar-close-mobile"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close sidebar"
+        >
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
         <Sidebar stats={stats} selectedLGA={selectedLGA} onClose={handleCloseLGA} />
       </div>
 
@@ -261,7 +270,7 @@ function App() {
 
         {/* View content — Map is always mounted (hidden via CSS) for zoom-on-navigate */}
         <div className={'map-view-wrapper' + (activeView !== 'map' ? ' hidden' : '')}>
-          <MapComponent data={filteredData} onFeatureClick={handleFeatureClick} selectedLGA={selectedLGA} />
+          <MapComponent data={filteredData} onFeatureClick={handleFeatureClick} selectedLGA={selectedLGA} filterKey={stateFilter + '|' + riskFilter} />
           <Legend />
         </div>
 
@@ -285,7 +294,7 @@ function App() {
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveView(item.id)}
+              onClick={() => { setActiveView(item.id); setSidebarOpen(false); }}
               className={'bottom-nav-btn' + (activeView === item.id ? ' active' : '')}
             >
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">

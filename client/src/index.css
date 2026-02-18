@@ -1132,3 +1132,31 @@ body {
   background: var(--bg-panel-hover);
   color: var(--text-primary);
 }
+
+/* Sidebar close button for mobile */
+.sidebar-close-mobile {
+  display: none;
+}
+@media (max-width: 768px) {
+  .sidebar-close-mobile {
+    display: flex;
+    position: absolute;
+    top: 20px; right: 16px;
+    z-index: 10;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: var(--text-quaternary);
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .sidebar-close-mobile:hover {
+    background: var(--bg-panel-hover);
+    color: var(--text-primary);
+  }
+
+  /* Add bottom padding to sidebar scroll so download btn isn't blocked */
+  .sidebar-scroll { padding-bottom: 24px; }
+}
