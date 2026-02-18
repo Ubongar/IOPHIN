@@ -97,7 +97,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
   };
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-md">
+    <div ref={searchRef} className="search-bar-root relative w-full">
       <div className="relative">
         <div className="search-input-wrapper">
           <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
             }}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
-            placeholder="Search LGAs or States..."
+            placeholder="Search LGAs..."
             className="search-input"
             role="combobox"
             aria-autocomplete="list"

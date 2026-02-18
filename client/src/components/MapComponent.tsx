@@ -102,11 +102,26 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
   }, [selectedLGA]);
 
   /**
-   * Component to capture map instance
+   * Component to capture map instance and handle resize
    */
   const MapInstanceCapture: React.FC = () => {
     const map = useMap();
     mapRef.current = map;
+
+    // Invalidate size periodically to handle visibility changes (mobile view switches)
+    useEffect(() => {
+      const observer = new ResizeObserver(() => {
+        map.invalidateSize();
+      });
+      const container = map.getContainer();
+      if (container.parentElement) {
+        observer.observe(container.parentElement);
+      }
+      // Also invalidate on initial mount and after a short delay
+      setTimeout(() => map.invalidateSize(), 200);
+      return () => observer.disconnect();
+    }, [map]);
+
     return null;
   };
 
