@@ -152,7 +152,12 @@ def save_geojson_output(df, gdf, output_path):
     # State name normalisation (csv_state → shapefile_state)
     STATE_NORM: dict[str, str] = {
         "federal capital territory": "fct",
-        "nasarawa": "nassarawa",
+    }
+
+    # Shapefile LGA name normalisation — applied to shapefile side so both
+    # sides use the same canonical spelling before the composite-key merge.
+    SHP_LGA_NORM: dict[str, str] = {
+        "nassarawa": "nasarawa",   # Kano state LGA: shapefile "Nassarawa" → CSV "Nasarawa"
     }
 
     # ------------------------------------------------------------------
@@ -184,7 +189,9 @@ def save_geojson_output(df, gdf, output_path):
         # 3.  Build normalised merge keys on shapefile side
         # ------------------------------------------------------------------
         gdf_copy = gdf[[lga_col, state_col, 'geometry']].copy() if state_col else gdf[[lga_col, 'geometry']].copy()
-        gdf_copy['_shp_lga'] = gdf_copy[lga_col].str.strip().str.lower()
+        gdf_copy['_shp_lga'] = gdf_copy[lga_col].str.strip().str.lower().map(
+            lambda n: SHP_LGA_NORM.get(n, n)
+        )
         if state_col:
             gdf_copy['_shp_state'] = gdf_copy[state_col].str.strip().str.lower()
 
@@ -222,17 +229,35 @@ def save_geojson_output(df, gdf, output_path):
 
         if n_missing > 0:
             logger.warning(f"{n_missing} LGAs still missing geometry after primary merge — trying fuzzy fallback")
-            # Build a lookup from ultra-stripped shapefile name → geometry
-            shp_lookup: dict[str, object] = {}
+            # Build a lookup from (state, ultra-stripped lga) → geometry
+            # Using composite key prevents geometry duplication for same-name
+            # LGAs in different states (e.g. Obi in Benue vs Nasarawa).
+            shp_composite_lookup: dict[str, object] = {}
+            shp_name_lookup: dict[str, object] = {}  # name-only fallback
             for _, row in gdf.iterrows():
-                key = _strip(row[lga_col].lower())
-                shp_lookup.setdefault(key, row['geometry'])
+                lga_key = _strip(row[lga_col].lower())
+                if state_col:
+                    st_key = _strip(row[state_col].lower())
+                    shp_composite_lookup[f"{st_key}|{lga_key}"] = row['geometry']
+                shp_name_lookup.setdefault(lga_key, row['geometry'])
 
             for idx in geo_df[missing_mask].index:
                 csv_name = str(geo_df.loc[idx, 'LGA_Name']).lower()
-                key = _strip(csv_name)
-                if key in shp_lookup:
-                    geo_df.at[idx, 'geometry'] = shp_lookup[key]
+                lga_key = _strip(csv_name)
+                matched = False
+
+                # Try state+name composite key first
+                if 'State' in geo_df.columns and state_col:
+                    csv_state = str(geo_df.loc[idx, 'State']).lower()
+                    st_key = _strip(csv_state)
+                    comp_key = f"{st_key}|{lga_key}"
+                    if comp_key in shp_composite_lookup:
+                        geo_df.at[idx, 'geometry'] = shp_composite_lookup[comp_key]
+                        matched = True
+
+                # Fall back to name-only if composite didn't match
+                if not matched and lga_key in shp_name_lookup:
+                    geo_df.at[idx, 'geometry'] = shp_name_lookup[lga_key]
 
             still_missing = geo_df['geometry'].isna().sum()
             if still_missing > 0:
