@@ -37,6 +37,7 @@ function App() {
   const [stateFilter, setStateFilter] = useState<string>('');
   const [riskFilter, setRiskFilter] = useState<RiskLevel | ''>('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { theme, toggleTheme } = useTheme();
 
   /* -- Distinct states for the dropdown -- */
@@ -197,7 +198,16 @@ function App() {
           </button>
 
           <div className="toolbar-search">
-            <SearchBar data={hotspotsData?.features || null} onSelectLGA={handleSearchSelect} />
+            <SearchBar
+              data={hotspotsData?.features || null}
+              onSelectLGA={handleSearchSelect}
+              onSearchTermChange={setSearchQuery}
+              placeholder={
+                activeView === 'rankings' ? 'Filter LGAs...'
+                : activeView === 'states' ? 'Filter states...'
+                : 'Search LGAs...'
+              }
+            />
           </div>
 
           <select
@@ -276,16 +286,26 @@ function App() {
 
         {activeView === 'rankings' && (
           <div className="view-panel">
-            <RankingsTable rankings={rankings} onSelectLGA={(name: string) => {
-              const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
-              if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
-            }} />
+            <RankingsTable
+              rankings={rankings}
+              searchQuery={searchQuery}
+              stateFilter={stateFilter}
+              riskFilter={riskFilter}
+              onSelectLGA={(name: string) => {
+                const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
+                if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
+              }}
+            />
           </div>
         )}
 
         {activeView === 'states' && (
           <div className="view-panel">
-            <StateOverview states={stateAgg} onSelectState={(s: string) => { setStateFilter(s); setActiveView('map'); }} />
+            <StateOverview
+              states={stateAgg}
+              searchQuery={searchQuery}
+              onSelectState={(s: string) => { setStateFilter(s); setActiveView('map'); }}
+            />
           </div>
         )}
 

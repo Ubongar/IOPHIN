@@ -248,23 +248,17 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
   };
 
   /**
-   * Bind events to each feature — rich tooltip & interaction
+   * Bind events to each feature — lightweight tooltip & click-only selection
    */
   const onEachFeature = (feature: any, layer: any) => {
     const typedFeature = feature as HotspotFeature;
-    const { LGA_Name, State, risk_level, MPI, mean_nightlight_intensity, Headcount_Ratio, cluster_label, composite_poverty_score } = typedFeature.properties;
+    const { LGA_Name, State, risk_level, MPI, composite_poverty_score } = typedFeature.properties;
     const riskColor = RISK_COLORS[risk_level as RiskLevel] || '#999';
 
-    // Poverty probability (same formula as sidebar)
-    const mpiScore = Math.min(MPI * 100, 100);
-    const nightlightScore = Math.max(0, 100 - (mean_nightlight_intensity / 60) * 100);
-    const povertyProb = Math.min(Math.max(mpiScore * 0.7 + nightlightScore * 0.3, 0), 100);
-
-    // Build rich tooltip DOM
+    // Lightweight tooltip — just name, state, risk, and key score
     const container = document.createElement('div');
-    container.className = 'map-tooltip-inner';
+    container.className = 'map-tooltip-inner map-tooltip-compact';
 
-    // Header row with risk dot
     const header = document.createElement('div');
     header.className = 'tooltip-header';
 
@@ -288,64 +282,22 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
 
     container.appendChild(header);
 
-    // Divider
-    const divider = document.createElement('div');
-    divider.className = 'tooltip-divider';
-    container.appendChild(divider);
+    // One-line score summary
+    const scoreLine = document.createElement('div');
+    scoreLine.className = 'tooltip-score-line';
+    const scoreVal = composite_poverty_score != null ? composite_poverty_score.toFixed(4) : MPI.toFixed(4);
+    const scoreLabel = composite_poverty_score != null ? 'Composite' : 'MPI';
+    scoreLine.textContent = `${scoreLabel}: ${scoreVal}`;
+    container.appendChild(scoreLine);
 
-    // Metrics grid
-    const grid = document.createElement('div');
-    grid.className = 'tooltip-grid';
-
-    const makeMetric = (label: string, value: string, accent: string) => {
-      const cell = document.createElement('div');
-      cell.className = 'tooltip-metric';
-      const valEl = document.createElement('div');
-      valEl.className = 'tooltip-metric-value';
-      valEl.style.color = accent;
-      valEl.textContent = value;
-      cell.appendChild(valEl);
-      const labEl = document.createElement('div');
-      labEl.className = 'tooltip-metric-label';
-      labEl.textContent = label;
-      cell.appendChild(labEl);
-      return cell;
-    };
-
-    grid.appendChild(makeMetric('MPI Score', MPI.toFixed(4), '#f59e0b'));
-    grid.appendChild(makeMetric('Nightlight', mean_nightlight_intensity.toFixed(2), '#06b6d4'));
-    if (composite_poverty_score != null) {
-      grid.appendChild(makeMetric('Composite', composite_poverty_score.toFixed(4), '#8b5cf6'));
-    }
-    grid.appendChild(makeMetric('Poverty Prob.', `${povertyProb.toFixed(1)}%`, riskColor));
-    grid.appendChild(makeMetric('Headcount', Headcount_Ratio != null ? `${(Headcount_Ratio * 100).toFixed(1)}%` : 'N/A', '#a78bfa'));
-
-    container.appendChild(grid);
-
-    // Cluster label
-    if (cluster_label) {
-      const clusterDiv = document.createElement('div');
-      clusterDiv.className = 'tooltip-cluster';
-      clusterDiv.textContent = cluster_label;
-      container.appendChild(clusterDiv);
-    }
-
-    // Mini progress bar for poverty probability
-    const barWrap = document.createElement('div');
-    barWrap.className = 'tooltip-bar-wrap';
-    const barBg = document.createElement('div');
-    barBg.className = 'tooltip-bar-bg';
-    const barFill = document.createElement('div');
-    barFill.className = 'tooltip-bar-fill';
-    barFill.style.width = `${povertyProb}%`;
-    barFill.style.background = `linear-gradient(90deg, ${riskColor}, ${riskColor}99)`;
-    barBg.appendChild(barFill);
-    barWrap.appendChild(barBg);
-    container.appendChild(barWrap);
+    const clickHint = document.createElement('div');
+    clickHint.className = 'tooltip-click-hint';
+    clickHint.textContent = 'Click for details';
+    container.appendChild(clickHint);
 
     layer.bindTooltip(container, {
-      sticky: true,
-      className: 'custom-tooltip',
+      sticky: false,
+      className: 'custom-tooltip custom-tooltip-compact',
       direction: 'top',
       offset: [0, -10],
     });

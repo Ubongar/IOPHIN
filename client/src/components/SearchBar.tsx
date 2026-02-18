@@ -9,9 +9,11 @@ import { RISK_COLORS } from '../types';
 interface SearchBarProps {
   data: HotspotFeature[] | null;
   onSelectLGA: (feature: HotspotFeature | null) => void;
+  onSearchTermChange?: (term: string) => void;
+  placeholder?: string;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA, onSearchTermChange, placeholder = 'Search LGAs...' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -57,6 +59,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
   const handleClear = () => {
     setSearchTerm('');
     setShowResults(false);
+    onSearchTermChange?.('');
     onSelectLGA(null);
   };
 
@@ -108,13 +111,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA }) => {
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
+              onSearchTermChange?.(e.target.value);
               if (e.target.value) {
                 setShowResults(true);
               }
             }}
             onFocus={handleFocus}
             onKeyDown={handleKeyDown}
-            placeholder="Search LGAs..."
+            placeholder={placeholder}
             className="search-input"
             role="combobox"
             aria-autocomplete="list"
