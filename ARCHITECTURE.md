@@ -1,303 +1,231 @@
-# Architecture Diagrams
+# IOPHIN — System Architecture
 
-## System Architecture: Static vs Dynamic
-
-### Static Mode (Original)
-```
-┌─────────────────────────────────────────────┐
-│          Static Architecture                │
-├─────────────────────────────────────────────┤
-│                                             │
-│  Local Files          Python ML            │
-│  ┌──────────┐       ┌──────────┐           │
-│  │ viirs.tif │──────▶│ main.py  │           │
-│  └──────────┘       │ K-Means  │           │
-│  ┌──────────┐       └────┬─────┘           │
-│  │ nga_mpi  │────────────┘                 │
-│  │ .csv     │                              │
-│  └──────────┘       ┌────────────┐         │
-│                     │ hotspots   │         │
-│                     │ .geojson   │         │
-│                     └─────┬──────┘         │
-│                           │                │
-│  ┌───────────────────────┼──────────────┐ │
-│  │  Node.js API          ▼              │ │
-│  │  ┌─────────────────────────┐         │ │
-│  │  │ fs.readFileSync()       │         │ │
-│  │  │ /api/hotspots           │         │ │
-│  │  └──────────┬──────────────┘         │ │
-│  └─────────────┼────────────────────────┘ │
-│                │                          │
-│  ┌─────────────▼────────┐                │
-│  │ React Dashboard      │                │
-│  │ - Static data        │                │
-│  │ - Manual refresh     │                │
-│  └──────────────────────┘                │
-│                                           │
-│  ⚠️  Manual update required               │
-│      (days/weeks)                         │
-└─────────────────────────────────────────────┘
-```
-
-### Dynamic Mode (NEW ✨)
-```
-┌────────────────────────────────────────────────────────────────┐
-│               Dynamic Real-Time Architecture                    │
-├────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  External APIs (Live Data Sources)                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
-│  │ ACLED API    │  │ NASA GIBS    │  │ Google EE    │         │
-│  │ (Conflict)   │  │ (Nightlight) │  │ (Satellite)  │         │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘         │
-│         │                 │                  │                 │
-│         └─────────────────┼──────────────────┘                 │
-│                           │                                    │
-│         ┌─────────────────▼────────────────┐                   │
-│         │  Python Scheduler Service        │                   │
-│         │  (APScheduler - Continuous)      │                   │
-│         ├──────────────────────────────────┤                   │
-│         │  ⏰ Every 1 Hour:                 │                   │
-│         │     fetch_conflict_data()        │                   │
-│         │     - Detect crisis events       │                   │
-│         │     - Flag LGAs as CRITICAL      │                   │
-│         │                                  │                   │
-│         │  ⏰ Every 24 Hours:               │                   │
-│         │     fetch_latest_nightlights()   │                   │
-│         │     - Update VIIRS data          │                   │
-│         │     - Detect power outages       │                   │
-│         │     - Track development          │                   │
-│         │                                  │                   │
-│         │  ⏰ Every 6 Hours:                │                   │
-│         │     run_ml_engine()              │                   │
-│         │     - Re-run K-Means             │                   │
-│         │     - Recalculate risks          │                   │
-│         └──────────┬───────────────────────┘                   │
-│                    │                                            │
-│                    ▼                                            │
-│         ┌────────────────────┐                                 │
-│         │ SQLite/PostgreSQL  │                                 │
-│         │  Database          │                                 │
-│         ├────────────────────┤                                 │
-│         │ poverty_hotspots   │                                 │
-│         │ ├─ lga_name        │                                 │
-│         │ ├─ risk_level      │                                 │
-│         │ ├─ conflict_flag   │  ◄── NEW: Real-time status     │
-│         │ ├─ nightlight      │                                 │
-│         │ ├─ last_updated    │  ◄── NEW: Auto-timestamp       │
-│         │ └─ data_source     │  ◄── NEW: ML/API tracking      │
-│         └──────────┬─────────┘                                 │
-│                    │                                            │
-│  ┌─────────────────┼──────────────────────────┐                │
-│  │  Node.js API    ▼                          │                │
-│  │  ┌───────────────────────────────┐         │                │
-│  │  │ db.getHotspotsAsGeoJSON()     │         │                │
-│  │  │ /api/hotspots                 │         │                │
-│  │  │ Cache: 60 seconds (real-time) │         │                │
-│  │  │ X-Data-Source: database       │         │                │
-│  │  └──────────┬────────────────────┘         │                │
-│  └─────────────┼──────────────────────────────┘                │
-│                │                                                │
-│  ┌─────────────▼────────────┐                                  │
-│  │ React Dashboard          │                                  │
-│  │ - Live data (auto-poll)  │                                  │
-│  │ - 60s refresh            │                                  │
-│  │ - Conflict alerts        │  ◄── NEW: Crisis indicators     │
-│  │ - Trend visualization    │                                  │
-│  └──────────────────────────┘                                  │
-│                                                                 │
-│  ✅ Automatic updates (minutes/hours)                           │
-│  ✅ Crisis response enabled                                     │
-│  ✅ "Nowcasting" capability                                     │
-└────────────────────────────────────────────────────────────────┘
-```
-
-## Data Flow Sequence
-
-### Conflict Detection Flow
-```
-1. ⏰ Scheduler Trigger (Every 1 Hour)
-   │
-   ▼
-2. 🌐 API Call: requests.get('https://api.acleddata.com/...')
-   │
-   ▼
-3. 🔍 Parse Response: Detect conflict events in Nigeria
-   │
-   ▼
-4. ⚠️  Conflict Found: "Armed clash in Zamfara North"
-   │
-   ▼
-5. 💾 Database Update:
-   - conflict_flag = 'CRITICAL'
-   - last_conflict_event = now()
-   - risk_level = 'High' (elevated)
-   │
-   ▼
-6. 📊 Frontend Update: Next API poll shows red zone
-```
-
-### Nightlight Update Flow
-```
-1. ⏰ Scheduler Trigger (Every 24 Hours)
-   │
-   ▼
-2. 🛰️  Fetch VIIRS Data: NASA GIBS API or Google Earth Engine
-   │
-   ▼
-3. 📉 Calculate Changes: Compare with previous values
-   │
-   ├─▶ Decrease > 30%: ⚡ Power Outage Detected
-   ├─▶ Increase > 10%: 📈 Economic Development
-   └─▶ Change < 5%:    Normal Variation
-   │
-   ▼
-4. 💾 Database Update: mean_nightlight_intensity = new_value
-   │
-   ▼
-5. 🤖 Trigger ML Retraining (if significant changes)
-   │
-   ▼
-6. 🗺️  Map Updates: Risk levels recalculated
-```
-
-### ML Model Retraining Flow
-```
-1. ⏰ Scheduler Trigger (Every 6 Hours)
-   │
-   ▼
-2. 📥 Fetch Latest Data: SELECT * FROM poverty_hotspots
-   │
-   ▼
-3. 🧮 Feature Preparation:
-   - KNN Imputation
-   - StandardScaler
-   - PCA (95% variance)
-   │
-   ▼
-4. 🎯 K-Means Clustering:
-   - n_clusters = 4
-   - Silhouette Score validation
-   │
-   ▼
-5. 🏷️  Assign Labels:
-   - High Risk (low lights + high poverty)
-   - Medium Risk
-   - Low Risk
-   - Minimal Risk
-   │
-   ▼
-6. 💾 Database Update: All 774 LGAs with new clusters
-   │
-   ▼
-7. 📊 Frontend Refresh: Updated risk distribution
-```
-
-## Database Schema
-
-```sql
-CREATE TABLE poverty_hotspots (
-    -- Primary Key
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    
-    -- Identifiers (UNIQUE constraint on lga_name)
-    lga_name VARCHAR(255) UNIQUE NOT NULL,
-    state VARCHAR(100),
-    latitude FLOAT,
-    longitude FLOAT,
-    
-    -- Economic Indicators
-    mean_nightlight_intensity FLOAT,      -- Proxy for economic activity
-    
-    -- Poverty Indicators (from MPI data)
-    mpi FLOAT,                             -- Multidimensional Poverty Index
-    headcount_ratio FLOAT,                 -- % in poverty
-    intensity_of_deprivation FLOAT,        -- Severity of poverty
-    in_severe_poverty FLOAT,               -- % in severe poverty
-    vulnerable_to_poverty FLOAT,           -- At-risk population
-    
-    -- ML Model Outputs
-    cluster INTEGER,                       -- K-Means cluster (0-3)
-    cluster_label VARCHAR(100),            -- Human-readable label
-    risk_level VARCHAR(50),                -- High, Medium, Low, Minimal
-    
-    -- NEW: Crisis Tracking
-    conflict_flag VARCHAR(50) DEFAULT 'NORMAL',  -- NORMAL, ALERT, CRITICAL
-    last_conflict_event DATETIME,         -- When conflict occurred
-    
-    -- Geometry (stored as JSON string)
-    geometry TEXT,                         -- GeoJSON geometry
-    
-    -- NEW: Metadata
-    last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
-    data_source VARCHAR(100) DEFAULT 'ML_MODEL'  -- ML_MODEL, API_REFRESH, CONFLICT_API
-);
-
--- Indexes for performance
-CREATE INDEX idx_risk_level ON poverty_hotspots(risk_level);
-CREATE INDEX idx_conflict_flag ON poverty_hotspots(conflict_flag);
-CREATE INDEX idx_state ON poverty_hotspots(state);
-```
-
-## Component Interactions
+## High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                  Components                          │
-├─────────────────────────────────────────────────────┤
-│                                                      │
-│  scheduler_service.py (Always Running)              │
-│  ├─ fetch_conflict_data() ──────▶ Database         │
-│  ├─ fetch_latest_nightlights() ─▶ Database         │
-│  └─ run_ml_engine() ─────────────▶ Database         │
-│                                                      │
-│  server/index.js (HTTP Server)                      │
-│  ├─ GET /api/hotspots ───────────▶ Database Query  │
-│  ├─ GET /api/stats ──────────────▶ Database Query  │
-│  └─ GET /api/lga/:name ──────────▶ Database Query  │
-│                                                      │
-│  client/src (React App)                             │
-│  ├─ useSWR('/api/hotspots', {                       │
-│  │    refreshInterval: 60000  // Poll every minute  │
-│  │  })                                              │
-│  └─ Map auto-updates when data changes             │
-│                                                      │
-│  Database (poverty_hotspots.db)                     │
-│  └─ Single source of truth for all components      │
-└─────────────────────────────────────────────────────┘
+┌─────────────────────────── EXTERNAL DATA SOURCES ───────────────────────────┐
+│                                                                             │
+│  NASA VIIRS Nightlights   HDX (ACLED Conflict)    Google Earth Engine       │
+│  WorldPop Population      IOM DTM (Displacement)  OpenStreetMap (Overpass)  │
+│  WFP Food Prices          HumData Portal          Nigeria MPI Datasets      │
+│                                                                             │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────── PYTHON ML ENGINE ────────────────────────────────┐
+│                                                                             │
+│  src/data_loader.py ──► src/feature_extraction.py ──► src/model_engine.py   │
+│        │                       │                            │               │
+│    Load CSV/SHP           Raster/API              PCA + K-Means/HDBSCAN     │
+│    State MPI              extraction               Composite scoring        │
+│    Senatorial MPI         KNN imputation           5-tier classification    │
+│                           Infrastructure                                    │
+│                                                                             │
+│  src/scheduler_service.py ◄──── APScheduler (Dynamic Mode)                  │
+│        │                                                                    │
+│    Periodic data fetch + model retrain + DB update                          │
+│                                                                             │
+│  src/db_config.py ──► SQLAlchemy ORM ──► PostgreSQL                         │
+│  src/db_utils.py  ──► CRUD operations                                       │
+│  src/migrate_to_db.py ──► CSV → PostgreSQL migration                        │
+│                                                                             │
+│  Output: final_model_output.csv + hotspots.geojson + PostgreSQL rows        │
+│                                                                             │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────── POSTGRESQL DATABASE ─────────────────────────────┐
+│                                                                             │
+│  Database: iophin_db                                                        │
+│                                                                             │
+│  ┌─────────────────────────────┐  ┌──────────────────────────────────────┐  │
+│  │   poverty_hotspots (774)    │  │   hotspot_history (time-series)      │  │
+│  ├─────────────────────────────┤  ├──────────────────────────────────────┤  │
+│  │ id (SERIAL PK)             │  │ id (SERIAL PK)                       │  │
+│  │ lga_name + state (UNIQUE)  │  │ lga_name                             │  │
+│  │ latitude, longitude        │  │ state                                │  │
+│  │ mpi                        │  │ snapshot_date                         │  │
+│  │ headcount_ratio            │  │ composite_poverty_score               │  │
+│  │ intensity_of_deprivation   │  │ mpi                                  │  │
+│  │ in_severe_poverty          │  │ mean_nightlight_intensity             │  │
+│  │ senatorial_mpi             │  │ risk_level                           │  │
+│  │ mean_nightlight_intensity  │  │ conflict_flag                        │  │
+│  │ composite_poverty_score    │  │ population_density                   │  │
+│  │ health_facility_count      │  │ distance_to_urban_km                 │  │
+│  │ school_count               │  │ ...                                  │  │
+│  │ road_density_km            │  └──────────────────────────────────────┘  │
+│  │ ndvi_mean, rainfall_mm     │                                            │
+│  │ idp_count, food_price_index│  Index: (lga_name, snapshot_date)          │
+│  │ population_density         │                                            │
+│  │ distance_to_urban_km       │                                            │
+│  │ cluster, cluster_label     │                                            │
+│  │ risk_level                 │                                            │
+│  │ clustering_method          │                                            │
+│  │ conflict_flag              │                                            │
+│  │ last_conflict_event        │                                            │
+│  │ last_updated               │                                            │
+│  │ data_source                │                                            │
+│  │ geometry (GeoJSON text)    │                                            │
+│  └─────────────────────────────┘                                           │
+│                                                                             │
+│  Constraint: UNIQUE(lga_name, state) — compound index                      │
+│                                                                             │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────── NODE.JS API SERVER ──────────────────────────────┐
+│                                                                             │
+│  server/index.js — Express 4 (ESM modules)                                  │
+│                                                                             │
+│  Middleware: CORS, compression, rate-limiting (100 req/15min)               │
+│                                                                             │
+│  GET /api/health        → Health check (DB connectivity test)               │
+│  GET /api/hotspots      → GeoJSON FeatureCollection (filterable)            │
+│  GET /api/stats         → Aggregate statistics                              │
+│  GET /api/lga/:name     → Single LGA detail                                │
+│  GET /api/states        → Per-state aggregated metrics (DB only)            │
+│  GET /api/rankings      → Top-N by composite score (DB only)                │
+│  GET /api/history/:lga  → Time-series snapshots (DB only)                   │
+│                                                                             │
+│  Dual-mode: Database-first with automatic file fallback                     │
+│  Response header: X-Data-Source: database | file                            │
+│                                                                             │
+│  server/database.js — pg Pool, row→GeoJSON Feature mapping                  │
+│                                                                             │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────── REACT DASHBOARD ─────────────────────────────────┐
+│                                                                             │
+│  client/src/ — React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS 4         │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                           App.tsx                                   │    │
+│  │   State management, view switching, filter propagation              │    │
+│  │   Three views: Map | Rankings | State Overview                      │    │
+│  │   Mobile: hamburger menu, bottom nav bar, sidebar drawer            │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │                                                                     │    │
+│  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────────────────┐    │    │
+│  │  │ MapComponent  │ │ RankingsTable│ │ StateOverview            │    │    │
+│  │  │              │ │              │ │                          │    │    │
+│  │  │ Leaflet map  │ │ Sortable LGA │ │ State-level aggregated   │    │    │
+│  │  │ GeoJSON      │ │ rankings by  │ │ metrics, filterable by   │    │    │
+│  │  │ overlay      │ │ composite    │ │ search, click to zoom    │    │    │
+│  │  │ 5 risk tiers │ │ score        │ │ to state on map          │    │    │
+│  │  └──────────────┘ └──────────────┘ └──────────────────────────┘    │    │
+│  │                                                                     │    │
+│  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────────────────┐    │    │
+│  │  │ Sidebar      │ │ SearchBar    │ │ Legend                   │    │    │
+│  │  │              │ │              │ │                          │    │    │
+│  │  │ National     │ │ Search by    │ │ 5-tier risk level        │    │    │
+│  │  │ overview +   │ │ LGA/state    │ │ color legend             │    │    │
+│  │  │ LGA detail   │ │ Filters all  │ │                          │    │    │
+│  │  │ analytics    │ │ views        │ │                          │    │    │
+│  │  └──────────────┘ └──────────────┘ └──────────────────────────┘    │    │
+│  │                                                                     │    │
+│  │  ┌──────────────┐                                                   │    │
+│  │  │ ThemeContext  │  Dark/light theme management                      │    │
+│  │  └──────────────┘                                                   │    │
+│  │                                                                     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                             │
+│  Features: 60s auto-refresh, responsive design, cross-view search,         │
+│            compact hover tooltips, click-for-detail sidebar                 │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Deployment Architecture
+## Data Flow
+
+### Static Mode
 
 ```
-┌──────────────────────────────────────────────┐
-│           Production Deployment               │
-├──────────────────────────────────────────────┤
-│                                               │
-│  Cloud Server (AWS EC2 / Azure VM)           │
-│  ┌─────────────────────────────────────────┐ │
-│  │                                         │ │
-│  │  Systemd Services:                      │ │
-│  │  ├─ scheduler.service (background)      │ │
-│  │  ├─ api.service (port 5000)             │ │
-│  │  └─ nginx (reverse proxy, port 80)      │ │
-│  │                                         │ │
-│  │  PostgreSQL with PostGIS:               │ │
-│  │  ├─ poverty_hotspots table              │ │
-│  │  └─ Automatic backups                   │ │
-│  │                                         │ │
-│  │  Monitoring:                            │ │
-│  │  ├─ PM2 for Node.js                     │ │
-│  │  ├─ Supervisor for Python               │ │
-│  │  └─ CloudWatch / Azure Monitor          │ │
-│  │                                         │ │
-│  └─────────────────────────────────────────┘ │
-│                                               │
-│  Frontend (Vercel / Netlify)                 │
-│  ┌─────────────────────────────────────────┐ │
-│  │ Static React build                      │ │
-│  │ Connects to API server                  │ │
-│  │ Auto-polling enabled                    │ │
-│  └─────────────────────────────────────────┘ │
-└──────────────────────────────────────────────┘
+Local Files                    Processing                     Output
+─────────────────────────────────────────────────────────────────────────
+VIIRS .tif      ──┐
+GRID3 .shp      ──┤   feature_extraction.py
+State MPI .csv  ──┤──► (windowed raster read)   ──► processed_hotspots.csv
+Senatorial .csv ──┤    (zonal stats per LGA)
+nigeria_lga.json──┘    (KNN imputation)
+
+processed_hotspots.csv ──► model_engine.py ──────► final_model_output.csv
+                           (StandardScaler)        hotspots.geojson
+                           (PCA 95% variance)
+                           (K-Means k=5 or HDBSCAN)
+                           (Composite scoring)
+                           (5-tier classification)
+
+final_model_output.csv ──► migrate_to_db.py ─────► PostgreSQL poverty_hotspots
+hotspots.geojson        ──► (fallback file for API)
 ```
+
+### Dynamic Mode
+
+```
+Scheduler (APScheduler)                    Database
+────────────────────────────────────────────────────────
+Every 1h:  ACLED API → conflict events  ──► poverty_hotspots.conflict_flag
+Every 6h:  Infrastructure APIs          ──► poverty_hotspots (health, schools)
+Every 24h: VIIRS data refresh           ──► poverty_hotspots.nightlight
+Every 12h: Full model retrain           ──► poverty_hotspots (all columns)
+                                            hotspot_history (new snapshots)
+
+API Server (Express)                       Frontend (React)
+────────────────────────────────────────────────────────
+GET /api/hotspots                       → GeoJSON for map
+GET /api/stats                          → Summary statistics
+GET /api/states                         → State aggregations
+GET /api/rankings                       → Ranked LGA list
+GET /api/history/:lga                   → Trend sparklines
+
+                    ◄──── 60-second polling ────►
+```
+
+## Composite Poverty Score Formula
+
+```
+composite_poverty_score = (
+    0.30 × mpi_normalized +
+    0.25 × inverse_nightlight_normalized +
+    0.15 × health_access_normalized +
+    0.15 × education_access_normalized +
+    0.15 × infrastructure_normalized
+)
+```
+
+Higher scores = higher poverty risk. Scores are standardized before weighting.
+
+## Risk Level Assignment
+
+After K-Means (k=5) or HDBSCAN clustering:
+
+1. Clusters sorted by mean composite poverty score (descending)
+2. Labels assigned top-down: Critical → High → Medium → Low → Minimal
+3. Risk colors: `#7C3AED` (Critical), `#EF4444` (High), `#F59E0B` (Medium), `#10B981` (Low), `#3B82F6` (Minimal)
+
+## Technology Stack
+
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| ML Engine | Python | 3.9+ |
+| ML Libs | scikit-learn, HDBSCAN, geopandas, rasterio | Latest |
+| ORM | SQLAlchemy | Latest |
+| Database | PostgreSQL | 14+ |
+| API Server | Node.js / Express | 18+ / 4.x |
+| DB Driver | pg (node-postgres) | Latest |
+| Frontend | React + TypeScript | 19 / 5.9 |
+| Build | Vite | 7.x |
+| Styling | Tailwind CSS | 4.x |
+| Maps | Leaflet + react-leaflet | 1.9 / 5.x |
+| Charts | Recharts | 3.x |
+
+## Security & Performance
+
+- **Rate limiting**: 100 requests per 15 minutes per IP
+- **CORS**: Configured for localhost development
+- **Compression**: gzip via `compression` middleware
+- **Graceful shutdown**: SIGTERM/SIGINT handlers on API server
+- **Memory-safe raster processing**: Windowed reads for 10.8 GB VIIRS file
+- **GeoJSON caching**: Frontend caches fetched data and only re-requests on filter changes
+- **Polling**: 60-second interval with re-fetch on page focus

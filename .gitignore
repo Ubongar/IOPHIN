@@ -32,3 +32,5 @@ build/
 
 # Service account keys / secrets
 gee/gen-lang-client-0206534143-b4d81af822c7.json
+#bak files
+*.bak

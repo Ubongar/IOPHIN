@@ -1,209 +1,234 @@
-# IOPHIN Web Dashboard - Setup Guide
+# IOPHIN — Setup Guide
 
-This guide will help you set up and run the complete IOPHIN system including the ML engine, backend API, and frontend dashboard.
+Complete installation and configuration guide for the Nigeria Poverty Hotspot Intelligence System.
 
 ## Prerequisites
 
-- **Python 3.8+** (for the ML engine)
-- **Node.js 18+** and npm (for backend and frontend)
-- **Git** (for cloning the repository)
+| Requirement | Version | Purpose |
+|-------------|---------|---------|
+| Python | 3.9+ | ML engine, data processing |
+| Node.js | 18+ | API server |
+| PostgreSQL | 14+ | Primary database |
+| npm | 9+ | Package management |
+| Git | Latest | Version control |
 
-## Quick Start (Dashboard Only)
+### Hardware
 
-If the ML engine has already processed the data and `data/processed/hotspots.geojson` exists:
+- **RAM**: 8 GB minimum (16 GB recommended for VIIRS raster processing)
+- **Disk**: ~12 GB for VIIRS GeoTIFF + processed outputs
+- **CPU**: Multi-core recommended for raster extraction
 
-### 1. Start the Backend API
+## 1. Clone & Navigate
 
 ```bash
-cd server
-npm install
-npm start
+git clone <repository-url>
+cd IOPHIN
 ```
 
-The API will be available at http://localhost:5000
+## 2. PostgreSQL Setup
 
-### 2. Start the Frontend Dashboard
+Create the database and user:
 
-In a new terminal:
+```sql
+-- Connect as superuser
+psql -U postgres
 
-```bash
-cd client
-npm install
-npm run dev
+-- Create database
+CREATE DATABASE iophin_db;
+
+-- Verify
+\l
 ```
 
-The dashboard will be available at http://localhost:5173
+The application uses the connection string:
+```
+postgresql://postgres:<password>@localhost:5432/iophin_db
+```
 
-## Full Setup (Including ML Engine)
+Tables are auto-created by the Python ORM on first run. The schema includes:
+- `poverty_hotspots` — 774 LGA rows with compound unique constraint `(lga_name, state)`
+- `hotspot_history` — time-series snapshots indexed on `(lga_name, snapshot_date)`
 
-### Step 1: Python ML Engine
+## 3. Python Environment
 
 ```bash
-# Install Python dependencies
+# Create virtual environment (recommended)
+python -m venv venv
+
+# Activate
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
-
-# Run the ML pipeline
-python -m src.main
 ```
 
-This will:
-- Load LGA shapefiles
-- Extract nightlight intensity from VIIRS data (or generate synthetic data)
-- Merge with MPI indicators
-- Run K-Means clustering
-- Generate `data/processed/hotspots.geojson`
+### Python Dependencies
 
-### Step 2: Backend API
+Core packages installed by `requirements.txt`:
+
+| Package | Purpose |
+|---------|---------|
+| numpy, pandas | Data manipulation |
+| scikit-learn | PCA, K-Means, KNN imputation |
+| hdbscan | Alternative clustering algorithm |
+| geopandas | Geospatial dataframe operations |
+| rasterio | VIIRS raster reading (windowed) |
+| shapely, fiona, pyproj | Geometry operations, file I/O, CRS |
+| sqlalchemy | ORM for PostgreSQL |
+| psycopg2-binary | PostgreSQL driver for Python |
+| requests | HTTP API calls |
+| schedule | Task scheduling |
+| python-dotenv | Environment variable management |
+| earthengine-api | Google Earth Engine integration |
+| thefuzz | Fuzzy string matching for LGA names |
+| matplotlib, seaborn | Visualization (diagnostics) |
+| openpyxl | Excel file reading |
+
+## 4. Node.js Backend
 
 ```bash
 cd server
 npm install
+```
 
-# Optional: Create .env file with custom settings
-cat > .env << EOF
+### Server Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| express | HTTP server framework |
+| pg | PostgreSQL client for Node.js |
+| cors | Cross-origin resource sharing |
+| compression | gzip response compression |
+| dotenv | Environment variables |
+| express-rate-limit | API rate limiting |
+
+> **Note**: `better-sqlite3` appears in `package.json` as a legacy dependency but is **not used**. The server exclusively uses `pg` for PostgreSQL.
+
+## 5. React Frontend
+
+```bash
+cd client
+npm install
+```
+
+### Client Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| react, react-dom | UI framework (v19) |
+| typescript | Type safety (v5.9) |
+| vite | Build tool (v7) |
+| tailwindcss | Utility CSS framework (v4) |
+| react-leaflet, leaflet | Interactive map |
+| recharts | Charts and sparklines |
+| axios | HTTP client |
+| @types/leaflet | Leaflet type definitions |
+
+## 6. Environment Configuration
+
+### Python (`src/config.py`)
+
+Key configuration values (modify in `src/config.py`):
+
+```python
+# Paths
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+RAW_DIR = DATA_DIR / "raw"
+PROCESSED_DIR = DATA_DIR / "processed"
+
+# Model Parameters
+K_CLUSTERS = 5                    # Number of clusters
+PCA_VARIANCE = 0.95               # PCA variance threshold
+USE_HDBSCAN = True                # Use HDBSCAN instead of K-Means
+
+# Composite Score Weights
+COMPOSITE_WEIGHTS = {
+    "mpi": 0.30,
+    "inverse_nightlight": 0.25,
+    "health_access": 0.15,
+    "education_access": 0.15,
+    "infrastructure": 0.15
+}
+```
+
+### Python Database (`src/db_config.py`)
+
+```python
+DATABASE_URL = "postgresql://postgres:<password>@localhost:5432/iophin_db"
+```
+
+Or set via environment variable:
+```bash
+export DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/iophin_db"
+```
+
+### Node.js Server (`server/.env` — optional)
+
+```env
 PORT=5000
-NODE_ENV=development
-DATA_PATH=../data/processed/hotspots.geojson
-EOF
-
-npm start
+DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/iophin_db
 ```
 
-Available endpoints:
-- `GET /api/health` - Health check
-- `GET /api/stats` - Summary statistics
-- `GET /api/hotspots` - Full GeoJSON data
-- `GET /api/lga/:name` - Individual LGA details
+The server defaults to port 5000 and reads from `data/processed/hotspots.geojson` when the database is unavailable.
 
-### Step 3: Frontend Dashboard
+### React Frontend (`client/vite.config.ts`)
+
+The dev server runs on port 5173 with API proxy to `http://localhost:5000`.
+
+## 7. Data Files
+
+### Required Files
+
+| File | Location | Source |
+|------|----------|--------|
+| LGA Shapefile | `data/raw/NGA_LGA_Boundaries_2_.../grid3_nga_boundary_vacclgas.shp` | GRID3 Nigeria |
+| State MPI | `data/raw/nga_mpi(3).csv` | Oxford MPI |
+| Senatorial MPI | `data/raw/Nigeria MPI by Senatorial District.csv` | Oxford MPI |
+| LGA Reference | `data/raw/nigeria_lga.json` | Manual reference |
+
+### Optional Files
+
+| File | Location | Notes |
+|------|----------|-------|
+| VIIRS Raster | `data/raw/viirs_2024.tif` | 10.8 GB — synthetic data used when absent |
+| GEE Credentials | `gee/*.json` | Required only for Google Earth Engine features |
+
+## 8. Verify Installation
 
 ```bash
-cd client
-npm install
+# Check Python
+python -c "import geopandas; import rasterio; import sqlalchemy; print('Python OK')"
 
-# Optional: Create .env file with custom API URL
-cat > .env << EOF
-VITE_API_URL=http://localhost:5000/api
-EOF
+# Check Node
+node -e "require('pg'); require('express'); console.log('Node OK')"
 
-# Development mode with hot reload
-npm run dev
+# Check PostgreSQL
+psql -U postgres -d iophin_db -c "SELECT 1"
 
-# Or build for production
-npm run build
-npm run preview
+# Run ML pipeline
+python -m src.main
+
+# Start server
+cd server && node index.js
+
+# Start frontend (new terminal)
+cd client && npm run dev
 ```
 
-## Environment Variables
+## Port Summary
 
-### Backend (`server/.env`)
+| Service | Port | URL |
+|---------|------|-----|
+| React Dev Server | 5173 | http://localhost:5173 |
+| Node.js API | 5000 | http://localhost:5000 |
+| PostgreSQL | 5432 | postgresql://localhost:5432/iophin_db |
 
-```env
-PORT=5000                                      # API server port
-NODE_ENV=development                           # Environment (development/production)
-DATA_PATH=../data/processed/hotspots.geojson  # Path to GeoJSON data
-```
+## Next Steps
 
-### Frontend (`client/.env`)
-
-```env
-VITE_API_URL=http://localhost:5000/api  # Backend API URL
-```
-
-## Production Deployment
-
-### Backend
-
-```bash
-cd server
-npm install --production
-NODE_ENV=production npm start
-```
-
-Consider using:
-- **PM2** for process management
-- **Nginx** as reverse proxy
-- **SSL/TLS** certificates for HTTPS
-
-### Frontend
-
-```bash
-cd client
-npm run build
-```
-
-Deploy the `dist/` folder to:
-- **Netlify**
-- **Vercel**
-- **GitHub Pages**
-- Or serve with Nginx/Apache
-
-Update `VITE_API_URL` to point to your production API.
-
-## Troubleshooting
-
-### Backend Issues
-
-**"Model is currently retraining" error**
-- The `hotspots.geojson` file is missing
-- Run the Python ML engine first: `python -m src.main`
-
-**Port already in use**
-- Change the PORT in `server/.env`
-- Or stop the process using port 5000
-
-**CORS errors**
-- Ensure the frontend URL is allowed in `server/index.js`
-- Check CORS configuration in production
-
-### Frontend Issues
-
-**Network error / Failed to fetch**
-- Ensure backend is running on http://localhost:5000
-- Check `VITE_API_URL` in `client/.env`
-
-**Map tiles not loading**
-- OpenStreetMap tiles may be blocked by ad blockers
-- Or check network connectivity
-
-**Build errors**
-- Delete `node_modules` and `package-lock.json`
-- Run `npm install` again
-- Ensure Node.js version is 18+
-
-## Data Notes
-
-- **774 LGAs** are included in the current dataset with complete data for analysis
-- The system can be updated when additional data becomes available
-
-## Performance
-
-### Backend
-- GZIP compression enabled for large files
-- Streaming for efficient memory usage
-- Rate limiting: 100 requests per 15 minutes per IP
-
-### Frontend
-- Single-page React application suitable for dashboard-style interactions
-- Production builds use standard React tooling optimizations (minification, bundling)
-- Architecture allows adding code splitting, memoization, and lazy loading for heavy components if needed
-
-## Security Features
-
-✅ Rate limiting on all API endpoints
-✅ CORS configuration
-✅ Input validation
-✅ Error handling with no sensitive data exposure
-✅ Environment-based configuration
-
-## Support
-
-For issues or questions:
-1. Check the troubleshooting section
-2. Review the documentation in `README.md`
-3. Check individual component READMEs (`server/README.md`, `client/README.md`)
-4. Open an issue on GitHub
-
-## License
-
-This project is part of the IOPHIN (Integrated Optimization Platform for Health Information in Nigeria) initiative.
+- [QUICKSTART.md](QUICKSTART.md) — Run the static pipeline
+- [QUICKSTART_DYNAMIC.md](QUICKSTART_DYNAMIC.md) — Enable real-time monitoring
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Diagnose common issues

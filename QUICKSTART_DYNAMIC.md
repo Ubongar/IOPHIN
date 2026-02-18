@@ -1,243 +1,180 @@
-# Quick Start Guide - Dynamic Real-Time Monitoring
+# IOPHIN — Quick Start (Dynamic Monitoring Mode)
 
-This guide will get you up and running with the dynamic monitoring system in 5 minutes.
+Enable real-time monitoring with scheduled data fetches, ML retraining, and live dashboard updates.
 
 ## Prerequisites
 
-- Python 3.9+ installed
-- Existing IOPHIN data (from running `python -m src.main`)
-- Terminal access
+- All [static mode setup](QUICKSTART.md) completed (ML pipeline ran, database populated)
+- PostgreSQL running with `iophin_db` containing 774 LGA records
+- External API access (optional — graceful fallback if unavailable)
 
-## Step 1: Install Dependencies
+## Overview
 
-```bash
-pip install -r requirements.txt
-```
+Dynamic mode adds continuous monitoring via `scheduler_service.py` which uses APScheduler to:
 
-This installs:
-- sqlalchemy (database ORM)
-- apscheduler (task scheduling)
-- requests (API calls)
-- psycopg2-binary (PostgreSQL support)
-- All existing ML dependencies
+| Task | Interval | Source |
+|------|----------|--------|
+| Conflict events | Every 1 hour | ACLED via HDX API |
+| Infrastructure refresh | Every 6 hours | OpenStreetMap Overpass, WorldPop |
+| Nightlight data update | Every 24 hours | NASA VIIRS (or GEE) |
+| Full model retrain | Every 12 hours | All data sources |
 
-## Step 2: Initialize Database
+Each update writes to `poverty_hotspots` (upsert) and creates a snapshot in `hotspot_history` for trend analysis.
 
-First, ensure you have the initial data:
+## Step 1: Ensure Database is Populated
 
 ```bash
-# If you haven't already, run the ML model
+# Run initial ML pipeline if not done
 python -m src.main
-```
 
-Then migrate to database:
-
-```bash
+# Migrate to database
 python -m src.migrate_to_db
 ```
 
-Expected output:
-```
-✅ Database schema created
-✅ Migration complete: 774 records
+Verify: `psql -U postgres -d iophin_db -c "SELECT COUNT(*) FROM poverty_hotspots;"`
+Expected: `774`
+
+## Step 2: Configure External APIs
+
+Edit `src/config.py` for API endpoints:
+
+```python
+# Conflict data (ACLED via HDX)
+HDX_API_URL = "https://data.humdata.org/api/3/action/..."
+
+# Population data
+WORLDPOP_API = "https://www.worldpop.org/rest/data/..."
+
+# Displacement data
+DTM_API = "https://dtm.iom.int/api/..."
+
+# Food prices
+WFP_API = "https://api.wfp.org/..."
+
+# Infrastructure (OpenStreetMap)
+OVERPASS_API = "https://overpass-api.de/api/interpreter"
+
+# Environmental (Google Earth Engine)
+GEE_PROJECT = "your-project-id"
+GEE_CREDENTIALS = "gee/your-credentials.json"
 ```
 
-This creates `poverty_hotspots.db` in the project root.
+> **Note**: The system gracefully handles API failures. If an external API is unreachable, that data source is skipped and existing values are retained.
 
-## Step 3: Start the Scheduler
+## Step 3: Start the Scheduler Service
 
 ```bash
 python -m src.scheduler_service
 ```
 
-You'll see:
+**Expected output:**
 ```
-🚀 STARTING DYNAMIC MONITORING SERVICE
-================================================================================
-📊 SYSTEM STATUS
-Total LGAs monitored: 774
-Risk Distribution:
-  - High Risk: 221 LGAs
-  - Medium Risk: 263 LGAs
-  - Low Risk: 201 LGAs
-  - Minimal Risk: 89 LGAs
-Conflict Zones: 0 LGAs
-Average MPI: 0.1741
-Average Nightlight: 0.38
-================================================================================
-✅ Scheduled: Conflict Listener (every 1 hour)
-✅ Scheduled: Satellite Refresher (every 24 hours)
-✅ Scheduled: ML Model Retraining (every 6 hours)
-✅ SCHEDULER SERVICE IS NOW RUNNING
+Starting dynamic monitoring scheduler...
+Scheduler started with intervals:
+  - Conflict check: every 1 hour
+  - Infrastructure update: every 6 hours
+  - Nightlight refresh: every 24 hours
+  - Model retrain: every 12 hours
+Next conflict check at: YYYY-MM-DD HH:MM:SS
+Waiting for scheduled tasks...
 ```
 
-The service will:
-- Check for conflicts every hour
-- Update nightlight data every 24 hours
-- Retrain the ML model every 6 hours
-- Display status every hour
+The scheduler runs continuously. Keep this terminal open.
 
-## Step 4: Query the Database
-
-While the scheduler is running (in another terminal):
+## Step 4: Start API Server
 
 ```bash
-python -c "
-from src.db_utils import get_statistics
-import json
-stats = get_statistics()
-print(json.dumps(stats, indent=2))
-"
+cd server
+node index.js
 ```
 
-Or query specific data:
+The server reads from PostgreSQL. As the scheduler updates the database, the API automatically serves fresh data.
+
+## Step 5: Start Frontend
 
 ```bash
-python -c "
-from src.db_utils import get_all_hotspots
-hotspots = get_all_hotspots()
-print(f'Total LGAs: {len(hotspots)}')
-print(f'First LGA: {hotspots[0][\"LGA_Name\"]}')
-"
+cd client
+npm run dev
 ```
 
-## What's Happening?
+Open **http://localhost:5173**
 
-### Conflict Listener (Every 1 Hour)
+The dashboard polls the API every 60 seconds. Status indicators in the top toolbar show:
+- **Data source**: `database` (live) or `file` (fallback)
+- **LGA count**: Number of LGAs loaded
+- **Last updated**: Timestamp of most recent data
 
-Simulates checking ACLED API for conflict events:
-- 10% chance of detecting a conflict per run
-- Affected LGAs are flagged as "CRITICAL"
-- Risk levels automatically elevated
+## Data Flow in Dynamic Mode
 
-Example output:
 ```
-🔍 CONFLICT DATA LISTENER
-⚠️  CONFLICT DETECTED in Zamfara North
-   Event Type: Armed Clash
-   Severity: HIGH
-   Action: Flagging LGA as CRITICAL
-✅ Database updated
-```
-
-### Satellite Refresher (Every 24 Hours)
-
-Simulates fetching latest VIIRS nightlight data:
-- Updates 5-10 random LGAs per run
-- Simulates power outages (-30% to -50%)
-- Tracks development (+10% to +30%)
-- Normal variations (±5%)
-
-Example output:
-```
-🛰️  SATELLITE REFRESHER
-📊 Simulating nightlight changes for 8 LGAs...
-   ⚡ Borno South: POWER OUTAGE detected
-      Nightlight: 12.5 → 7.8 (-37.6%)
-   📈 Lagos Mainland: Economic activity increasing
-      Nightlight: 25.3 → 30.4 (+20.2%)
-✅ Updated 8 LGAs
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  External APIs   │────►│  Scheduler        │────►│  PostgreSQL      │
+│  (ACLED, GEE,    │     │  (APScheduler)    │     │  iophin_db       │
+│   WorldPop, WFP) │     │                    │     │                  │
+└──────────────────┘     │  src/scheduler_    │     │  poverty_hotspots│
+                         │  service.py        │     │  hotspot_history │
+                         └──────────────────┘     └────────┬─────────┘
+                                                           │
+                         ┌──────────────────┐              │
+                         │  Express API      │◄─────────────┘
+                         │  server/index.js  │
+                         │  Port 5000        │
+                         └────────┬─────────┘
+                                  │
+                         ┌────────▼─────────┐
+                         │  React Dashboard  │  ◄── 60s polling
+                         │  Port 5173        │
+                         └──────────────────┘
 ```
 
-### ML Model Retraining (Every 6 Hours)
+## Monitoring the Scheduler
 
-Re-runs K-Means clustering on updated data:
+The scheduler logs each task execution:
+
 ```
-🤖 ML ENGINE - Retraining model
-📊 Retraining model with 774 LGAs and 5 features
-✅ Model retrained successfully
-   Silhouette Score: 0.4350
-✅ Database updated with new risk classifications
+[2024-01-15 14:00:00] Running conflict check...
+[2024-01-15 14:00:05] Conflict check complete: 12 LGAs updated
+[2024-01-15 14:00:05] History snapshot saved for 12 LGAs
 ```
 
-## Verifying It's Working
+### Time-Series History
 
-### Check the Database
+Each scheduler run with data changes creates snapshots in `hotspot_history`:
+
+```sql
+SELECT lga_name, snapshot_date, composite_poverty_score, risk_level
+FROM hotspot_history
+WHERE lga_name = 'Maiduguri'
+ORDER BY snapshot_date DESC
+LIMIT 10;
+```
+
+The frontend accesses this via `GET /api/history/:lga` for trend visualization.
+
+## Stopping the Service
+
+Press `Ctrl+C` in the scheduler terminal. The scheduler has a graceful shutdown handler.
+
+## Running All Services
+
+For convenience, run all three services in separate terminals:
 
 ```bash
-# Count records
-sqlite3 poverty_hotspots.db "SELECT COUNT(*) FROM poverty_hotspots;"
+# Terminal 1: Scheduler
+python -m src.scheduler_service
 
-# Check conflict zones
-sqlite3 poverty_hotspots.db "SELECT lga_name, conflict_flag FROM poverty_hotspots WHERE conflict_flag != 'NORMAL';"
+# Terminal 2: API Server
+cd server && node index.js
 
-# View recent updates
-sqlite3 poverty_hotspots.db "SELECT lga_name, last_updated FROM poverty_hotspots ORDER BY last_updated DESC LIMIT 5;"
+# Terminal 3: Frontend
+cd client && npm run dev
 ```
-
-### Monitor Logs
-
-The scheduler writes to:
-- Console output (stdout)
-- `scheduler_service.log` file
-
-```bash
-# Tail the log file
-tail -f scheduler_service.log
-```
-
-## Stop the Scheduler
-
-Press `Ctrl+C` in the terminal running the scheduler:
-
-```
-^C
-🛑 Shutting down scheduler service...
-✅ Service stopped gracefully
-```
-
-## Customizing Update Intervals
-
-Edit `src/scheduler_service.py`:
-
-```python
-# Conflict check: every 30 minutes instead of 1 hour
-scheduler.add_job(
-    self.fetch_conflict_data,
-    trigger=IntervalTrigger(minutes=30),
-    id='conflict_listener'
-)
-
-# Satellite refresh: every 12 hours instead of 24
-scheduler.add_job(
-    self.fetch_latest_nightlights,
-    trigger=IntervalTrigger(hours=12),
-    id='satellite_refresher'
-)
-```
-
-## Next Steps
-
-1. **Connect Real APIs**: Replace simulated functions in `scheduler_service.py` with actual API calls to ACLED, NASA GIBS, etc.
-
-2. **Production Database**: Switch from SQLite to PostgreSQL by setting:
-   ```bash
-   export DATABASE_URL="postgresql://user:pass@localhost/iophin"
-   ```
-
-3. **Deploy as Service**: Use systemd or Docker to run scheduler continuously
-
-4. **Add Alerting**: Implement email/SMS notifications for critical events
-
-5. **Frontend Integration**: Update React app to poll `/api/hotspots` every 60 seconds for real-time updates
 
 ## Troubleshooting
 
-**Database not found**
-```bash
-python -m src.migrate_to_db
-```
+- **Scheduler won't start**: Check PostgreSQL is running and `DATABASE_URL` is correct
+- **No data updates**: Check API connectivity with `curl` to external endpoints
+- **Stale dashboard**: Verify browser console shows successful API calls every 60s
+- **History not appearing**: Ensure `hotspot_history` table exists (auto-created on first run)
 
-**Import errors**
-```bash
-pip install -r requirements.txt
-```
-
-**Scheduler not updating**
-- Check `scheduler_service.log` for errors
-- Verify database file permissions
-- Ensure scheduler process is running
-
-## Full Documentation
-
-See [DYNAMIC_MONITORING.md](DYNAMIC_MONITORING.md) for complete architecture details and production deployment guide.
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) and [DYNAMIC_MONITORING.md](DYNAMIC_MONITORING.md) for detailed guides.

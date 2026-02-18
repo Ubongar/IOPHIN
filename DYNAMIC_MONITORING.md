@@ -1,378 +1,287 @@
-# Dynamic Real-Time Monitoring System Guide
+# IOPHIN — Dynamic Monitoring Guide
 
-This guide explains how to use the new **Dynamic Real-Time Monitoring System** for IOPHIN.
+Comprehensive guide for the real-time poverty monitoring system with scheduled data ingestion, ML retraining, and live dashboard updates.
 
-## Architecture Overview
+## System Overview
 
-The system has transitioned from a static, file-based architecture to a dynamic pipeline with three components:
+The dynamic monitoring system continuously fetches external data, updates ML predictions, and stores time-series snapshots for trend analysis. It transforms IOPHIN from a static analysis tool into a live intelligence platform.
 
-1. **The Harvester (Python Scheduler)**: Background service that fetches data from APIs and updates the database
-2. **The Live Database (SQLite/PostgreSQL)**: Single source of truth that changes dynamically
-3. **The API Gateway (Node.js)**: Serves the latest state from the database in real-time
+### Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Dynamic Architecture                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  External APIs            Scheduler Service       Database   │
-│  ┌──────────┐           ┌──────────────┐        ┌─────────┐ │
-│  │ ACLED    │──hourly──▶│ Conflict     │───────▶│         │ │
-│  │ (Conflict)           │ Listener     │        │ SQLite/ │ │
-│  └──────────┘           └──────────────┘        │ PostGIS │ │
-│                                                  │         │ │
-│  ┌──────────┐           ┌──────────────┐        │ poverty │ │
-│  │ NASA     │──daily───▶│ Nightlight   │───────▶│ hotspots│ │
-│  │ GIBS     │           │ Refresher    │        │ table   │ │
-│  └──────────┘           └──────────────┘        │         │ │
-│                                ▼                 └────┬────┘ │
-│                         ┌──────────────┐              │      │
-│                         │ ML Engine    │              │      │
-│                         │ (K-Means)    │◀─────────────┘      │
-│                         └──────────────┘                     │
-│                                                               │
-│  Frontend                Node.js API                         │
-│  ┌──────────┐           ┌──────────────┐                    │
-│  │ React    │◀─60s poll─│ Express      │◀─query─────────────┘
-│  │ Dashboard│           │ /api/hotspots│                     │
-│  └──────────┘           └──────────────┘                     │
-└─────────────────────────────────────────────────────────────┘
+External APIs ──► scheduler_service.py ──► PostgreSQL ──► Express API ──► React Dashboard
+                 (APScheduler)              (iophin_db)    (port 5000)     (port 5173)
+                                                                            60s polling
 ```
 
-## Quick Start
+### Components
 
-### 1. Install Dependencies
+| Component | File | Role |
+|-----------|------|------|
+| Scheduler | `src/scheduler_service.py` | Orchestrates periodic data fetch + retrain |
+| Config | `src/config.py` | API URLs, intervals, model parameters |
+| DB Config | `src/db_config.py` | SQLAlchemy ORM, table schemas |
+| DB Utils | `src/db_utils.py` | CRUD operations for PostgreSQL |
+| Model Engine | `src/model_engine.py` | ML pipeline (PCA, K-Means/HDBSCAN) |
+| Feature Extraction | `src/feature_extraction.py` | Data enrichment from APIs |
 
-```bash
-# Python dependencies
-pip install -r requirements.txt
+## Database Schema
 
-# Node.js dependencies (for API server)
-cd server
-npm install
-```
+### `poverty_hotspots` (774 rows)
 
-### 2. Initialize Database
-
-First, run the ML model to generate the initial GeoJSON data:
-
-```bash
-python -m src.main
-```
-
-Then migrate the data to the database:
-
-```bash
-python -m src.migrate_to_db
-```
-
-This creates `poverty_hotspots.db` with all LGA data.
-
-### 3. Start the Scheduler Service
-
-The scheduler continuously fetches data and updates the database:
-
-```bash
-python -m src.scheduler_service
-```
-
-You'll see output like:
-```
-🚀 STARTING DYNAMIC MONITORING SERVICE
-✅ Scheduled: Conflict Listener (every 1 hour)
-✅ Scheduled: Satellite Refresher (every 24 hours)
-✅ Scheduled: ML Model Retraining (every 6 hours)
-✅ SCHEDULER SERVICE IS NOW RUNNING
-```
-
-### 4. Start the API Server
-
-In a separate terminal:
-
-```bash
-cd server
-npm start
-```
-
-The API will automatically use the database for real-time data.
-
-### 5. Start the Frontend (Optional)
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-Access at http://localhost:5173
-
-## How It Works
-
-### Automated Data Pipeline
-
-#### 1. Conflict Listener (Every 1 Hour)
-
-Simulates fetching from ACLED or GDELT APIs:
-- Detects conflict events in LGAs
-- Flags affected areas as "CRITICAL"
-- Elevates risk levels automatically
-- Example: If violence detected in "Zamfara North", system immediately updates database
-
-```python
-# Simulated conflict detection
-if conflict_detected:
-    upsert_conflict_flag(
-        lga_name="Zamfara North",
-        conflict_flag='CRITICAL'
-    )
-```
-
-#### 2. Satellite Refresher (Every 24 Hours)
-
-Simulates fetching from NASA GIBS or Google Earth Engine:
-- Updates nightlight intensity values
-- Detects power outages (-30% to -50%)
-- Tracks economic development (+10% to +30%)
-- Normal variations (±5%)
-
-```python
-# Simulated scenarios
-if power_outage:
-    new_nightlight = old_value * 0.6  # 40% decrease
-    
-if development:
-    new_nightlight = old_value * 1.2  # 20% increase
-```
-
-#### 3. ML Model Retraining (Every 6 Hours)
-
-- Re-runs K-Means clustering on updated data
-- Recalculates risk levels based on new indicators
-- Updates database with fresh classifications
-
-### Database Schema
-
-The `poverty_hotspots` table stores:
+Primary table storing current state for all LGAs.
 
 ```sql
 CREATE TABLE poverty_hotspots (
-    id INTEGER PRIMARY KEY,
-    lga_name VARCHAR(255) UNIQUE,
-    state VARCHAR(100),
+    id SERIAL PRIMARY KEY,
+    lga_name VARCHAR NOT NULL,
+    state VARCHAR NOT NULL,
     latitude FLOAT,
     longitude FLOAT,
-    mean_nightlight_intensity FLOAT,
+    
+    -- Poverty indicators
     mpi FLOAT,
     headcount_ratio FLOAT,
     intensity_of_deprivation FLOAT,
     in_severe_poverty FLOAT,
+    senatorial_mpi FLOAT,
+    
+    -- Economic
+    mean_nightlight_intensity FLOAT,
+    composite_poverty_score FLOAT,
+    
+    -- Infrastructure
+    health_facility_count FLOAT,
+    school_count FLOAT,
+    road_density_km FLOAT,
+    
+    -- Environmental
+    ndvi_mean FLOAT,
+    rainfall_mm FLOAT,
+    
+    -- Demographics
+    population_density FLOAT,
+    distance_to_urban_km FLOAT,
+    
+    -- Displacement
+    idp_count FLOAT,
+    food_price_index FLOAT,
+    
+    -- ML outputs
     cluster INTEGER,
-    cluster_label VARCHAR(100),
-    risk_level VARCHAR(50),
-    conflict_flag VARCHAR(50),  -- NEW: NORMAL, ALERT, CRITICAL
-    last_conflict_event DATETIME,
-    geometry TEXT,
-    last_updated DATETIME,
-    data_source VARCHAR(100)  -- ML_MODEL, API_REFRESH, CONFLICT_API
+    cluster_label VARCHAR,
+    risk_level VARCHAR,
+    clustering_method VARCHAR,
+    
+    -- Crisis
+    conflict_flag BOOLEAN DEFAULT FALSE,
+    last_conflict_event TIMESTAMP,
+    
+    -- Metadata
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_source VARCHAR DEFAULT 'model_output',
+    geometry TEXT,  -- GeoJSON polygon (stored as text)
+    
+    UNIQUE(lga_name, state)  -- Compound unique constraint
 );
 ```
 
-### API Endpoints
+### `hotspot_history` (time-series)
 
-All endpoints now serve real-time data from the database:
+Stores periodic snapshots for trend analysis.
 
-**GET /api/hotspots**
-- Returns GeoJSON from database
-- Cache: 60 seconds (real-time mode)
-- Header: `X-Data-Source: database`
+```sql
+CREATE TABLE hotspot_history (
+    id SERIAL PRIMARY KEY,
+    lga_name VARCHAR NOT NULL,
+    state VARCHAR,
+    snapshot_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    composite_poverty_score FLOAT,
+    mpi FLOAT,
+    mean_nightlight_intensity FLOAT,
+    risk_level VARCHAR,
+    conflict_flag BOOLEAN,
+    population_density FLOAT,
+    distance_to_urban_km FLOAT,
+    health_facility_count FLOAT,
+    school_count FLOAT
+);
 
-**GET /api/stats**
-- Real-time statistics including conflict zones
-- Returns: `totalLGAs`, `riskDistribution`, `conflictZones`, etc.
+CREATE INDEX idx_history_lga_date ON hotspot_history(lga_name, snapshot_date);
+```
 
-**GET /api/lga/:name**
-- Individual LGA details with conflict status
-- Includes `conflict_flag` and `last_conflict_event`
+## Scheduled Tasks
 
-## Configuration
+### Task 1: Conflict Monitoring (Every 1 Hour)
+
+**Source**: ACLED data via HDX (Humanitarian Data Exchange) API
+
+**Process**:
+1. Fetches recent conflict events for Nigeria
+2. Geocodes events to LGAs using spatial lookup
+3. Updates `conflict_flag` and `last_conflict_event` columns
+4. Creates history snapshots for affected LGAs
+
+**Configuration** (`src/config.py`):
+```python
+HDX_API_URL = "https://data.humdata.org/api/3/action/..."
+ACLED_RESOURCE_ID = "..."
+```
+
+### Task 2: Infrastructure Update (Every 6 Hours)
+
+**Sources**: OpenStreetMap (Overpass API), WorldPop
+
+**Process**:
+1. Queries Overpass API for health facilities, schools, road networks per LGA
+2. Fetches population density from WorldPop
+3. Updates `health_facility_count`, `school_count`, `road_density_km`, `population_density`
+
+**Configuration**:
+```python
+OVERPASS_API = "https://overpass-api.de/api/interpreter"
+WORLDPOP_API = "https://www.worldpop.org/rest/data/..."
+```
+
+### Task 3: Nightlight Refresh (Every 24 Hours)
+
+**Source**: NASA VIIRS via Google Earth Engine
+
+**Process**:
+1. Authenticates with GEE using service account
+2. Extracts mean nightlight intensity per LGA boundary
+3. Updates `mean_nightlight_intensity`
+
+**Configuration**:
+```python
+GEE_PROJECT = "your-project-id"
+GEE_CREDENTIALS = "gee/your-credentials.json"
+```
+
+### Task 4: Full Model Retrain (Every 12 Hours)
+
+**Process**:
+1. Reads current `poverty_hotspots` data from PostgreSQL
+2. Re-runs the full ML pipeline:
+   - Standard scaling of all features
+   - PCA (95% variance retained)
+   - K-Means (k=5) or HDBSCAN clustering
+   - Composite poverty score recalculation
+   - 5-tier risk level re-assignment
+3. Updates all rows in `poverty_hotspots`
+4. Creates snapshots in `hotspot_history` for all 774 LGAs
+
+## API Endpoints for Dynamic Data
+
+| Endpoint | Response | Notes |
+|----------|----------|-------|
+| `GET /api/hotspots?state=X&risk=Y` | GeoJSON FeatureCollection | Filterable by state and risk level |
+| `GET /api/stats` | `{ total, byRisk, avgMPI, ... }` | Summary statistics |
+| `GET /api/states` | `[{ state, count, avgScore, riskBreakdown }]` | Per-state aggregations (DB only) |
+| `GET /api/rankings?order=worst&limit=50` | `[{ lga, state, score, risk }]` | Ranked list (DB only) |
+| `GET /api/history/:lga?limit=30` | `[{ date, score, risk, nightlight }]` | Time-series (DB only) |
+| `GET /api/lga/:name` | Single LGA feature | Full detail |
+| `GET /api/health` | `{ status, dbConnected, hotspots }` | Health check |
+
+All responses include `X-Data-Source: database` header when serving from PostgreSQL.
+
+## Frontend Integration
+
+### Auto-Refresh
+
+The React dashboard polls `/api/hotspots` and `/api/stats` every 60 seconds:
+
+```typescript
+// In App.tsx
+useEffect(() => {
+    const interval = setInterval(fetchData, 60000);
+    return () => clearInterval(interval);
+}, []);
+```
+
+### Status Display
+
+The top toolbar shows data freshness:
+- Source indicator: **DB** (live database) or **File** (static fallback)
+- LGA count badge
+- Theme toggle (dark/light)
+
+### History Visualization
+
+When a user clicks an LGA, the sidebar can display trend data from `/api/history/:lga`:
+- Composite score over time
+- Risk level transitions
+- Nightlight intensity trends
+
+## Error Handling
+
+### API Failures
+
+Each scheduled task has independent error handling:
+
+```python
+try:
+    fetch_conflict_data()
+except Exception as e:
+    logger.error(f"Conflict fetch failed: {e}")
+    # Other tasks continue unaffected
+```
+
+### Database Connection
+
+- SQLAlchemy connection pooling with auto-reconnect
+- Express server tests DB connection on `/api/health`
+- Graceful fallback to static GeoJSON file when DB is unavailable
+
+### Rate Limiting
+
+- Overpass API: Built-in request throttling
+- HDX API: Respects rate limits with backoff
+- Express API: 100 requests per 15 minutes per IP
+
+## Deployment Considerations
+
+### Running as a Service
+
+```bash
+# Using systemd (Linux)
+[Unit]
+Description=IOPHIN Scheduler Service
+After=postgresql.service
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/IOPHIN
+ExecStart=/path/to/venv/bin/python -m src.scheduler_service
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
-
-```env
-# Database configuration
-DATABASE_URL=sqlite:///./poverty_hotspots.db
-# For PostgreSQL: postgresql://user:password@localhost/iophin
-
-# API server
+```bash
+DATABASE_URL=postgresql://postgres:password@localhost:5432/iophin_db
 PORT=5000
-USE_DATABASE=true
+NODE_ENV=production
 ```
 
-### Scheduler Intervals
+### Logging
 
-Edit `src/scheduler_service.py` to customize:
+The scheduler logs to stdout. Redirect for persistent logging:
 
-```python
-# Conflict check: every 1 hour
-scheduler.add_job(fetch_conflict_data, trigger=IntervalTrigger(hours=1))
-
-# Satellite refresh: every 24 hours  
-scheduler.add_job(fetch_latest_nightlights, trigger=IntervalTrigger(hours=24))
-
-# Model retrain: every 6 hours
-scheduler.add_job(run_ml_engine, trigger=IntervalTrigger(hours=6))
-```
-
-## Production Deployment
-
-### Using Real APIs
-
-Replace simulated functions with actual API calls:
-
-**1. ACLED Conflict Data**
-
-```python
-def fetch_conflict_data():
-    response = requests.get(
-        'https://api.acleddata.com/acled/read',
-        params={
-            'key': 'YOUR_API_KEY',
-            'country': 'Nigeria',
-            'event_date': today,
-            'event_date_where': '>'
-        }
-    )
-    
-    for event in response.json()['data']:
-        if event['admin2']:  # LGA level
-            upsert_conflict_flag(
-                lga_name=event['admin2'],
-                conflict_flag='CRITICAL'
-            )
-```
-
-**2. NASA GIBS Nightlights**
-
-```python
-import ee
-ee.Initialize()
-
-def fetch_latest_nightlights():
-    # Google Earth Engine approach
-    image = ee.ImageCollection('NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG') \
-        .filterDate('2024-01-01', '2024-12-31') \
-        .select('avg_rad') \
-        .mean()
-    
-    # Extract values for each LGA geometry
-    # Update database with new values
-```
-
-### PostgreSQL for Production
-
-1. Install PostgreSQL with PostGIS:
 ```bash
-sudo apt-get install postgresql postgis
+python -m src.scheduler_service 2>&1 | tee -a logs/scheduler.log
 ```
 
-2. Update `DATABASE_URL`:
-```env
-DATABASE_URL=postgresql://user:password@localhost/iophin_db
-```
+## Monitoring Checklist
 
-3. The system auto-migrates to PostgreSQL schema
-
-### Frontend Auto-Refresh
-
-The frontend can use SWR or React Query for polling:
-
-```typescript
-import useSWR from 'swr';
-
-function Dashboard() {
-  const { data } = useSWR('/api/hotspots', fetcher, {
-    refreshInterval: 60000  // Poll every 60 seconds
-  });
-  
-  // Map automatically updates when data changes
-}
-```
-
-## Monitoring
-
-### Logs
-
-The scheduler writes to:
-- Console (stdout)
-- `scheduler_service.log` file
-
-Example log output:
-```
-2024-01-15 10:30:00 - INFO - 🔍 CONFLICT DATA LISTENER
-2024-01-15 10:30:01 - WARNING - ⚠️  CONFLICT DETECTED in Zamfara North
-2024-01-15 10:30:01 - INFO - ✅ Database updated: Zamfara North marked as CRITICAL
-2024-01-15 11:00:00 - INFO - 🛰️  SATELLITE REFRESHER
-2024-01-15 11:00:05 - WARNING - ⚡ Borno South: POWER OUTAGE detected
-2024-01-15 11:00:05 - INFO - ✅ Updated 8 LGAs with new nightlight data
-```
-
-### Status Dashboard
-
-The scheduler displays system status hourly:
-```
-📊 SYSTEM STATUS
-Total LGAs monitored: 774
-Risk Distribution:
-  - High Risk: 180 LGAs
-  - Medium Risk: 215 LGAs
-  - Low Risk: 200 LGAs
-  - Minimal Risk: 179 LGAs
-Conflict Zones: 3 LGAs
-Average MPI: 0.0567
-Average Nightlight: 12.34
-```
-
-## Advantages Over Static System
-
-| Feature | Static System | Dynamic System |
-|---------|--------------|----------------|
-| Data freshness | Manual update | Automatic (hourly/daily) |
-| Conflict detection | Not supported | Real-time alerts |
-| Response time | Days/weeks | Minutes/hours |
-| Crisis response | Manual intervention | Automatic flagging |
-| Data source | Local files | Live APIs |
-| Scalability | Single snapshot | Continuous monitoring |
-
-## Troubleshooting
-
-**Database not found**
-```bash
-python -m src.migrate_to_db
-```
-
-**Scheduler not updating**
-- Check logs in `scheduler_service.log`
-- Verify database permissions
-- Ensure scheduler process is running
-
-**API returns static file**
-- Check `USE_DATABASE=true` in environment
-- Verify database file exists
-- Check console for connection errors
-
-## Next Steps
-
-1. **Obtain API Keys**: Register for ACLED, NASA GIBS, or Google Earth Engine
-2. **Implement Real Fetchers**: Replace simulated functions with actual API calls
-3. **Deploy Scheduler**: Run as systemd service or Docker container
-4. **Scale Database**: Migrate to PostgreSQL for production
-5. **Add Alerting**: Email/SMS notifications for critical events
-
-## References
-
-- ACLED API: https://acleddata.com/
-- NASA GIBS: https://gibs.earthdata.nasa.gov/
-- Google Earth Engine: https://earthengine.google.com/
-- APScheduler Docs: https://apscheduler.readthedocs.io/
+| Check | Command | Expected |
+|-------|---------|----------|
+| DB row count | `psql -d iophin_db -c "SELECT COUNT(*) FROM poverty_hotspots"` | 774 |
+| History snapshots | `psql -d iophin_db -c "SELECT COUNT(*) FROM hotspot_history"` | Growing over time |
+| API health | `curl localhost:5000/api/health` | `{"status":"ok","dbConnected":true}` |
+| Recent update | `psql -d iophin_db -c "SELECT MAX(last_updated) FROM poverty_hotspots"` | Recent timestamp |
+| Conflict flags | `psql -d iophin_db -c "SELECT COUNT(*) FROM poverty_hotspots WHERE conflict_flag=true"` | Variable |

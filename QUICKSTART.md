@@ -1,151 +1,152 @@
-# Quick Start Guide - Nigeria Poverty Hotspot Identifier
+# IOPHIN — Quick Start (Static Mode)
 
-## Overview
-This analytical engine processes Nigeria's 774 LGAs using nighttime satellite imagery and poverty data to identify poverty hotspots.
+Run the full ML pipeline from local files to interactive dashboard in under 10 minutes.
 
-## Installation & Setup
+## Prerequisites
+
+- Python 3.9+ with dependencies installed (`pip install -r requirements.txt`)
+- Node.js 18+ with npm
+- PostgreSQL 14+ with `iophin_db` database created
+- Data files in `data/raw/` (see [SETUP.md](SETUP.md))
+
+## Step 1: Run the ML Pipeline
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-```
-
-## Running the Pipeline
-
-```bash
-# Run the full analytical engine
 python -m src.main
 ```
 
-## What Happens During Execution
+This executes 3 phases:
 
-### Phase 1: Feature Extraction (Memory-Safe)
-- Loads LGA boundaries from shapefile (774 LGAs)
-- Extracts nighttime light intensity from VIIRS raster (10.8GB)
-- Uses windowed reading to prevent memory errors
-- Automatically handles CRS mismatches
+### Phase 1: Feature Extraction
+- Loads 774 LGA boundaries from GRID3 shapefile
+- Extracts mean nightlight intensity from VIIRS raster (memory-safe windowed reads)
+- Falls back to synthetic nightlight data if VIIRS file is unavailable
+- Outputs: `data/processed/processed_hotspots.csv`
 
-**Note:** If VIIRS file is not present, synthetic data is generated for testing.
+### Phase 2: Data Fusion & Enrichment
+- Merges state-level MPI indicators (e.g., headcount ratio, intensity of deprivation)
+- Merges senatorial district MPI for sub-state granularity
+- Enriches with infrastructure data (health facilities, schools, road density)
+- KNN imputation (k=5) for missing values
+- Feature standardization via StandardScaler
 
-### Phase 2: Data Fusion
-- Merges state-level poverty indicators (MPI, Headcount Ratio, etc.)
-- Applies KNN imputation for missing values (k=5)
-- Standardizes features using StandardScaler
+### Phase 3: Unsupervised ML
+- PCA dimensionality reduction (retains 95% variance)
+- Clustering: K-Means (k=5) or HDBSCAN (min_cluster_size=30, configurable via `USE_HDBSCAN` in config)
+- Composite poverty score calculation:
+  - MPI: 30%
+  - Inverse nightlight: 25%
+  - Health access: 15%
+  - Education access: 15%
+  - Infrastructure: 15%
+- Risk tier assignment (5 tiers): Critical, High, Medium, Low, Minimal
+- Silhouette Score validation printed to console
 
-### Phase 3: Machine Learning
-- Applies PCA for dimensionality reduction (95% variance)
-- Performs K-Means clustering (k=4)
-- Validates with Silhouette Score
-- Assigns risk labels:
-  - High Risk - Severe Poverty
-  - Medium Risk - Poor
-  - Low Risk - Vulnerable
-  - Minimal Risk - Wealthy
+**Outputs:**
+- `data/processed/final_model_output.csv` — All 774 LGAs with full feature set
+- `data/processed/hotspots.geojson` — GeoJSON FeatureCollection for the API
 
-## Outputs
+## Step 2: Migrate to Database
 
-### 1. CSV File: `data/processed/final_model_output.csv`
-Tabular data with:
-- LGA name, state, coordinates
-- Mean nightlight intensity
-- MPI and poverty indicators
-- Cluster ID and label
-- Risk level
+```bash
+python -m src.migrate_to_db
+```
 
-**Use case:** Backend API, data analysis, reporting
+This reads `final_model_output.csv` and inserts/updates all 774 LGA records into the `poverty_hotspots` table in PostgreSQL. Uses compound unique constraint `(lga_name, state)` for upsert behavior.
 
-### 2. GeoJSON File: `data/processed/hotspots.geojson`
-Geospatial data with:
-- LGA polygon geometries
-- Cluster labels and risk levels
-- Key poverty indicators
+**Expected output:**
+```
+Migrating 774 records to PostgreSQL...
+Migration complete: 774 records inserted/updated
+```
 
-**Use case:** Frontend map visualization, GIS applications
+## Step 3: Start the API Server
 
-## Using with Actual VIIRS Data
+```bash
+cd server
+npm install    # first time only
+node index.js
+```
 
-To use the real 10.8GB VIIRS file:
+**Expected output:**
+```
+Server running on port 5000
+Database connected successfully
+Loaded X hotspots from database
+```
 
-1. Download or obtain `viirs_2024.tif`
-2. Place it in: `data/raw/viirs_2024.tif`
-3. Run the pipeline: `python -m src.main`
+The server exposes 7 endpoints:
 
-The system will automatically:
-- Detect the file
-- Use windowed reading to extract data safely
-- Check and reproject CRS if needed
-- Process all 774 LGAs without memory errors
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/health` | Health check |
+| `GET /api/hotspots` | GeoJSON FeatureCollection |
+| `GET /api/stats` | Aggregate statistics |
+| `GET /api/lga/:name` | Single LGA detail |
+| `GET /api/states` | Per-state metrics |
+| `GET /api/rankings` | Ranked LGA list |
+| `GET /api/history/:lga` | Time-series data |
 
-## Expected Performance
+Verify: `curl http://localhost:5000/api/health`
 
-- Processing time: ~30 seconds (with synthetic data)
-- Processing time: ~5-10 minutes (with actual VIIRS file, depending on hardware)
-- Memory usage: < 2GB (thanks to windowed reading)
-- Output files: ~8.5MB total
+## Step 4: Start the Frontend
 
-## Understanding the Results
+```bash
+cd client
+npm install    # first time only
+npm run dev
+```
 
-### Silhouette Score
-- Measures cluster quality
-- Range: -1 to 1
-- > 0.5 = Good separation
-- > 0.7 = Excellent separation
-- Typical value: ~0.43-0.45 (moderate separation)
+**Expected output:**
+```
+  VITE v7.x.x  ready in XXXms
 
-### Cluster Distribution
-Expect approximately:
-- 20-35% High Risk (Severe Poverty)
-- 20-25% Medium Risk (Poor)
-- 20-25% Low Risk (Vulnerable)
-- 20-35% Minimal Risk (Wealthy)
+  ➜  Local:   http://localhost:5173/
+```
+
+Open **http://localhost:5173** in your browser.
+
+## What You'll See
+
+### Map View (Default)
+- Interactive map centered on Nigeria
+- 774 LGA polygons color-coded by risk level:
+  - **Purple** (#7C3AED) — Critical
+  - **Red** (#EF4444) — High
+  - **Amber** (#F59E0B) — Medium
+  - **Green** (#10B981) — Low
+  - **Blue** (#3B82F6) — Minimal
+- Hover for compact tooltip (LGA name, state, risk badge, composite score)
+- Click any LGA for full analytics in the sidebar panel
+- Legend in bottom-left corner
+
+### Rankings View
+- Table of all LGAs ranked by composite poverty score
+- Toggle between worst-first and best-first
+- Filterable by search, state, and risk level
+
+### State Overview
+- Aggregated state-level metrics
+- Filterable by search
+- Click a state to zoom into it on the map
+
+### Top Toolbar
+- Search bar (filters across all views)
+- State filter dropdown
+- Risk level filter dropdown
+- Theme toggle (dark/light)
+- Status indicator (data source: database/file, LGA count)
+
+### Mobile
+- Bottom navigation bar for switching views
+- Hamburger menu for sidebar access
+- Responsive layout
 
 ## Troubleshooting
 
-### "Shapefile not found"
-- Check that shapefile exists in: `data/raw/NGA_LGA_Boundaries_2_-5383648833805565856/`
+If the map shows no data:
+1. Check that the API server is running: `curl http://localhost:5000/api/hotspots`
+2. Check the browser console for errors
+3. Ensure `hotspots.geojson` exists in `data/processed/` or the database has data
 
-### "Memory Error"
-- Ensure you're using the latest version (with windowed reading)
-- Check available RAM (needs at least 2GB)
-
-### "CRS mismatch warning"
-- This is normal - the system will automatically reproject
-
-### Different results each run
-- K-Means clustering has randomness (controlled by seed)
-- Small variations are expected
-
-## Integration with Frontend
-
-The GeoJSON output is ready for:
-- Leaflet.js maps
-- Mapbox GL JS
-- React mapping libraries
-
-Example usage:
-```javascript
-fetch('data/processed/hotspots.geojson')
-  .then(response => response.json())
-  .then(data => {
-    // data.features contains all LGAs with:
-    // - geometry (polygon)
-    // - properties.cluster_label
-    // - properties.risk_level
-    // - properties.mean_nightlight_intensity
-    // - properties.MPI
-  });
-```
-
-## Next Steps
-
-1. **Customize clustering:** Edit `src/config.py` to change K_CLUSTERS
-2. **Add features:** Modify `src/model_engine.py` to include more indicators
-3. **Tune PCA:** Adjust PCA_VARIANCE in `src/config.py`
-4. **Change imputation:** Modify KNN_NEIGHBORS in `src/config.py`
-
-## Support
-
-For issues or questions:
-- Check the main README.md for detailed documentation
-- Review the code comments for implementation details
-- Check logs in `analytical_engine.log`
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more.
