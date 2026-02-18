@@ -113,9 +113,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     return {
       fillColor: color,
       weight: 1.5,
-      opacity: 0.85,
+      opacity: 0.9,
       color: borderColor,
-      fillOpacity: 0.55,
+      fillOpacity: 0.8,
       dashArray: '',
     };
   };
