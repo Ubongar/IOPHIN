@@ -93,7 +93,11 @@ def upsert_hotspots_from_dataframe(df, data_source='ML_MODEL', batch_size=50):
                     logger.warning(f"Skipping row {idx}: No LGA name found")
                     continue
 
-                existing = session.query(PovertyHotspot).filter_by(lga_name=lga_name).first()
+                state_val = _resolve(row, ('State', 'state'))
+                if state_val:
+                    existing = session.query(PovertyHotspot).filter_by(lga_name=lga_name, state=state_val).first()
+                else:
+                    existing = session.query(PovertyHotspot).filter_by(lga_name=lga_name).first()
 
                 # Build data dict from column map
                 data = {}

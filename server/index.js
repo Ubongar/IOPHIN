@@ -128,15 +128,13 @@ app.get('/api/hotspots', async (req, res) => {
       console.log('📊 Serving hotspots from database (real-time data)');
       const geoJSON = await db.getHotspotsAsGeoJSON(state || null, risk || null);
       
-      // Only serve from DB if we got a reasonable number of features with geometry.
-      // If most rows lack geometry, fall through to the static file which has complete data.
-      if (geoJSON && geoJSON.features && geoJSON.features.length >= 100) {
+      if (geoJSON && geoJSON.features && geoJSON.features.length > 0) {
         res.setHeader('Content-Type', 'application/json');
         res.setHeader('Cache-Control', 'public, max-age=60');
         res.setHeader('X-Data-Source', 'database');
         return res.json(geoJSON);
       } else {
-        console.log(`⚠️ Database returned only ${geoJSON?.features?.length ?? 0} features with geometry — falling back to static file`);
+        console.log(`⚠️ Database returned ${geoJSON?.features?.length ?? 0} features — falling back to static file`);
       }
     }
     

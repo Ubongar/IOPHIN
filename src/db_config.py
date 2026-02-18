@@ -4,12 +4,16 @@ Handles PostgreSQL/PostGIS connection and table schema.
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, Text, Index, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime, timezone
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Database URL from environment variable or default to SQLite for testing
 DATABASE_URL = os.getenv(
@@ -35,8 +39,12 @@ class PovertyHotspot(Base):
     __tablename__ = "poverty_hotspots"
     
     id = Column(Integer, primary_key=True, index=True)
-    lga_name = Column(String(255), unique=True, index=True, nullable=False)
+    lga_name = Column(String(255), index=True, nullable=False)
     state = Column(String(100), index=True)
+    
+    __table_args__ = (
+        Index('ix_lga_state_unique', 'lga_name', 'state', unique=True),
+    )
     latitude = Column(Float)
     longitude = Column(Float)
     
