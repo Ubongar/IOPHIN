@@ -181,93 +181,82 @@ function App() {
       {/* ---- Main Content Area ---- */}
       <div className="flex-1 relative">
 
-        {/* Top toolbar: Search + Filters */}
-        <div className="map-search-wrapper">
-          <div className="flex items-center gap-2 w-full">
-            <div className="flex-1">
-              <SearchBar data={hotspotsData?.features || null} onSelectLGA={handleSearchSelect} />
-            </div>
-
-            {/* State filter */}
-            <select
-              value={stateFilter}
-              onChange={(e) => setStateFilter(e.target.value)}
-              className="filter-select"
-              title="Filter by state"
-            >
-              <option value="">All States</option>
-              {stateList.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-
-            {/* Risk filter */}
-            <select
-              value={riskFilter}
-              onChange={(e) => setRiskFilter(e.target.value as RiskLevel | '')}
-              className="filter-select"
-              title="Filter by risk level"
-            >
-              <option value="">All Risks</option>
-              {RISK_LEVELS.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-
-            {/* Clear filters */}
-            {(stateFilter || riskFilter) && (
-              <button
-                onClick={() => { setStateFilter(''); setRiskFilter(''); }}
-                className="filter-clear-btn"
-                title="Clear filters"
-              >
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Status chips */}
-        <div className="map-status-strip">
-          {/* Data source */}
-          <div className="status-chip">
-            <span className="status-chip-label">Source:</span>
-            <span className={'status-chip-value ' + (dataSource === 'Live Database' ? 'text-blue-400' : 'text-amber-400')}>
-              {dataSource}
-            </span>
-          </div>
-
-          {/* Filter indicator */}
-          {(stateFilter || riskFilter) && (
-            <div className="status-chip">
-              <span className="status-chip-label">Filter:</span>
-              <span className="status-chip-value text-purple-400">
-                {[stateFilter, riskFilter].filter(Boolean).join(' · ')}
-                {filteredData && ` (${filteredData.features.length})`}
-              </span>
-            </div>
-          )}
-
-          {/* Conflict zones */}
-          {stats?.conflictZones != null && stats.conflictZones > 0 && (
-            <div className="status-chip status-chip-danger">
-              <span>{stats.conflictZones} Conflict Zone{stats.conflictZones > 1 ? 's' : ''}</span>
-            </div>
-          )}
-
-          {/* System status */}
-          <div className="status-chip">
-            <span className="status-pulse-wrap">
-              <span className={'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ' + statusPing} />
-              <span className={'relative inline-flex rounded-full h-1.5 w-1.5 ' + statusDot} />
-            </span>
-            <span className={statusColor + ' font-semibold'}>{statusText}</span>
-          </div>
-        </div>
-
-        {/* Theme toggle */}
-        <div className="map-theme-toggle">
-          <button onClick={toggleTheme} className="theme-btn" title="Toggle theme">
+        {/* Unified top toolbar */}
+        <div className="top-toolbar">
+          <button onClick={toggleTheme} className="theme-btn-sm" title="Toggle theme">
             {theme === 'dark' ? '\u{1F319}' : '\u{2600}\u{FE0F}'}
           </button>
+
+          <div className="toolbar-search">
+            <SearchBar data={hotspotsData?.features || null} onSelectLGA={handleSearchSelect} />
+          </div>
+
+          <select
+            value={stateFilter}
+            onChange={(e) => setStateFilter(e.target.value)}
+            className="filter-select"
+            title="Filter by state"
+          >
+            <option value="">All States</option>
+            {stateList.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+
+          <select
+            value={riskFilter}
+            onChange={(e) => setRiskFilter(e.target.value as RiskLevel | '')}
+            className="filter-select"
+            title="Filter by risk level"
+          >
+            <option value="">All Risks</option>
+            {RISK_LEVELS.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+
+          {(stateFilter || riskFilter) && (
+            <button
+              onClick={() => { setStateFilter(''); setRiskFilter(''); }}
+              className="filter-clear-btn"
+              title="Clear filters"
+            >
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+
+          <div className="toolbar-spacer" />
+
+          <div className="toolbar-status">
+            <div className="status-chip">
+              <span className="status-chip-label">Source:</span>
+              <span className={'status-chip-value ' + (dataSource === 'Live Database' ? 'text-blue-400' : 'text-amber-400')}>
+                {dataSource}
+              </span>
+            </div>
+
+            {(stateFilter || riskFilter) && (
+              <div className="status-chip">
+                <span className="status-chip-label">Filter:</span>
+                <span className="status-chip-value text-purple-400">
+                  {[stateFilter, riskFilter].filter(Boolean).join(' · ')}
+                  {filteredData && ` (${filteredData.features.length})`}
+                </span>
+              </div>
+            )}
+
+            {stats?.conflictZones != null && stats.conflictZones > 0 && (
+              <div className="status-chip status-chip-danger">
+                <span>{stats.conflictZones} Conflict Zone{stats.conflictZones > 1 ? 's' : ''}</span>
+              </div>
+            )}
+
+            <div className="status-chip">
+              <span className="status-pulse-wrap">
+                <span className={'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ' + statusPing} />
+                <span className={'relative inline-flex rounded-full h-1.5 w-1.5 ' + statusDot} />
+              </span>
+              <span className={statusColor + ' font-semibold'}>{statusText}</span>
+            </div>
+          </div>
         </div>
 
         {/* View content — Map is always mounted (hidden via CSS) for zoom-on-navigate */}
@@ -290,6 +279,22 @@ function App() {
             <StateOverview states={stateAgg} onSelectState={(s: string) => { setStateFilter(s); setActiveView('map'); }} />
           </div>
         )}
+
+        {/* Mobile bottom navigation */}
+        <nav className="mobile-bottom-nav">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveView(item.id)}
+              className={'bottom-nav-btn' + (activeView === item.id ? ' active' : '')}
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.d} />
+              </svg>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
     </div>
   );

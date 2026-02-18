@@ -427,18 +427,20 @@ body {
 }
 
 /* ============================================================
-   MAP OVERLAY ELEMENTS
+   TOP TOOLBAR  Unified search + filters + status
    ============================================================ */
 
-.map-search-wrapper {
-  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
-  z-index: 1000; width: 100%; max-width: 420px; padding: 0 16px;
-}
-
-.map-status-strip {
-  position: absolute; top: 16px; right: 16px; z-index: 1000;
+.top-toolbar {
+  position: absolute; top: 0; left: 0; right: 0;
+  z-index: 1000;
   display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px;
+  pointer-events: none;
 }
+.top-toolbar > * { pointer-events: auto; }
+.toolbar-search { flex: 1; max-width: 300px; position: relative; }
+.toolbar-spacer { flex: 1; pointer-events: none; }
+.toolbar-status { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 .status-chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -461,30 +463,34 @@ body {
   width: 6px; height: 6px;
 }
 
-.map-theme-toggle {
-  position: absolute; top: 16px; left: 16px; z-index: 1000;
-}
-
-/* On mobile, move theme toggle to bottom-left to avoid hamburger collision */
-@media (max-width: 768px) {
-  .map-theme-toggle {
-    top: auto;
-    bottom: 20px;
-    left: 12px;
-  }
-}
-.theme-btn {
+.theme-btn-sm {
   width: 36px; height: 36px; border-radius: 10px;
-  background: var(--blue); color: #fff;
+  background: var(--bg-sidebar); border: 1px solid var(--border);
+  color: var(--text-primary);
   display: flex; align-items: center; justify-content: center;
-  border: none; cursor: pointer; font-size: 16px;
-  box-shadow: 0 4px 12px rgba(79,70,229,.3);
+  cursor: pointer; font-size: 16px; flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   transition: all .2s;
 }
-.theme-btn:hover {
-  box-shadow: 0 6px 18px rgba(79,70,229,.45);
+.theme-btn-sm:hover {
+  background: var(--bg-panel-hover);
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
   transform: translateY(-1px);
 }
+
+/* Mobile bottom navigation */
+.mobile-bottom-nav { display: none; }
+.bottom-nav-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: none; border: none; color: var(--text-quaternary);
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  padding: 6px 16px; border-radius: 8px;
+  transition: color .2s, background .2s;
+  font-family: 'Inter', sans-serif;
+}
+.bottom-nav-btn:hover { color: var(--text-secondary); }
+.bottom-nav-btn.active { color: var(--blue-light); }
 
 /* ============================================================
    SPINNER
@@ -690,7 +696,8 @@ body {
 .icon-rail, .sidebar-panel, .sidebar-root, .sidebar-brand,
 .metric-card, .source-chip, .status-chip, .search-input, .search-results,
 .nav-icon-btn, .close-btn, .alert-banner, .view-panel, .rankings-table-wrap,
-.rankings-header, .filter-select, .mobile-menu-btn {
+.rankings-header, .filter-select, .mobile-menu-btn, .theme-btn-sm,
+.bottom-nav-btn, .mobile-bottom-nav {
   transition: background-color .3s ease, border-color .3s ease, color .3s ease;
 }
 
@@ -977,15 +984,16 @@ body {
 /* -- Medium desktop / small laptop (1024–1200) -- */
 @media (max-width: 1200px) {
   .sidebar-panel { width: 320px; min-width: 320px; }
-  .map-search-wrapper { max-width: 340px; }
-  .map-status-strip { flex-wrap: wrap; max-width: 360px; justify-content: flex-end; }
+  .toolbar-search { max-width: 260px; }
+  .toolbar-status { flex-wrap: wrap; max-width: 360px; justify-content: flex-end; }
 }
 
 /* -- Tablet (768–1024) -- */
 @media (max-width: 1024px) {
   .sidebar-panel { width: 290px; min-width: 290px; }
-  .map-search-wrapper { max-width: 280px; left: 52px; transform: none; }
-  .map-status-strip { top: 60px; right: 12px; flex-wrap: wrap; max-width: 320px; }
+  .toolbar-search { max-width: 220px; }
+  .toolbar-status { gap: 4px; }
+  .status-chip { font-size: 10px; padding: 4px 10px; }
   .rankings-table th, .rankings-table td,
   .state-overview-table th, .state-overview-table td {
     padding: 8px 10px; font-size: 11px;
@@ -994,15 +1002,13 @@ body {
 
 /* -- Mobile (<768px) -- */
 @media (max-width: 768px) {
-  /* Hide sidebar and icon-rail by default on mobile */
+  /* Hide icon-rail on mobile */
   .icon-rail { display: none; }
   .sidebar-panel {
     position: fixed;
     left: 0; top: 0; bottom: 0;
     z-index: 1100;
-    width: 85vw;
-    max-width: 360px;
-    min-width: unset;
+    width: 85vw; max-width: 360px; min-width: unset;
     transform: translateX(-100%);
     transition: transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
     box-shadow: none;
@@ -1012,76 +1018,53 @@ body {
     box-shadow: 8px 0 32px rgba(0,0,0,.4);
   }
 
-  /* Sidebar backdrop overlay */
+  /* Sidebar backdrop */
   .sidebar-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1050;
+    display: none; position: fixed; inset: 0; z-index: 1050;
     background: rgba(0,0,0,.45);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
   }
   .sidebar-backdrop.visible { display: block; }
+  .mobile-menu-btn { display: flex !important; }
 
-  /* Mobile hamburger button */
-  .mobile-menu-btn {
-    display: flex !important;
+  /* Top toolbar mobile */
+  .top-toolbar {
+    padding: 10px 8px 10px 48px;
   }
-
-  /* Toolbar: search takes full row, filters go below */
-  .map-search-wrapper {
-    left: 52px; right: 8px; transform: none;
-    width: auto; max-width: none;
-    padding: 0 4px;
-  }
-  .map-search-wrapper > .flex {
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .map-search-wrapper > .flex > .flex-1 {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+  .toolbar-search { max-width: none; flex: 1; min-width: 0; }
+  .toolbar-spacer { display: none; }
+  .toolbar-status { display: none; }
   .filter-select {
-    flex: 1 1 0;
-    min-width: 80px;
     font-size: 10px;
     padding: 5px 22px 5px 8px;
+    min-width: 70px;
+  }
+  .theme-btn-sm { width: 32px; height: 32px; font-size: 14px; }
+
+  /* Mobile bottom nav */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 1200;
+    background: var(--bg-sidebar);
+    border-top: 1px solid var(--border);
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+    justify-content: space-around;
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    box-shadow: 0 -4px 16px rgba(0,0,0,.2);
   }
 
-  .map-status-strip {
-    top: auto; bottom: 8px; right: 8px; left: auto;
-    flex-wrap: wrap; gap: 4px;
-    max-width: 50vw;
-    justify-content: flex-end;
-  }
-  .status-chip { font-size: 9px; padding: 4px 8px; }
-
-  /* Search results mobile: narrower, compact items */
-  .search-results {
-    max-height: 55vh;
-    left: 0;
-    right: 0;
-  }
-  .search-result-item {
-    padding: 10px 12px;
-    gap: 8px;
-  }
+  /* Search results mobile */
+  .search-results { max-height: 55vh; }
+  .search-result-item { padding: 10px 12px; gap: 8px; }
   .search-result-title { font-size: 13px; }
   .search-result-subtitle { font-size: 10px; }
-  .search-result-badge {
-    padding: 3px 8px;
-    font-size: 8px;
-  }
-  .search-input {
-    padding: 8px 36px 8px 34px;
-    font-size: 13px;
-  }
+  .search-result-badge { padding: 3px 8px; font-size: 8px; }
+  .search-input { padding: 8px 36px 8px 34px; font-size: 13px; }
   .search-icon { width: 16px; height: 16px; left: 10px; }
 
-  /* View panel mobile adjustments */
-  .view-panel { padding: 90px 12px 16px; }
+  /* View panel mobile */
+  .view-panel { padding: 60px 12px 70px; }
 
   /* Rankings responsive */
   .rankings-header { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -1089,9 +1072,7 @@ body {
   .rankings-subtitle { font-size: 11px; }
   .rankings-table-wrap { border-radius: var(--radius-sm); }
   .rankings-table th, .rankings-table td,
-  .state-overview-table th, .state-overview-table td {
-    padding: 8px 8px; font-size: 10px;
-  }
+  .state-overview-table th, .state-overview-table td { padding: 8px 8px; font-size: 10px; }
   .rank-cell { font-size: 12px; }
 
   /* Sidebar content adjustments */
@@ -1103,15 +1084,17 @@ body {
   /* Map controls mobile */
   .map-container .leaflet-control-zoom {
     margin-right: 8px !important;
-    margin-bottom: 40px !important;
+    margin-bottom: 70px !important;
   }
 }
 
 /* -- Small mobile (<480px) -- */
 @media (max-width: 480px) {
   .sidebar-panel { width: 100vw; max-width: 100vw; }
-  .map-search-wrapper { left: 46px; right: 6px; }
-  .view-panel { padding: 100px 8px 12px; }
+  .top-toolbar { padding-left: 44px; flex-wrap: wrap; gap: 4px; }
+  .toolbar-search { flex: 0 0 calc(100% - 40px); }
+  .filter-select { flex: 1 1 0; min-width: 0; }
+  .view-panel { padding: 90px 8px 70px; }
   .rankings-container { margin: 0; }
   .rankings-header { gap: 6px; }
   .rankings-title { font-size: 14px; }
