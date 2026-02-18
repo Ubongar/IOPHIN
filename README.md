@@ -1,308 +1,456 @@
-# IOPHIN — Nigeria Poverty Hotspot Intelligence System
+<p align="center">
+  <img src="https://img.shields.io/badge/IOPHIN-Poverty%20Hotspot%20Intelligence-7C3AED?style=for-the-badge&labelColor=13131A" alt="IOPHIN" />
+</p>
 
-A geospatial machine learning platform for identifying and monitoring poverty hotspots across Nigeria's 774 Local Government Areas (LGAs). Combines nighttime satellite imagery, multidimensional poverty indicators, and infrastructure data with unsupervised ML to deliver real-time risk classification through an interactive web dashboard.
+<h1 align="center">IOPHIN — Poverty Hotspot Identifier for Nigeria</h1>
+
+<p align="center">
+  <strong>A real-time geospatial intelligence dashboard that identifies, monitors, and visualizes poverty hotspots across Nigeria's 774 Local Government Areas using machine learning and multi-source satellite data.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vite-7.3-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4.1-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Leaflet-1.9-199900?style=flat-square&logo=leaflet&logoColor=white" alt="Leaflet" />
+  <img src="https://img.shields.io/badge/Express-4.18-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/PostgreSQL-14+-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/scikit--learn-1.2-F7931E?style=flat-square&logo=scikitlearn&logoColor=white" alt="scikit-learn" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License" />
+</p>
+
+---
 
 ## Overview
 
-The system fuses multiple data sources:
+**IOPHIN** (Identification Of Poverty Hotspots In Nigeria) combines satellite nightlight imagery, multidimensional poverty indices, infrastructure data, environmental metrics, and conflict displacement statistics into a unified composite poverty model. The system clusters Nigeria's 774 LGAs into five risk tiers using HDBSCAN, then serves the results through an interactive React dashboard with real-time monitoring capabilities.
 
-- **VIIRS Nighttime Lights** (10.8 GB GeoTIFF) — proxy for economic activity
-- **State-level MPI Data** — Multidimensional Poverty Index indicators
-- **Senatorial District MPI** — sub-state poverty granularity
-- **LGA Boundary Shapefiles** — GRID3 geospatial boundaries (774 LGAs)
-- **Infrastructure Data** — health facilities, schools, road density (via external APIs)
-- **Environmental Data** — NDVI vegetation, rainfall (via Google Earth Engine)
-- **Conflict & Displacement Data** — ACLED, IOM DTM, HumData
+The platform is designed for policymakers, NGOs, and researchers working on poverty alleviation in Nigeria — providing actionable intelligence through an intuitive, data-rich interface.
 
-The analytical engine classifies LGAs into **5 risk tiers**:
+---
 
-| Tier | Color | Description |
-|------|-------|-------------|
-| **Critical** | Purple `#7C3AED` | Extremely low nightlights + highest poverty + active conflict |
-| **High** | Red `#EF4444` | Low nightlights + high poverty indicators |
-| **Medium** | Amber `#F59E0B` | Moderate indicators |
-| **Low** | Green `#10B981` | Improving indicators |
-| **Minimal** | Blue `#3B82F6` | High nightlights + low poverty indicators |
+## Key Features
+
+### 🗺️ Interactive Geospatial Map
+- **Choropleth risk overlay** — 774 LGA boundaries colored by 5-tier risk classification
+- **Theme-aware basemaps** — CARTO Dark Matter (dark mode) and CARTO Positron (light mode)
+- **Smart interactions** — Hover highlights with compact tooltips; click to zoom and inspect
+- **Auto-zoom** — Clicking an LGA smoothly flies to its bounds; clicking away returns to national view
+- **Collapsible floating legend** — Risk classification key with composite score ranges
+
+### 📊 Analytics Sidebar
+- **National Summary Mode**
+  - Total LGAs monitored, states covered, mean MPI, average nightlight intensity
+  - Interactive donut chart (Recharts) showing risk tier distribution
+  - Horizontal progress bars for each risk level with counts and percentages
+  - Conflict zone alert banner with animated pulse indicator
+  - Downloadable national summary report (`.txt`)
+
+- **LGA Profile Mode** (click any LGA on the map)
+  - Risk level badge, conflict alert status, last-updated timestamp
+  - **Core Metrics** — MPI, Nightlight Intensity, Composite Score, Population Density, Headcount Ratio, Intensity of Deprivation
+  - **Poverty Depth** — Severe Poverty rate, Senatorial MPI, Urban Distance
+  - **Infrastructure** — Health facility count, school count, road density
+  - **Environment & Displacement** — NDVI (vegetation), rainfall, IDP count, food price index
+  - **Poverty Probability Gauge** — Animated arc gauge (70% MPI + 30% inverse nightlight)
+  - **Comparative Analysis** — Bar chart comparing LGA metrics vs national averages
+  - Downloadable per-LGA intelligence report (`.txt`)
+
+### 📋 Rankings View
+- Sortable table of all 774 LGAs ranked by composite poverty score
+- Toggle between **Most Deprived** and **Least Deprived** ordering
+- Columns: Rank, LGA, State, Composite Score, MPI, Nightlight, Risk Level, Health Facilities, Schools
+- Click any row to navigate to that LGA on the map
+
+### 🏛️ State Overview
+- Aggregated state-level analytics across all 37 states
+- Metrics: LGA count, average composite score, average MPI, average nightlight, high-risk count, total health facilities, total schools
+- Click any state to zoom to its LGAs on the map
+
+### 🔍 Cross-View Search & Filtering
+- **Unified search bar** — Searches LGAs and states across all views simultaneously
+- **State filter** — Dropdown to filter by any of Nigeria's 37 states
+- **Risk filter** — Filter by any of the 5 risk tiers
+- Filters propagate across Map, Rankings, and State Overview in real time
+
+### 🌓 Dark / Light Theme
+- Full dark mode (true-black `#0A0A0F` background) and light mode
+- Theme persisted in `localStorage` and toggled via toolbar button
+- All components, map tiles, tooltips, and overlays adapt to theme
+- Glassmorphism effects throughout (frosted glass with `backdrop-filter: blur`)
+
+### 📡 Real-Time Monitoring
+- **60-second auto-polling** — Dashboard data refreshes automatically
+- **Status indicators** — Live system status chip with animated pulse dot
+- **Data source chips** — Shows active data sources (PostgreSQL, Satellite, MPI, Infrastructure)
+- Conflict zone count displayed in toolbar
+
+### 📱 Mobile-First Responsive Design
+- **5 responsive breakpoints** — 1400px, 1200px, 1024px, 768px, 480px
+- **Mobile bottom navigation** — Fixed bottom tab bar for view switching on phones
+- **Sidebar drawer** — Slides in from left with backdrop overlay on mobile
+- **Hamburger menu** — Replaces icon rail on small screens
+- Columns hidden progressively (Nightlight, Health, Schools) on smaller screens
+
+---
 
 ## Architecture
 
 ```
-External APIs ──► Python Scheduler ──► PostgreSQL ◄── Node.js API ◄── React Dashboard
-(ACLED, NASA,       (APScheduler)       (iophin_db)    (Express)       (Vite + Leaflet)
- GEE, HDX, WFP)
+┌─────────────────────────────────────────────────────────────────┐
+│                        React Frontend                           │
+│  ┌──────────┐  ┌────────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │  Search   │  │    Map     │  │ Rankings │  │   Sidebar    │  │
+│  │   Bar     │  │ (Leaflet)  │  │  Table   │  │  (Analytics) │  │
+│  └──────────┘  └────────────┘  └──────────┘  └──────────────┘  │
+│  ┌──────────┐  ┌────────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │  Legend   │  │   State    │  │  Theme   │  │   Toolbar    │  │
+│  │          │  │  Overview  │  │ Context  │  │  (Filters)   │  │
+│  └──────────┘  └────────────┘  └──────────┘  └──────────────┘  │
+└───────────────────────┬─────────────────────────────────────────┘
+                        │ HTTP / REST API
+┌───────────────────────┴─────────────────────────────────────────┐
+│                    Express API Server                            │
+│         /api/hotspots · /api/stats · /api/rankings              │
+│        /api/states · /api/lga/:name · /api/history/:lga         │
+└───────────────────────┬─────────────────────────────────────────┘
+                        │
+          ┌─────────────┴──────────────┐
+          │                            │
+  ┌───────┴────────┐         ┌────────┴────────┐
+  │  PostgreSQL DB │         │  GeoJSON File   │
+  │  (Primary)     │         │  (Fallback)     │
+  └───────┬────────┘         └─────────────────┘
+          │
+┌─────────┴──────────────────────────────────────────┐
+│              Python ML Engine                       │
+│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐ │
+│  │  Feature  │  │ HDBSCAN  │  │  Google Earth    │ │
+│  │ Extraction│  │ Cluster  │  │  Engine (VIIRS)  │ │
+│  └──────────┘  └──────────┘  └───────────────────┘ │
+│  Data Sources: MPI · Nightlight · Infrastructure   │
+│  · Conflict/IDP · NDVI · Rainfall · Food Prices    │
+└────────────────────────────────────────────────────┘
 ```
 
-### Static Mode
-One-time ML pipeline: local files → Python engine → GeoJSON → API → dashboard.
+---
 
-### Dynamic Mode
-Continuous monitoring: scheduled API fetches → database updates → ML retraining → live dashboard with 60-second polling.
+## Risk Classification System
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed diagrams and [DYNAMIC_MONITORING.md](DYNAMIC_MONITORING.md) for the real-time system guide.
+The composite poverty model produces a score from 0 to 1 for each LGA, classified into five tiers:
+
+| Tier | Label | Score Range | Color | Hex |
+|------|-------|-------------|-------|-----|
+| 🟣 Critical | Extreme Deprivation | > 0.80 | Purple | `#7C3AED` |
+| 🔴 High | Severe Poverty | 0.60 – 0.80 | Red | `#EF4444` |
+| 🟡 Medium | Significant Deprivation | 0.40 – 0.60 | Amber | `#F59E0B` |
+| 🟢 Low | Moderate Vulnerability | 0.20 – 0.40 | Green | `#10B981` |
+| 🔵 Minimal | Relatively Stable | < 0.20 | Blue | `#3B82F6` |
+
+**Composite Score Formula:**
+
+$$\text{Score} = 0.30 \times \text{MPI} + 0.25 \times (1 - \text{Nightlight}) + 0.15 \times \text{Health} + 0.15 \times \text{Education} + 0.15 \times \text{Infrastructure}$$
+
+---
+
+## Technology Stack
+
+### Frontend
+| Technology | Version | Purpose |
+|---|---|---|
+| React | 19.2 | UI framework with hooks and functional components |
+| TypeScript | 5.9 | Type-safe development |
+| Vite | 7.3 | Build tooling and dev server |
+| Tailwind CSS | 4.1 | Utility-first CSS framework |
+| Leaflet + react-leaflet | 1.9 / 5.0 | Interactive choropleth map |
+| Recharts | 3.7 | Donut charts and data visualization |
+| Axios | 1.13 | HTTP client for API calls |
+
+### Backend
+| Technology | Version | Purpose |
+|---|---|---|
+| Node.js + Express | 4.18 | REST API server |
+| PostgreSQL (`pg`) | 8.18 | Primary database driver |
+| express-rate-limit | 8.2 | API rate limiting |
+| compression | 1.7 | gzip response compression |
+| dotenv | 16.6 | Environment variable management |
+
+### ML & Data Pipeline
+| Technology | Version | Purpose |
+|---|---|---|
+| Python | 3.9+ | ML engine runtime |
+| scikit-learn | 1.2+ | Feature scaling, model evaluation |
+| HDBSCAN | 0.8+ | Density-based spatial clustering |
+| GeoPandas | 0.13+ | Geospatial data manipulation |
+| Rasterio | 1.3+ | Satellite raster processing |
+| SQLAlchemy | 2.0+ | ORM for PostgreSQL |
+| Earth Engine API | 0.1+ | VIIRS nightlight, NDVI, rainfall data |
+| APScheduler | — | Recurring model refresh scheduling |
+
+---
+
+## UI Component Architecture
+
+```
+App.tsx                          ← Main layout, state management, view routing
+├── ThemeContext                  ← Dark/light theme provider (localStorage)
+├── SearchBar                    ← Unified search with autocomplete dropdown
+├── Toolbar                      ← Filters, status chips, theme toggle
+├── Icon Rail                    ← Navigation: Map / Rankings / States
+├── Sidebar                      ← National summary or LGA drill-down
+│   ├── MetricCard[]             ← Reusable stat display component
+│   ├── PieChart (Recharts)      ← Risk distribution donut
+│   ├── Poverty Gauge            ← Animated probability arc
+│   └── Comparative Analysis     ← LGA vs national average bars
+├── MapComponent                 ← Leaflet map with GeoJSON overlay
+│   ├── FitBounds                ← Auto-zoom to selected feature bounds
+│   ├── MapInstanceCapture       ← ResizeObserver for responsive resize
+│   └── Legend                   ← Floating, collapsible risk key
+├── RankingsTable                ← Sortable, filterable LGA table
+└── StateOverview                ← State-level aggregation table
+```
+
+Each component is self-contained with TypeScript interfaces and accepts filter props from `App.tsx` for cross-view data consistency.
+
+---
+
+## Design System
+
+### Color Palette
+
+**Dark Theme (Default)**
+| Token | Value | Usage |
+|---|---|---|
+| `--bg` | `#0A0A0F` | Page background |
+| `--bg-rail` | `#101018` | Icon rail |
+| `--bg-sidebar` | `#12121C` | Sidebar panel |
+| `--bg-panel` | `#1A1A28` | Cards, dropdowns |
+| `--border` | `rgba(255,255,255,0.08)` | Dividers |
+| `--text-primary` | `#FFFFFF` | Headings |
+| `--text-secondary` | `#E2E8F0` | Body text |
+| `--text-tertiary` | `#94A3B8` | Labels |
+| `--text-quaternary` | `#64748B` | Muted, captions |
+
+**Light Theme**
+| Token | Value | Usage |
+|---|---|---|
+| `--bg` | `#F8FAFC` | Page background |
+| `--bg-rail` | `#FFFFFF` | Icon rail |
+| `--bg-sidebar` | `#FFFFFF` | Sidebar panel |
+| `--bg-panel` | `#F1F5F9` | Cards, dropdowns |
+| `--text-primary` | `#0F172A` | Headings |
+| `--text-secondary` | `#1E293B` | Body text |
+
+### Typography
+- **Primary font:** Inter (system fallback stack)
+- **Monospace font:** JetBrains Mono — used for metric values, scores, and table data
+- **Scale:** 10px (micro labels) → 22px (main headings), 4px base grid
+
+### Visual Effects
+- **Glassmorphism** — `backdrop-filter: blur(16px–20px)` on status chips, search overlays, legend, bottom nav
+- **Animations** — `fade-in-up` (sidebar entry), `spin` (loading spinner), `pulse-dot` (system status)
+- **Border radius** — `--radius-sm: 6px`, `--radius-md: 10px`, `--radius-lg: 14px`
+
+### Layout System
+| Zone | Width | Behavior |
+|---|---|---|
+| Icon Rail | 56px fixed | Left navigation column |
+| Sidebar Panel | 380px fixed | Analytics panel, scrollable |
+| Main Content | `flex: 1` | Map, rankings, or state view |
+
+---
+
+## Responsive Breakpoints
+
+| Breakpoint | Layout Changes |
+|---|---|
+| **≥ 1400px** | Sidebar expands to 400px, larger padding |
+| **≤ 1200px** | Sidebar shrinks to 320px |
+| **≤ 1024px** | Sidebar 290px, tighter spacing |
+| **≤ 768px** | Icon rail hidden; sidebar becomes slide-in drawer with backdrop; mobile bottom nav appears; toolbar adapts to stacked layout |
+| **≤ 480px** | Sidebar fills 100vw; extra-compact padding; search/filter widths reduced |
+
+On mobile devices, view switching happens via a fixed bottom navigation bar. The sidebar is accessible through a hamburger menu button and slides in from the left with a semi-transparent backdrop overlay.
+
+---
+
+## Quick Start
+
+### Prerequisites
+- **Node.js** 18+ and npm
+- **Python** 3.9+
+- **PostgreSQL** 14+ (optional — falls back to GeoJSON file)
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/your-username/iophin.git
+cd iophin
+
+# Backend
+cd server
+npm install
+
+# Frontend
+cd ../client
+npm install
+
+# ML Engine (optional)
+cd ..
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment
+
+Create `server/.env`:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=iophin_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+PORT=5000
+```
+
+### 3. Run
+
+```bash
+# Terminal 1 — API server
+cd server
+npm run dev          # runs on :5000
+
+# Terminal 2 — Frontend
+cd client
+npm run dev          # runs on :5173
+```
+
+Open **http://localhost:5173** in your browser.
+
+> **No database?** The server automatically falls back to the bundled `data/processed/hotspots.geojson` file if PostgreSQL is unavailable.
+
+---
+
+## API Reference
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/health` | Server health check |
+| `GET` | `/api/hotspots` | All LGA hotspots as GeoJSON FeatureCollection |
+| `GET` | `/api/stats` | Aggregate statistics (risk distribution, conflict zones, averages) |
+| `GET` | `/api/rankings` | All LGAs ranked by composite poverty score |
+| `GET` | `/api/states` | State-level aggregated metrics |
+| `GET` | `/api/lga/:name` | Detailed data for a specific LGA |
+| `GET` | `/api/history/:lga` | Historical trend data for a specific LGA |
+
+All endpoints return JSON. The server uses CORS, gzip compression, and rate limiting (100 req/15 min).
+
+---
+
+## Data Sources
+
+| Source | Metrics | Update Frequency |
+|---|---|---|
+| **VIIRS Nightlight** (Google Earth Engine) | Mean nightlight intensity | Monthly |
+| **Nigeria MPI** (OPHI/NBS) | Multidimensional Poverty Index, headcount ratio, deprivation intensity | Annual |
+| **GRID3 Nigeria** | LGA boundary shapefiles (774 LGAs) | Static |
+| **DTM Baseline Assessment** | IDP counts, displacement data | Quarterly |
+| **Health & Education Registries** | Facility counts, school counts | Periodic |
+| **Senatorial District MPI** | Sub-national poverty granularity | Annual |
+| **NDVI / Rainfall** (Earth Engine) | Vegetation index, precipitation | Monthly |
+| **Road Network Data** | Road density per LGA | Static |
+| **Food Price Index** | Consumer food price tracking | Monthly |
+
+---
 
 ## Project Structure
 
 ```
-IOPHIN/
-├── src/                                        Python ML Engine
-│   ├── __init__.py                             Package init
-│   ├── config.py                               Paths, model params, API config
-│   ├── data_loader.py                          Data loading utilities
-│   ├── feature_extraction.py                   Memory-safe raster processing
-│   ├── model_engine.py                         ML pipeline (KNN, PCA, K-Means/HDBSCAN)
-│   ├── main.py                                 Main orchestration script
-│   ├── db_config.py                            SQLAlchemy ORM, schema definition
-│   ├── db_utils.py                             Database CRUD operations
-│   ├── scheduler_service.py                    Real-time monitoring service
-│   └── migrate_to_db.py                        CSV → PostgreSQL migration
-│
-├── server/                                     Node.js Backend API
-│   ├── index.js                                Express server (7 endpoints)
-│   ├── database.js                             PostgreSQL query module (pg)
-│   ├── package.json                            Dependencies
-│   └── README.md                               Server documentation
-│
-├── client/                                     React Frontend Dashboard
+iophin/
+├── client/                        # React frontend
 │   ├── src/
-│   │   ├── App.tsx                             Main layout, view switching, filters
-│   │   ├── main.tsx                            Application entry point
-│   │   ├── types.ts                            TypeScript type definitions
-│   │   ├── index.css                           Design system (dark/light themes)
+│   │   ├── App.tsx                # Main app — layout, state, routing
+│   │   ├── main.tsx               # Entry point with ThemeProvider
+│   │   ├── index.css              # Full design system (~1,200 lines)
+│   │   ├── types.ts               # TypeScript interfaces & constants
 │   │   ├── components/
-│   │   │   ├── MapComponent.tsx                Interactive Leaflet map
-│   │   │   ├── Sidebar.tsx                     Analytics panel (national + LGA)
-│   │   │   ├── RankingsTable.tsx               LGA poverty rankings table
-│   │   │   ├── StateOverview.tsx               State-level aggregated analytics
-│   │   │   ├── SearchBar.tsx                   Search/filter across all views
-│   │   │   └── Legend.tsx                      Risk level legend
+│   │   │   ├── MapComponent.tsx   # Leaflet choropleth map
+│   │   │   ├── Sidebar.tsx        # Analytics sidebar (national + LGA)
+│   │   │   ├── RankingsTable.tsx  # LGA rankings table
+│   │   │   ├── StateOverview.tsx  # State aggregation table
+│   │   │   ├── SearchBar.tsx      # Search with autocomplete
+│   │   │   └── Legend.tsx         # Floating map legend
 │   │   └── contexts/
-│   │       └── ThemeContext.tsx                 Dark/light theme management
-│   ├── public/                                 Static assets
-│   ├── package.json                            Dependencies
-│   ├── vite.config.ts                          Vite 7 configuration
-│   ├── tsconfig.json                           TypeScript configuration
-│   ├── tailwind.config.js                      Tailwind CSS 4 configuration
-│   ├── postcss.config.js                       PostCSS configuration
-│   └── eslint.config.js                        ESLint configuration
-│
+│   │       └── ThemeContext.tsx    # Dark/light theme provider
+│   ├── package.json
+│   └── vite.config.ts
+├── server/                        # Express API server
+│   ├── index.js                   # Routes, middleware, dual-mode data
+│   ├── database.js                # PostgreSQL queries
+│   └── package.json
+├── src/                           # Python ML engine
+│   ├── main.py                    # Pipeline orchestrator
+│   ├── data_loader.py             # Multi-source data ingestion
+│   ├── feature_extraction.py      # Feature engineering & normalization
+│   ├── model_engine.py            # HDBSCAN clustering & scoring
+│   ├── db_config.py               # SQLAlchemy ORM models
+│   ├── db_utils.py                # Database utilities
+│   ├── migrate_to_db.py           # CSV → PostgreSQL migration
+│   ├── scheduler_service.py       # APScheduler for recurring runs
+│   └── config.py                  # Model weights, API keys, thresholds
 ├── data/
-│   ├── raw/
-│   │   ├── viirs_2024.tif                      VIIRS raster (10.8 GB, local only)
-│   │   ├── nga_mpi(3).csv                      State-level MPI data
-│   │   ├── Nigeria MPI by Senatorial District.csv  Senatorial MPI
-│   │   ├── nigeria_lga.json                    LGA reference data
-│   │   └── NGA_LGA_Boundaries_2_.../          GRID3 shapefile directory
-│   │       ├── grid3_nga_boundary_vacclgas.shp
-│   │       ├── grid3_nga_boundary_vacclgas.dbf
-│   │       ├── grid3_nga_boundary_vacclgas.shx
-│   │       ├── grid3_nga_boundary_vacclgas.prj
-│   │       ├── grid3_nga_boundary_vacclgas.cpg
-│   │       └── grid3_nga_boundary_vacclgas.shp.xml
-│   └── processed/
-│       ├── processed_hotspots.csv              Intermediate LGA coordinates
-│       ├── final_model_output.csv              Model output with all features
-│       └── hotspots.geojson                    GeoJSON for frontend (fallback)
-│
-├── gee/                                        Google Earth Engine credentials
-├── docs/
-│   └── EXAMPLE_OUTPUT.md                       Sample diagnostic output
-├── ui designs/                                 UI/UX design assets
-│
-├── requirements.txt                            Python dependencies
-├── ARCHITECTURE.md                             System architecture diagrams
-├── SETUP.md                                    Setup and installation guide
-├── QUICKSTART.md                               Quick start — static mode
-├── QUICKSTART_DYNAMIC.md                       Quick start — dynamic mode
-├── DYNAMIC_MONITORING.md                       Real-time monitoring guide
-├── IMPLEMENTATION_SUMMARY.md                   Implementation details
-├── TROUBLESHOOTING.md                          Troubleshooting guide
-├── DATA_LICENSE.md                             Data attribution and licensing
-└── license.md                                  MIT software license
+│   ├── raw/                       # Source datasets (MPI, shapefiles)
+│   └── processed/                 # Model output (GeoJSON, CSV)
+├── gee/                           # Google Earth Engine credentials
+├── requirements.txt               # Python dependencies
+└── README.md
 ```
 
-## Installation
+---
 
-### Prerequisites
+## ML Pipeline
 
-- **Python 3.9+** with pip
-- **Node.js 18+** with npm
-- **PostgreSQL 14+** with a database named `iophin_db`
+The Python engine runs a multi-stage pipeline:
 
-### Python ML Engine
+1. **Data Loading** — Ingests MPI CSV, nightlight rasters, infrastructure registries, IDP data, and shapefiles
+2. **Feature Extraction** — Normalizes and engineers 15+ features per LGA including spatial joins, fuzzy matching (senatorial districts → LGAs), and composite index calculation
+3. **Clustering** — Applies HDBSCAN (density-based) or K-Means (K=5) to group LGAs by deprivation similarity
+4. **Scoring** — Computes composite poverty score with weighted formula: MPI (30%), inverse nightlight (25%), health (15%), education (15%), infrastructure (15%)
+5. **Classification** — Maps composite scores to 5 risk tiers
+6. **Export** — Writes results to PostgreSQL and/or GeoJSON for the dashboard
 
-```bash
-pip install -r requirements.txt
-```
+The scheduler service can run this pipeline on a recurring basis (configurable via APScheduler) for continuous monitoring.
 
-### Node.js Backend
+---
 
-```bash
-cd server
-npm install
-```
+## Accessibility
 
-### React Frontend
+- All interactive elements use semantic HTML (`button`, `table`, `nav`)
+- Search implements full ARIA: `role="combobox"`, `aria-autocomplete`, `aria-expanded`, `aria-activedescendant`
+- Keyboard navigation: Arrow keys for search results, Enter to select, Escape to dismiss
+- Risk colors are accompanied by text labels (not color-only)
+- Sufficient contrast ratios in both dark and light themes
 
-```bash
-cd client
-npm install
-```
+---
 
-## Usage
+## Report Generation
 
-### Static Mode
+Both national and per-LGA intelligence reports can be downloaded as formatted `.txt` files directly from the sidebar. Reports include:
 
-```bash
-# Run the ML pipeline (generates GeoJSON + CSV)
-python -m src.main
+- **National Report** — Overall statistics, risk distribution breakdown, top critical LGAs, data source summary
+- **LGA Report** — All metrics (MPI, nightlight, composite, infrastructure, environment, displacement), risk assessment narrative, comparative analysis vs national averages, poverty probability calculation
 
-# Migrate results to PostgreSQL
-python -m src.migrate_to_db
-
-# Start the API server
-cd server && node index.js
-
-# Start the frontend (in another terminal)
-cd client && npm run dev
-```
-
-### Dynamic Mode (Real-Time Monitoring)
-
-```bash
-# 1. Run ML model for initial data
-python -m src.main
-
-# 2. Migrate to database
-python -m src.migrate_to_db
-
-# 3. Start the scheduler service (continuous)
-python -m src.scheduler_service
-
-# 4. Start the API server
-cd server && node index.js
-
-# 5. Start the frontend
-cd client && npm run dev
-```
-
-The scheduler automatically:
-- Checks for conflict events every 1 hour
-- Updates nightlight data every 24 hours
-- Refreshes infrastructure data every 6 hours
-- Retrains the ML model every 12 hours
-
-See [QUICKSTART.md](QUICKSTART.md) and [QUICKSTART_DYNAMIC.md](QUICKSTART_DYNAMIC.md) for detailed guides.
-
-## Pipeline Phases
-
-### Phase 1: Feature Extraction (Memory-Safe)
-- Loads LGA boundaries from GRID3 shapefile (774 LGAs)
-- Extracts mean nightlight intensity from VIIRS raster using windowed reading
-- Automatic CRS detection and reprojection
-- Falls back to synthetic data when VIIRS file is unavailable
-
-### Phase 2: Data Fusion & Enrichment
-- Merges state-level and senatorial MPI indicators
-- Enriches with infrastructure data (health facilities, schools, roads)
-- Adds environmental data (NDVI, rainfall)
-- KNN imputation for missing values (k=5)
-- Feature standardization via StandardScaler
-
-### Phase 3: Machine Learning
-- PCA dimensionality reduction (95% variance retained)
-- K-Means clustering (k=5) or HDBSCAN (min_cluster_size=30)
-- Composite poverty score: MPI (30%) + inverse nightlight (25%) + health access (15%) + education access (15%) + infrastructure (15%)
-- Silhouette Score validation
-- Assignment of 5 risk tiers: Critical, High, Medium, Low, Minimal
-
-## API Endpoints
-
-| Method | Route | Description | Fallback |
-|--------|-------|-------------|----------|
-| `GET` | `/api/health` | Health check | — |
-| `GET` | `/api/hotspots?state=&risk=` | GeoJSON FeatureCollection (filterable) | Static file |
-| `GET` | `/api/stats` | Aggregate statistics | Static file |
-| `GET` | `/api/lga/:name` | Single LGA detail | Static file |
-| `GET` | `/api/states` | Per-state aggregated metrics | DB only |
-| `GET` | `/api/rankings?order=worst&limit=50` | Top-N by composite score | DB only |
-| `GET` | `/api/history/:lga?limit=30` | Time-series snapshots | DB only |
-
-Response header `X-Data-Source` indicates `database` or `file` mode.
-
-## Web Dashboard
-
-### Features
-
-- **Interactive Map** — 774 LGAs color-coded by 5 risk levels with hover tooltips
-- **Rankings Table** — LGAs ranked by composite poverty score (worst/best toggle)
-- **State Overview** — Aggregated state-level metrics with drill-down to map
-- **Search & Filter** — Search by LGA or state name, filter by state and risk level across all views
-- **LGA Detail Panel** — Click any LGA for full analytics (MPI, nightlight, composite score, infrastructure, poverty probability)
-- **Dark/Light Themes** — Toggle between dark and light modes
-- **Responsive Design** — Mobile-optimized with bottom navigation bar and sidebar drawer
-- **Auto-Refresh** — 60-second polling for live data updates
-
-### Quick Start
-
-```bash
-# Start API server (port 5000)
-cd server && npm install && node index.js
-
-# Start frontend (port 5173)
-cd client && npm install && npm run dev
-```
-
-Dashboard available at **http://localhost:5173**
-
-## Database
-
-### PostgreSQL (`iophin_db`)
-
-Connection: `postgresql://postgres:<password>@localhost:5432/iophin_db`
-
-**Primary table: `poverty_hotspots`** — 774 rows, one per LGA
-
-| Category | Columns |
-|----------|---------|
-| Identifiers | `lga_name`, `state`, `latitude`, `longitude` |
-| Poverty | `mpi`, `headcount_ratio`, `intensity_of_deprivation`, `in_severe_poverty`, `senatorial_mpi` |
-| Economic | `mean_nightlight_intensity`, `composite_poverty_score` |
-| Infrastructure | `health_facility_count`, `school_count`, `road_density_km` |
-| Environmental | `ndvi_mean`, `rainfall_mm` |
-| Displacement | `idp_count`, `food_price_index` |
-| ML outputs | `cluster`, `cluster_label`, `risk_level`, `clustering_method` |
-| Crisis | `conflict_flag`, `last_conflict_event` |
-| Metadata | `last_updated`, `data_source`, `geometry` (GeoJSON text) |
-
-Unique constraint: `(lga_name, state)` compound index.
-
-**History table: `hotspot_history`** — time-series snapshots for trend analysis, indexed on `(lga_name, snapshot_date)`.
-
-## Dependencies
-
-### Python
-numpy, pandas, scikit-learn, scipy, geopandas, rasterio, shapely, fiona, pyproj, matplotlib, seaborn, sqlalchemy, psycopg2-binary, requests, schedule, python-dotenv, earthengine-api, hdbscan, thefuzz, openpyxl
-
-### Node.js (Server)
-express 4, cors, compression, dotenv, express-rate-limit, pg
-
-### React (Client)
-react 19, react-dom, typescript 5.9, vite 7, tailwindcss 4, react-leaflet 5, leaflet, recharts 3, axios
-
-## Outputs
-
-### CSV (`data/processed/final_model_output.csv`)
-All 774 LGAs with features, cluster assignments, and risk levels.
-
-### GeoJSON (`data/processed/hotspots.geojson`)
-FeatureCollection with polygon geometries and all properties — used as static fallback when database is unavailable.
-
-## Troubleshooting
-
-See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for diagnosis of common issues including VIIRS raster extraction errors, spatial bounds verification, database connection issues, and frontend build errors.
+---
 
 ## License
 
-MIT License — see [license.md](license.md). Data attribution in [DATA_LICENSE.md](DATA_LICENSE.md).
+This project is licensed under the **MIT License** — see [license.md](license.md) for details.
 
-IOPHIN — Integrated Optimization Platform for Health Information in Nigeria.
+Data sources are subject to their respective licenses — see [DATA_LICENSE.md](DATA_LICENSE.md).
+
+---
+
+<p align="center">
+  <sub>Built with purpose — identifying where help is needed most.</sub>
+</p>
