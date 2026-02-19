@@ -31,7 +31,7 @@ export function useWebSocket(lgaName?: string, stateName?: string) {
 
         io.on('alert', (payload: any) => {
           addNotification({
-            id: `${Date.now()}-${Math.random()}`,
+            id: crypto.randomUUID(),
             type: payload.type || 'alert',
             message: payload.description || `Risk change: ${payload.lga_name}`,
             severity: payload.severity || 'medium',
