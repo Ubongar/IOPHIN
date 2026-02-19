@@ -21,7 +21,21 @@ def _find_package_dir(package_name: str) -> Path | None:
 
 
 def _candidate_proj_paths() -> list[Path]:
+    """Return PROJ data directories ordered by likely compatibility.
+
+    Rasterio bundles a newer proj.db (VERSION_MINOR >= 6) that is
+    compatible with its own PROJ library, so it is preferred over the
+    older proj.db shipped with pyproj.
+    """
     candidates: list[Path] = []
+
+    # Prefer rasterio's proj_data — its proj.db matches the PROJ
+    # library that rasterio itself links against.
+    rasterio_dir = _find_package_dir("rasterio")
+    if rasterio_dir:
+        candidates.append(rasterio_dir / "proj_data")
+
+    # pyproj as fallback
     pyproj_dir = _find_package_dir("pyproj")
     if pyproj_dir:
         candidates.append(pyproj_dir / "proj_dir" / "share" / "proj")

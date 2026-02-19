@@ -14,6 +14,7 @@ from rasterio.mask import mask
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 import logging
 from pathlib import Path
+import time
 
 from . import config
 
