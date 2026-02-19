@@ -444,6 +444,14 @@ def build_analytical_model(df, use_pca=True):
         logger.info("Skipping PCA (not enough features or disabled)")
         clustering_features = scaled_cols
 
+    # ── Phase 3.1b: XGBoost dynamic model (optional enhancement) ─────────
+    try:
+        from .advanced_model import build_xgboost_model
+        result = build_xgboost_model(result)
+        logger.info("XGBoost dynamic model applied successfully")
+    except Exception as _xgb_err:
+        logger.info(f"XGBoost model skipped (falling back to weighted composite): {_xgb_err}")
+
     # ── Phase 3.2: Clustering — K-Means ──────────────────────────────────
     km_result, kmeans, km_silhouette = perform_kmeans_clustering(
         result, clustering_features, n_clusters=config.K_CLUSTERS
@@ -476,6 +484,30 @@ def build_analytical_model(df, use_pca=True):
 
     models['silhouette_score'] = best_silhouette
     models['clustering_method'] = best_method
+
+    # ── Phase 4.1: Getis-Ord spatial statistics (optional) ───────────────
+    try:
+        from .spatial_statistics import compute_getis_ord
+        result = compute_getis_ord(result)
+        logger.info("Getis-Ord spatial statistics computed")
+    except Exception as _gs_err:
+        logger.info(f"Getis-Ord skipped: {_gs_err}")
+
+    # ── Phase 4.2: Temporal trend analysis (optional) ────────────────────
+    try:
+        from .temporal_analysis import compute_temporal_trends
+        result = compute_temporal_trends(result)
+        logger.info("Temporal trends computed")
+    except Exception as _tt_err:
+        logger.info(f"Temporal trends skipped: {_tt_err}")
+
+    # ── Phase 4.3: Nightlight anomaly detection (optional) ───────────────
+    try:
+        from .anomaly_detection import detect_nightlight_anomalies
+        result = detect_nightlight_anomalies(result)
+        logger.info("Nightlight anomaly detection complete")
+    except Exception as _nl_err:
+        logger.info(f"Nightlight anomaly detection skipped: {_nl_err}")
 
     # Distribution
     cluster_dist = result['cluster'].value_counts().sort_index()

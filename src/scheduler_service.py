@@ -395,6 +395,61 @@ class IOPHINScheduler:
         except Exception as e:
             logger.error(f"GEE Environmental Error: {e}", exc_info=True)
 
+    # ── Task 7: Anomaly Detection ────────────────────────────────────────
+
+    def run_anomaly_detection(self):
+        logger.info("=" * 60)
+        logger.info("ANOMALY DETECTION: Running nightlight + multivariate checks...")
+        try:
+            hotspots = get_all_hotspots()
+            if not hotspots:
+                logger.warning("No data — skipping anomaly detection")
+                return
+            df = pd.DataFrame(hotspots)
+            from src.anomaly_detection import detect_nightlight_anomalies, detect_multivariate_anomalies
+            df = detect_nightlight_anomalies(df)
+            df = detect_multivariate_anomalies(df)
+            upsert_hotspots_from_dataframe(df, data_source="ANOMALY_DETECTION")
+            logger.info("✅ Anomaly detection complete")
+        except Exception as e:
+            logger.error(f"Anomaly Detection Error: {e}", exc_info=True)
+
+    # ── Task 8: Predictive Model ─────────────────────────────────────────
+
+    def run_predictive_model(self):
+        logger.info("=" * 60)
+        logger.info("PREDICTIVE MODEL: Forecasting all LGAs...")
+        try:
+            hotspots = get_all_hotspots()
+            if not hotspots:
+                logger.warning("No data — skipping predictive model")
+                return
+            df = pd.DataFrame(hotspots)
+            from src.predictive_model import forecast_all_lgas
+            df = forecast_all_lgas(df)
+            upsert_hotspots_from_dataframe(df, data_source="PREDICTIVE_MODEL")
+            logger.info("✅ Predictive model forecasts saved")
+        except Exception as e:
+            logger.error(f"Predictive Model Error: {e}", exc_info=True)
+
+    # ── Task 9: Temporal Analysis ────────────────────────────────────────
+
+    def run_temporal_analysis(self):
+        logger.info("=" * 60)
+        logger.info("TEMPORAL ANALYSIS: Computing trend indicators...")
+        try:
+            hotspots = get_all_hotspots()
+            if not hotspots:
+                logger.warning("No data — skipping temporal analysis")
+                return
+            df = pd.DataFrame(hotspots)
+            from src.temporal_analysis import compute_temporal_trends
+            df = compute_temporal_trends(df)
+            upsert_hotspots_from_dataframe(df, data_source="TEMPORAL_ANALYSIS")
+            logger.info("✅ Temporal trends computed and saved")
+        except Exception as e:
+            logger.error(f"Temporal Analysis Error: {e}", exc_info=True)
+
     # ── Scheduler entry point ──────────────────────────────────────────────
 
     def start(self):
@@ -410,6 +465,9 @@ class IOPHINScheduler:
         self.fetch_external_enrichment()
         self.fetch_gee_environmental()
         self.retrain_ml_model()
+        self.run_anomaly_detection()
+        self.run_predictive_model()
+        self.run_temporal_analysis()
 
         # Schedule recurring tasks
         schedule.every(intervals['conflict']).hours.do(self.fetch_conflict_data)
@@ -418,6 +476,9 @@ class IOPHINScheduler:
         schedule.every(intervals['ml_retrain']).hours.do(self.retrain_ml_model)
         schedule.every(intervals['external_enrichment']).hours.do(self.fetch_external_enrichment)
         schedule.every(intervals['gee_environmental']).hours.do(self.fetch_gee_environmental)
+        schedule.every(6).hours.do(self.run_anomaly_detection)
+        schedule.every(24).hours.do(self.run_predictive_model)
+        schedule.every(12).hours.do(self.run_temporal_analysis)
 
         logger.info("All tasks scheduled:")
         logger.info(f"  Conflict Listener       – every {intervals['conflict']} h")
@@ -426,6 +487,9 @@ class IOPHINScheduler:
         logger.info(f"  ML Retrain + Snapshot   – every {intervals['ml_retrain']} h")
         logger.info(f"  External Enrichment     – every {intervals['external_enrichment']} h")
         logger.info(f"  GEE Environmental       – every {intervals['gee_environmental']} h")
+        logger.info(f"  Anomaly Detection       – every 6 h")
+        logger.info(f"  Predictive Model        – every 24 h")
+        logger.info(f"  Temporal Analysis       – every 12 h")
 
         while True:
             schedule.run_pending()
