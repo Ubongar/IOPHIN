@@ -12,7 +12,9 @@ interface AuthState {
 }
 
 const getInitialToken = (): string | null => {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {
+    return null;
+  }
   try {
     return window.localStorage.getItem('iophin_token');
   } catch {
@@ -22,6 +24,7 @@ const getInitialToken = (): string | null => {
 
 export const useAuthStore = create<AuthState>((set) => {
   const initialToken = getInitialToken();
+
   return {
     user: null,
     token: initialToken,
