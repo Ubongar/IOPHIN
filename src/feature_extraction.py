@@ -4,6 +4,11 @@ Implements memory-safe extraction of nighttime light intensity from large VIIRS 
 """
 import numpy as np
 import geopandas as gpd
+
+from .geospatial_env import configure_geospatial_env
+
+configure_geospatial_env()
+
 import rasterio
 from rasterio.mask import mask
 from rasterio.warp import calculate_default_transform, reproject, Resampling

@@ -5,6 +5,11 @@ Orchestrates the complete analytical workflow.
 import re
 import sys
 import logging
+
+from src.geospatial_env import configure_geospatial_env
+
+configure_geospatial_env()
+
 import pandas as pd
 import geopandas as gpd
 
