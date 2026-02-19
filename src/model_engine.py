@@ -444,6 +444,20 @@ def build_analytical_model(df, use_pca=True):
         logger.info("Skipping PCA (not enough features or disabled)")
         clustering_features = scaled_cols
 
+    # ── Phase 3.1b: XGBoost dynamic model (optional enhancement) ─────────
+    try:
+        from .advanced_model import load_or_train_model, predict_poverty_scores
+        _bundle, _metrics = load_or_train_model(result)
+        if _bundle is not None:
+            _scores = predict_poverty_scores(_bundle, result)
+            if not _scores.empty:
+                result['composite_poverty_score'] = _scores.values
+                logger.info("XGBoost dynamic model applied successfully")
+        else:
+            logger.info("XGBoost model skipped (insufficient data — using weighted composite)")
+    except Exception as _xgb_err:
+        logger.info(f"XGBoost model skipped (falling back to weighted composite): {_xgb_err}")
+
     # ── Phase 3.2: Clustering — K-Means ──────────────────────────────────
     km_result, kmeans, km_silhouette = perform_kmeans_clustering(
         result, clustering_features, n_clusters=config.K_CLUSTERS
@@ -476,6 +490,56 @@ def build_analytical_model(df, use_pca=True):
 
     models['silhouette_score'] = best_silhouette
     models['clustering_method'] = best_method
+
+    # ── Phase 4.1: Getis-Ord spatial statistics (optional) ───────────────
+    try:
+        import geopandas as gpd
+        from .spatial_statistics import compute_getis_ord
+        if isinstance(result, gpd.GeoDataFrame):
+            result = compute_getis_ord(result, column='composite_poverty_score')
+            logger.info("Getis-Ord spatial statistics computed")
+        else:
+            logger.info("Getis-Ord skipped (result is not a GeoDataFrame)")
+    except Exception as _gs_err:
+        logger.info(f"Getis-Ord skipped: {_gs_err}")
+
+    # ── Phase 4.2: Temporal trend analysis (optional) ────────────────────
+    # Requires historical snapshots — fetch from DB and merge trend indicators
+    try:
+        from .temporal_analysis import compute_temporal_trends
+        from .db_utils import get_all_hotspots
+        _hist_raw = get_all_hotspots()
+        if _hist_raw:
+            _hist_df = pd.DataFrame(_hist_raw)
+            _trends = compute_temporal_trends(_hist_df)
+            if not _trends.empty and 'lga_name' in _trends.columns:
+                _trend_cols = ['lga_name', 'trend_slope', 'trend_class', 'trend_acceleration', 'trend_volatility']
+                _trend_cols = [c for c in _trend_cols if c in _trends.columns]
+                result = result.merge(_trends[_trend_cols], on='lga_name', how='left')
+                logger.info("Temporal trends merged into result")
+        else:
+            logger.info("Temporal trends skipped (no historical data)")
+    except Exception as _tt_err:
+        logger.info(f"Temporal trends skipped: {_tt_err}")
+
+    # ── Phase 4.3: Nightlight anomaly detection (optional) ───────────────
+    # Requires both current data and historical baseline
+    try:
+        from .anomaly_detection import detect_nightlight_anomalies
+        from .db_utils import get_all_hotspots
+        _hist_raw = get_all_hotspots()
+        if _hist_raw:
+            _hist_df = pd.DataFrame(_hist_raw)
+            _anomalies = detect_nightlight_anomalies(result, _hist_df)
+            if not _anomalies.empty:
+                result['nightlight_anomaly'] = result['lga_name'].isin(
+                    _anomalies['lga_name']
+                )
+                logger.info(f"Nightlight anomaly detection complete ({len(_anomalies)} flagged)")
+        else:
+            logger.info("Nightlight anomaly detection skipped (no history available)")
+    except Exception as _nl_err:
+        logger.info(f"Nightlight anomaly detection skipped: {_nl_err}")
 
     # Distribution
     cluster_dist = result['cluster'].value_counts().sort_index()

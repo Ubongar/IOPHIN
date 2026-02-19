@@ -34,3 +34,25 @@ python-Levenshtein>=0.25.0
 
 # Excel file reading (for DTM Baseline Assessment XLSX)
 openpyxl>=3.1.0
+
+# Predictive & Advanced ML
+xgboost>=2.0.0
+lightgbm>=4.0.0
+prophet>=1.1.0
+shap>=0.43.0
+
+# Spatial Statistics
+libpysal>=4.7.0
+esda>=2.4.0
+mgwr>=2.2.0
+splot>=1.1.0
+
+# Anomaly Detection
+pyod>=1.1.0
+
+# Redis caching (Python side)
+redis>=5.0.0
+
+# PDF Report Generation
+reportlab>=4.0.0
+fpdf2>=2.7.0

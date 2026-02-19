@@ -114,4 +114,103 @@ export interface RankingEntry {
   schools: number;
 }
 
-export type ViewMode = 'map' | 'rankings' | 'states';
+// ── New upgrade types ────────────────────────────────────────────────────
+
+export type ChoroplethMode = 'composite' | 'mpi' | 'nightlight' | 'conflict' | 'rainfall' | 'ndvi';
+export type BasemapStyle = 'dark' | 'light' | 'satellite';
+
+export interface TemporalTrend {
+  lga_name: string;
+  state: string;
+  trend_slope: number;
+  trend_class: 'Deteriorating Fast' | 'Deteriorating' | 'Stable' | 'Improving' | 'Improving Fast';
+  months_at_current_tier: number;
+  tier_crossings_6m: number;
+}
+
+export interface RiskForecast {
+  id?: number;
+  lga_name: string;
+  state: string;
+  forecast_date: string;
+  current_risk_level: RiskLevel;
+  predicted_risk_level: RiskLevel;
+  confidence: number;
+  forecast_horizon_months: number;
+  predicted_composite_score?: number;
+}
+
+export interface AnomalyAlert {
+  id: number;
+  lga_name: string;
+  state: string;
+  anomaly_type: string;
+  severity: string;
+  description: string;
+  metric_name: string;
+  deviation_pct: number;
+  detected_at: string;
+  acknowledged: boolean;
+}
+
+export interface Intervention {
+  id: number;
+  lga_name: string;
+  state: string;
+  program_name: string;
+  organization: string;
+  intervention_type: string;
+  start_date: string;
+  end_date?: string;
+  budget_usd?: number;
+  beneficiaries?: number;
+  status: 'active' | 'completed' | 'planned';
+  mpi_before?: number;
+  mpi_after?: number;
+  impact_score?: number;
+}
+
+export interface CorrelationPoint {
+  lga_name: string;
+  state: string;
+  x: number;
+  y: number;
+  risk_level: RiskLevel;
+}
+
+export interface SavedView {
+  id: number;
+  name: string;
+  view_config: object;
+  share_token: string;
+  is_public: boolean;
+  created_at: string;
+}
+
+export interface ChangeLogEntry {
+  lga_name: string;
+  state: string;
+  old_risk_level: RiskLevel;
+  new_risk_level: RiskLevel;
+  delta_composite: number;
+  changed_at: string;
+}
+
+export interface SeasonalVulnerability {
+  month: number;
+  month_name: string;
+  food_insecurity_risk: number;
+  flood_risk: number;
+  drought_risk: number;
+  overall_vulnerability: number;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  full_name: string;
+  role: 'admin' | 'government' | 'ngo' | 'public';
+  organization?: string;
+}
+
+export type ViewMode = 'map' | 'rankings' | 'states' | 'interventions' | 'conflict' | 'seasonal' | 'budget' | 'reports' | 'alerts' | 'settings';

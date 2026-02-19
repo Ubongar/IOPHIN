@@ -119,5 +119,38 @@ DTM_HDX_CSV_URL = os.getenv(
 WFP_API_URL = os.getenv('WFP_API_URL', 'https://data.humdata.org/api/3/action')
 OVERPASS_API_URL = os.getenv('OVERPASS_API_URL', 'https://overpass-api.de/api/interpreter')
 
+# Advanced Model
+USE_XGBOOST = True
+XGBOOST_PARAMS = {
+    'max_depth': 6, 'learning_rate': 0.1, 'n_estimators': 200,
+    'objective': 'reg:squarederror', 'eval_metric': 'rmse',
+}
+MODEL_SAVE_DIR = BASE_DIR / "models"
+MODEL_SAVE_DIR.mkdir(parents=True, exist_ok=True)
+
+# Anomaly Detection
+NIGHTLIGHT_DROP_THRESHOLD = float(os.getenv('NIGHTLIGHT_DROP_THRESHOLD', 0.20))
+ANOMALY_CONTAMINATION = float(os.getenv('ANOMALY_CONTAMINATION', 0.05))
+
+# Forecasting
+FORECAST_HORIZONS = [3, 6]  # months
+
+# Population weighting
+USE_POPULATION_WEIGHTED_MPI = True
+
+# ACLED API credentials
+ACLED_EMAIL = os.getenv('ACLED_EMAIL', '')
+ACLED_API_KEY = os.getenv('ACLED_API_KEY', '')
+
+# NASA LAADS
+NASA_LAADS_TOKEN = os.getenv('NASA_LAADS_TOKEN', '')
+
+# Redis
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
+
+# New scheduler intervals
+SCHEDULER_INTERVALS['anomaly_detection'] = int(os.getenv('SCHEDULER_ANOMALY_DETECTION_INTERVAL', 6))
+SCHEDULER_INTERVALS['predictive_model'] = int(os.getenv('SCHEDULER_PREDICTIVE_MODEL_INTERVAL', 24))
+
 # Ensure directories exist
 PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)

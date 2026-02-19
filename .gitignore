@@ -34,3 +34,12 @@ build/
 gee/gen-lang-client-0206534143-b4d81af822c7.json
 #bak files
 *.bak
+
+# Trained ML models (can be large)
+models/*.pkl
+models/*.joblib
+models/*.h5
+
+# Result files
+result*.txt
+_fix_output.txt
