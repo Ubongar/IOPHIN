@@ -21,8 +21,9 @@ import ScrollytellingTour from './components/ScrollytellingTour';
 import CrisisCorridor from './components/CrisisCorridor';
 import Leaderboard from './components/Leaderboard';
 import DataQualityPanel from './components/DataQualityPanel';
+import AuthModal from './components/AuthModal';
 import { useTheme } from './contexts/ThemeContext';
-import { useDataStore, useFilterStore, useMapStore, useAlertStore } from './store';
+import { useDataStore, useFilterStore, useMapStore, useAlertStore, useAuthStore } from './store';
 import { useWebSocket } from './hooks/useWebSocket';
 import type { HotspotFeature, RiskLevel, ViewMode, Intervention, ChangeLogEntry } from './types';
 
@@ -51,12 +52,14 @@ function App() {
     setStateFilter, setRiskFilter, setSearchQuery, setActiveView, clearFilters } = useFilterStore();
   const { selectedLGA, sidebarOpen, setSelectedLGA, setSidebarOpen } = useMapStore();
   const { unreadCount: alertCount } = useAlertStore();
+  const { isAuthenticated, user, logout: authLogout } = useAuthStore();
 
   // Local state
   const [interventions, setInterventions] = useState<Intervention[]>([]);
   const [recentChangesLocal, setRecentChangesLocal] = useState<ChangeLogEntry[]>([]);
   const [tourActive, setTourActive] = useState(false);
   const [activeTab, setActiveTab] = useState<'anomalies' | 'corridor' | 'leaderboard' | 'subscriptions'>('anomalies');
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   // WebSocket for real-time alerts
@@ -251,6 +254,20 @@ function App() {
             </button>
           )}
           <div className="toolbar-status">
+            {isAuthenticated ? (
+              <button onClick={authLogout} className="rankings-toggle-btn" style={{ fontSize: 11, padding: '4px 12px' }}
+                title={user?.email || 'Logged in'}>
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ marginRight: 4 }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                {user?.full_name?.split(' ')[0] || 'Account'} · Sign Out
+              </button>
+            ) : (
+              <button onClick={() => setShowAuthModal(true)} className="download-btn"
+                style={{ width: 'auto', padding: '5px 14px', fontSize: 11 }}>
+                Sign In
+              </button>
+            )}
             <div className="status-chip">
               <span className="status-chip-label">Source:</span>
               <span className={'status-chip-value ' + (dataSource === 'Live Database' ? 'text-blue-400' : 'text-amber-400')}>{dataSource}</span>
@@ -412,6 +429,9 @@ function App() {
           ))}
         </nav>
       </div>
+
+      {/* Auth modal */}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
     </div>
   );
 }

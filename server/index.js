@@ -497,7 +497,7 @@ v1.get('/saved-views/:token', async (req, res) => {
 });
 
 // ── Reports ───────────────────────────────────────────
-v1.post('/reports/generate', requireAuth, async (req, res) => {
+v1.post('/reports/generate', authMiddleware, async (req, res) => {
   try {
     await generateReport(res, req.body);
   } catch (error) { res.status(500).json({ error: 'Report generation failed' }); }

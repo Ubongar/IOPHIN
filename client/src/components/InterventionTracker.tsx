@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { Intervention } from '../types';
 
 interface Props {
@@ -43,7 +43,7 @@ export default function InterventionTracker({ interventions, userRole, onAdd, on
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <select className="filter-select"
+          <select className="filter-select" aria-label="Filter interventions by status"
             value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
             <option value="">All Status</option>
             <option value="active">Active</option>
