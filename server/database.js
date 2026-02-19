@@ -316,11 +316,12 @@ export async function getLGAsWithinRadius(lat, lon, radiusKm) {
 export async function getRecentChanges(days = 7) {
   if (!isConnected) return null;
   try {
-    const result = await pool.query(`
-      SELECT * FROM risk_change_log
-      WHERE changed_at >= NOW() - INTERVAL '${parseInt(days)} days'
-      ORDER BY changed_at DESC LIMIT 100
-    `);
+    const result = await pool.query(
+      `SELECT * FROM risk_change_log
+       WHERE changed_at >= NOW() - ($1 * INTERVAL '1 day')
+       ORDER BY changed_at DESC LIMIT 100`,
+      [parseInt(days, 10)]
+    );
     return result.rows;
   } catch (error) {
     console.error('Error in getRecentChanges:', error.message);
@@ -378,12 +379,8 @@ export async function getEscalationCandidates() {
       SELECT * FROM risk_forecasts
       WHERE forecast_horizon_months = 3
         AND current_risk_level != predicted_risk_level
-        AND CASE current_risk_level
-          WHEN 'Minimal' THEN 0 WHEN 'Low' THEN 1 WHEN 'Medium' THEN 2
-          WHEN 'High' THEN 3 WHEN 'Critical' THEN 4 END
-        < CASE predicted_risk_level
-          WHEN 'Minimal' THEN 0 WHEN 'Low' THEN 1 WHEN 'Medium' THEN 2
-          WHEN 'High' THEN 3 WHEN 'Critical' THEN 4 END
+        AND array_position(ARRAY['Minimal','Low','Medium','High','Critical'], current_risk_level)
+          < array_position(ARRAY['Minimal','Low','Medium','High','Critical'], predicted_risk_level)
       ORDER BY confidence DESC
     `);
     return result.rows;

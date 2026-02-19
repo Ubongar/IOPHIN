@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import http from 'http';
 import * as db from './database.js';
-import { initRedis, getCached, setCache } from './redis.js';
+import { initRedis, getCached, setCache, closeRedis } from './redis.js';
 import { initWebSocket } from './websocket.js';
 import { registerUser, loginUser, authMiddleware, requireAuth, requireRole } from './auth.js';
 import { createSubscription, deleteSubscription, getUserSubscriptions } from './alerts.js';
@@ -529,6 +529,7 @@ const io = await initWebSocket(httpServer);
 const shutdown = async (signal) => {
   console.log(`\n${signal} received. Closing...`);
   if (USE_DATABASE) await db.closeDatabase();
+  await closeRedis();
   process.exit(0);
 };
 

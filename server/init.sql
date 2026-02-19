@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS anomaly_alerts (
 );
 CREATE INDEX IF NOT EXISTS idx_anomaly_lga ON anomaly_alerts (lga_name);
 CREATE INDEX IF NOT EXISTS idx_anomaly_date ON anomaly_alerts (detected_at DESC);
+CREATE INDEX IF NOT EXISTS idx_anomaly_unacknowledged ON anomaly_alerts (detected_at DESC) WHERE acknowledged = false;
 
 -- ── Predictive Forecasts Table ──────────────────────────────
 CREATE TABLE IF NOT EXISTS risk_forecasts (
@@ -175,6 +176,11 @@ SELECT
     school_count
 FROM poverty_hotspots
 ORDER BY composite_poverty_score DESC;
+
+-- Unique indexes required for CONCURRENTLY refresh
+CREATE UNIQUE INDEX IF NOT EXISTS mv_state_aggregation_state_idx ON mv_state_aggregation (state);
+CREATE UNIQUE INDEX IF NOT EXISTS mv_risk_distribution_risk_idx ON mv_risk_distribution (risk_level);
+CREATE UNIQUE INDEX IF NOT EXISTS mv_rankings_rank_idx ON mv_rankings (rank);
 
 -- Refresh function
 CREATE OR REPLACE FUNCTION refresh_materialized_views()

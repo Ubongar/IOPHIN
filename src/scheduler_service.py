@@ -405,12 +405,14 @@ class IOPHINScheduler:
             if not hotspots:
                 logger.warning("No data — skipping anomaly detection")
                 return
-            df = pd.DataFrame(hotspots)
+            current_df = pd.DataFrame(hotspots)
             from src.anomaly_detection import detect_nightlight_anomalies, detect_multivariate_anomalies
-            df = detect_nightlight_anomalies(df)
-            df = detect_multivariate_anomalies(df)
-            upsert_hotspots_from_dataframe(df, data_source="ANOMALY_DETECTION")
-            logger.info("✅ Anomaly detection complete")
+            # detect_nightlight_anomalies needs a history baseline; use current data as both
+            # (a rolling baseline will be built once history table is populated)
+            nl_anomalies = detect_nightlight_anomalies(current_df, current_df)
+            mv_anomalies = detect_multivariate_anomalies(current_df)
+            total = len(nl_anomalies) + len(mv_anomalies)
+            logger.info(f"✅ Anomaly detection complete: {len(nl_anomalies)} nightlight, {len(mv_anomalies)} multivariate")
         except Exception as e:
             logger.error(f"Anomaly Detection Error: {e}", exc_info=True)
 
@@ -424,11 +426,13 @@ class IOPHINScheduler:
             if not hotspots:
                 logger.warning("No data — skipping predictive model")
                 return
-            df = pd.DataFrame(hotspots)
+            history_df = pd.DataFrame(hotspots)
             from src.predictive_model import forecast_all_lgas
-            df = forecast_all_lgas(df)
-            upsert_hotspots_from_dataframe(df, data_source="PREDICTIVE_MODEL")
-            logger.info("✅ Predictive model forecasts saved")
+            forecasts = forecast_all_lgas(history_df=history_df)
+            if not forecasts.empty:
+                logger.info(f"✅ Predictive model: {len(forecasts)} forecasts generated")
+            else:
+                logger.info("Predictive model: no forecasts produced (insufficient history)")
         except Exception as e:
             logger.error(f"Predictive Model Error: {e}", exc_info=True)
 
@@ -442,11 +446,11 @@ class IOPHINScheduler:
             if not hotspots:
                 logger.warning("No data — skipping temporal analysis")
                 return
-            df = pd.DataFrame(hotspots)
-            from src.temporal_analysis import compute_temporal_trends
-            df = compute_temporal_trends(df)
-            upsert_hotspots_from_dataframe(df, data_source="TEMPORAL_ANALYSIS")
-            logger.info("✅ Temporal trends computed and saved")
+            history_df = pd.DataFrame(hotspots)
+            from src.temporal_analysis import compute_temporal_trends, detect_tier_crossings
+            trends = compute_temporal_trends(history_df)
+            crossings = detect_tier_crossings(history_df)
+            logger.info(f"✅ Temporal trends computed: {len(trends)} LGAs, {len(crossings)} tier crossings")
         except Exception as e:
             logger.error(f"Temporal Analysis Error: {e}", exc_info=True)
 

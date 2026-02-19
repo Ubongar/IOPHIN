@@ -11,22 +11,36 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: localStorage.getItem('iophin_token'),
-  isAuthenticated: !!localStorage.getItem('iophin_token'),
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
-  setToken: (token) => {
-    if (token) localStorage.setItem('iophin_token', token);
-    else localStorage.removeItem('iophin_token');
-    set({ token });
-  },
-  login: (user, token) => {
-    localStorage.setItem('iophin_token', token);
-    set({ user, token, isAuthenticated: true });
-  },
-  logout: () => {
-    localStorage.removeItem('iophin_token');
-    set({ user: null, token: null, isAuthenticated: false });
-  },
-}));
+const getInitialToken = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.localStorage.getItem('iophin_token');
+  } catch {
+    return null;
+  }
+};
+
+export const useAuthStore = create<AuthState>((set) => {
+  const initialToken = getInitialToken();
+  return {
+    user: null,
+    token: initialToken,
+    isAuthenticated: !!initialToken,
+    setUser: (user) => set({ user, isAuthenticated: !!user }),
+    setToken: (token) => {
+      try {
+        if (token) window.localStorage.setItem('iophin_token', token);
+        else window.localStorage.removeItem('iophin_token');
+      } catch { /* SSR or storage blocked */ }
+      set({ token });
+    },
+    login: (user, token) => {
+      try { window.localStorage.setItem('iophin_token', token); } catch { /* ignore */ }
+      set({ user, token, isAuthenticated: true });
+    },
+    logout: () => {
+      try { window.localStorage.removeItem('iophin_token'); } catch { /* ignore */ }
+      set({ user: null, token: null, isAuthenticated: false });
+    },
+  };
+});

@@ -27,6 +27,20 @@ async function sendEmail(to, subject, html) {
 
 async function sendWebhook(url, payload) {
   try {
+    // SSRF protection: only allow https:// and block private/loopback ranges
+    if (!url || typeof url !== 'string') return;
+    if (!url.startsWith('https://')) {
+      console.warn('Webhook blocked: only https:// URLs are allowed');
+      return;
+    }
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+    // Block localhost, link-local, and private ranges
+    const BLOCKED = /^(localhost|127\.|0\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1$|fc00:|fe80:)/;
+    if (BLOCKED.test(hostname)) {
+      console.warn(`Webhook blocked: private/internal host "${hostname}"`);
+      return;
+    }
     const { default: fetch } = await import('node-fetch').catch(() => ({ default: null }));
     if (!fetch) return;
     await fetch(url, {
@@ -85,18 +99,20 @@ export async function triggerRiskChangeAlerts(io, lgaName, state, oldRisk, newRi
       emitAlert(io, 'risk_change', payload);
     }
 
-    // Email + webhook per subscriber
-    for (const sub of result.rows) {
+    // Email + webhook per subscriber — sent in parallel
+    await Promise.all(result.rows.map(async (sub) => {
+      const sends = [];
       if (sub.notify_email && sub.email) {
-        await sendEmail(sub.email,
+        sends.push(sendEmail(sub.email,
           `IOPHIN Alert: Risk change in ${lgaName}`,
           `<b>${lgaName}</b> (${state}) risk changed from <b>${oldRisk}</b> to <b>${newRisk}</b>.`
-        );
+        ));
       }
       if (sub.notify_webhook && sub.webhook_url) {
-        await sendWebhook(sub.webhook_url, payload);
+        sends.push(sendWebhook(sub.webhook_url, payload));
       }
-    }
+      await Promise.all(sends);
+    }));
   } catch (err) {
     console.error('Alert dispatch failed:', err.message);
   }

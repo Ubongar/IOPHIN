@@ -12,6 +12,30 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL,
 
 const ROLES = ['admin', 'government', 'ngo', 'public'];
 
+// Fail fast in production if JWT_SECRET is not set
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.error('FATAL: JWT_SECRET environment variable is required in production');
+  process.exit(1);
+}
+const EFFECTIVE_JWT_SECRET = JWT_SECRET || 'fallback-dev-secret-do-not-use-in-prod';
+
+// Email validation regex (RFC 5322 simplified)
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateEmail(email) {
+  return typeof email === 'string' && EMAIL_RE.test(email) && email.length <= 254;
+}
+
+function validatePassword(password) {
+  // Minimum 8 chars, at least one letter and one digit
+  if (typeof password !== 'string') return false;
+  if (password.length < 8) return false;
+  if (!/[A-Za-z]/.test(password)) return false;
+  if (!/[0-9]/.test(password)) return false;
+  return true;
+}
+
 async function hashPassword(password) {
   const bcrypt = await import('bcryptjs');
   return bcrypt.default.hash(password, 12);
@@ -24,10 +48,14 @@ async function comparePassword(password, hash) {
 
 async function createToken(payload) {
   const jwt = (await import('jsonwebtoken')).default;
-  return jwt.sign(payload, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '7d' });
+  return jwt.sign(payload, EFFECTIVE_JWT_SECRET, { expiresIn: '7d' });
 }
 
 export async function registerUser(email, password, fullName, role = 'public', organization = null) {
+  if (!validateEmail(email)) throw new Error('Invalid email format');
+  if (!validatePassword(password)) {
+    throw new Error('Password must be at least 8 characters and contain at least one letter and one digit');
+  }
   if (!ROLES.includes(role)) role = 'public';
   const passwordHash = await hashPassword(password);
   try {
@@ -44,6 +72,7 @@ export async function registerUser(email, password, fullName, role = 'public', o
 }
 
 export async function loginUser(email, password) {
+  if (!validateEmail(email)) throw new Error('Invalid credentials');
   const result = await pool.query(
     'SELECT * FROM users WHERE email = $1', [email.toLowerCase()]
   );
@@ -65,7 +94,7 @@ export async function authMiddleware(req, res, next) {
   const token = authHeader.split(' ')[1];
   try {
     const jwt = (await import('jsonwebtoken')).default;
-    req.user = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+    req.user = jwt.verify(token, EFFECTIVE_JWT_SECRET);
   } catch {
     req.user = null;
   }

@@ -7,7 +7,10 @@ let io = null;
 export async function initWebSocket(httpServer) {
   const { Server } = await import('socket.io');
   io = new Server(httpServer, {
-    cors: { origin: '*', methods: ['GET', 'POST'] },
+    cors: {
+      origin: process.env.CLIENT_URL || 'http://localhost:5173',
+      methods: ['GET', 'POST'],
+    },
     transports: ['websocket', 'polling'],
   });
 
