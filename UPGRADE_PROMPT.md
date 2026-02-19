@@ -1,5 +1,27 @@
 # IOPHIN 10x Upgrade — Complete Implementation Prompt for GitHub Copilot
 
+---
+
+## Table of Contents
+
+- [Critical Context](#critical-context-read-this-entire-prompt-before-writing-any-code)
+- [Current Directory Structure](#directory-structure-current)
+- [Existing Database Schema](#existing-database-schema)
+- [Existing API Endpoints](#existing-api-endpoints-serverindexjs)
+- [Existing Tech Stack](#existing-tech-stack)
+- [Phase 1: Environment & Infrastructure Setup](#phase-1-environment--infrastructure-setup)
+- [Phase 2: Model / Intelligence Engine Upgrade (Python)](#phase-2-model--intelligence-engine-upgrade-python)
+- [Phase 3: Backend Upgrade (Node.js + PostgreSQL)](#phase-3-backend-upgrade-nodejs--postgresql)
+- [Phase 4: Frontend Upgrade (React/TypeScript)](#phase-4-frontend-upgrade-reacttypescript)
+- [Phase 5: Data Quality & Enrichment](#phase-5-data-quality--enrichment)
+- [Phase 6: Architecture Polish](#phase-6-architecture-polish)
+- [Phase 7: Testing & Validation](#phase-7-testing--validation)
+- [Implementation Order](#implementation-order-suggested)
+- [API Keys Required](#api-keys-required-summary-for-user)
+- [Important Implementation Notes](#important-implementation-notes)
+
+---
+
 ## CRITICAL CONTEXT: Read this entire prompt before writing any code.
 
 You are upgrading an existing project called **IOPHIN (Intelligent Poverty Hotspot Identification for Nigeria)**. It is a full-stack application with:
@@ -73,12 +95,12 @@ Both managed by SQLAlchemy ORM in `src/db_config.py`.
 
 ```
 USE_DATABASE=true
-DATABASE_URL=postgresql://postgres:Mikels3442@localhost:5432/iophin_db
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/iophin_db
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=iophin_db
 DB_USER=postgres
-DB_PASSWORD=Mikels3442
+DB_PASSWORD=YOUR_PASSWORD
 PORT=5000
 ```
 
@@ -1266,6 +1288,86 @@ CMD ["python", "src/scheduler_service.py"]
 ---
 
 # ============================================================
+# PHASE 7: TESTING & VALIDATION
+# ============================================================
+
+## 7.1 Python Unit Tests
+
+Create `src/tests/` directory with:
+
+- **`test_model_engine.py`** — Test composite score calculation, HDBSCAN clustering, risk tier assignment. Use mock DataFrames with known values and assert expected output.
+- **`test_advanced_model.py`** — Test XGBoost training with synthetic data, assert RMSE below threshold, verify SHAP values sum to model output.
+- **`test_anomaly_detection.py`** — Inject synthetic nightlight drop anomaly, assert it's detected. Test Isolation Forest with known outliers.
+- **`test_temporal_analysis.py`** — Test trend slope computation with a synthetic 12-month series, assert correct trajectory classification.
+- **`test_predictive_model.py`** — Test Prophet forecast with synthetic history data, assert output has required columns and confidence bounds.
+- **`test_spatial_statistics.py`** — Test Moran's I on a synthetic grid with known spatial pattern.
+- **`test_db_utils.py`** — Test upsert logic using an in-memory SQLite database or PostgreSQL test instance.
+
+Run with: `python -m pytest src/tests/ -v`
+
+## 7.2 Node.js API Tests
+
+Create `server/tests/` directory with:
+
+- **`api.test.js`** — End-to-end API tests using `supertest`:
+  - `GET /api/health` → 200 OK
+  - `GET /api/hotspots` → 200, valid GeoJSON FeatureCollection
+  - `GET /api/stats` → 200, correct keys present
+  - `GET /api/rankings` → 200, array with required fields
+  - `GET /api/states` → 200, array of state objects
+  - `GET /api/lga/:name` → 200 for known LGA, 404 for unknown
+  - `POST /api/auth/register` → 201 with user object
+  - `POST /api/auth/login` → 200 with JWT token
+  - `GET /api/v1/anomalies` → 200, requires auth header
+  - `GET /api/v1/forecasts` → 200, requires auth header
+
+- **`cache.test.js`** — Test Redis cache hit/miss behavior with a test Redis instance.
+
+- **`auth.test.js`** — Test JWT token generation, validation, expiry, and RBAC role checks.
+
+Install testing dependencies: `npm install --save-dev jest supertest`
+Add to `server/package.json`: `"test": "jest --testPathPattern=tests/"`
+
+Run with: `cd server && npm test`
+
+## 7.3 Frontend Tests
+
+Create `client/src/__tests__/` directory with:
+
+- **`App.test.tsx`** — Render App without crashing, test view switching.
+- **`MapComponent.test.tsx`** — Mock Leaflet, assert GeoJSON layer is rendered when data provided.
+- **`Sidebar.test.tsx`** — Test national summary mode renders correctly; test LGA profile mode with mock LGA data.
+- **`RankingsTable.test.tsx`** — Test sorting behavior, confirm rows render with correct data.
+- **`StateOverview.test.tsx`** — Test state click triggers map zoom callback.
+- **`SearchBar.test.tsx`** — Type into search, assert results dropdown appears; test keyboard navigation.
+- **`useWebSocket.test.ts`** — Mock Socket.IO, assert alert events update the store.
+
+Install: `npm install --save-dev @testing-library/react @testing-library/user-event vitest jsdom`
+Add to `client/package.json`: `"test": "vitest run"`
+
+Run with: `cd client && npm test`
+
+## 7.4 Integration Tests
+
+Create `tests/integration/` at project root:
+
+- **`pipeline_e2e.py`** — Run the full ML pipeline with a small synthetic dataset, assert output GeoJSON has expected LGA count and all required columns.
+- **`db_integration.py`** — Test full DB write → API read cycle with a live test PostgreSQL instance.
+- **`websocket_e2e.py`** — Trigger an anomaly alert via the Python service, assert the WebSocket event is received by a test client.
+
+## 7.5 Performance & Load Tests
+
+Using `k6` or Apache JMeter:
+
+- **Baseline load test**: 50 concurrent users hitting `/api/v1/hotspots` for 60 seconds. Target: p95 response time < 500ms with Redis cache enabled.
+- **Stress test**: Ramp to 200 concurrent users, assert no 5xx errors.
+- **Cache validation**: Compare response times with Redis enabled vs disabled. Assert cache reduces p95 by ≥ 60%.
+
+Run with: `k6 run tests/load/hotspots.js`
+
+---
+
+# ============================================================
 # IMPLEMENTATION ORDER (suggested)
 # ============================================================
 
@@ -1289,7 +1391,7 @@ Work in this sequence to avoid breaking existing functionality:
 16. **Mobile FieldView**
 17. **Dockerfiles + Docker Compose finalization**
 18. **Swagger documentation**
-19. **Testing & error handling pass**
+19. **Testing & validation pass** (Phase 7: unit, integration, load tests)
 
 ---
 
