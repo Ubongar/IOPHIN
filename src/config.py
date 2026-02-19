@@ -94,7 +94,7 @@ GEE_KEY_FILE = os.getenv('GEE_KEY_FILE', str(BASE_DIR / 'gee' / 'gen-lang-client
 HDX_API_URL = os.getenv('HDX_API_URL', 'https://data.humdata.org/api/3/action')
 WORLDPOP_API_URL = os.getenv('WORLDPOP_API_URL', 'https://hub.worldpop.org/rest/data')
 # DTM API v3 (primary IDP source – requires subscription key from https://dtmapi.iom.int)
-DTM_API_URL = os.getenv('DTM_API_URL', 'https://dtmapi.iom.int/api')
+DTM_API_URL = os.getenv('DTM_API_URL', 'https://dtmapi.iom.int/v3')
 DTM_API_KEY = os.getenv('DTM_API_KEY', '')
 
 # DTM IDP data via HDX fallback (public, no API key needed)

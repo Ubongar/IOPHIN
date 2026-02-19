@@ -428,15 +428,53 @@ import pandas as pd
 from . import config as _cfg
 
 
-def _safe_get_json(url, params=None, timeout=30):
-    """HTTP GET with error handling. Returns dict or None."""
-    try:
-        resp = requests.get(url, params=params, timeout=timeout)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as e:
-        logger.warning(f"HTTP request failed ({url}): {e}")
-        return None
+def _safe_get_json(url, params=None, timeout=30, retries=3, headers=None):
+    """HTTP GET with retry logic for transient DNS/network errors. Returns dict or None."""
+    import time as _time
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            resp = requests.get(url, params=params, timeout=timeout, headers=headers)
+            resp.raise_for_status()
+            return resp.json()
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            last_err = e
+            if attempt < retries:
+                wait = 2 ** attempt  # 2s, 4s backoff
+                logger.info(f"  Retry {attempt}/{retries} for {url} in {wait}s (transient: {type(e).__name__})")
+                _time.sleep(wait)
+            else:
+                logger.warning(f"HTTP request failed after {retries} attempts ({url}): {e}")
+        except Exception as e:
+            logger.warning(f"HTTP request failed ({url}): {e}")
+            return None
+    return None
+
+
+def _safe_download(url, timeout=120, retries=3, stream=False, headers=None):
+    """HTTP GET with retry logic for file downloads. Returns Response or None."""
+    import time as _time
+    _headers = {'User-Agent': 'IOPHIN/1.0 (poverty-hotspot-identifier)'}
+    if headers:
+        _headers.update(headers)
+    last_err = None
+    for attempt in range(1, retries + 1):
+        try:
+            resp = requests.get(url, timeout=timeout, stream=stream, headers=_headers)
+            resp.raise_for_status()
+            return resp
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            last_err = e
+            if attempt < retries:
+                wait = 2 ** attempt
+                logger.info(f"  Retry {attempt}/{retries} for download in {wait}s ({type(e).__name__})")
+                _time.sleep(wait)
+            else:
+                logger.warning(f"Download failed after {retries} attempts ({url}): {e}")
+        except Exception as e:
+            logger.warning(f"Download failed ({url}): {e}")
+            return None
+    return None
 
 
 def fetch_grid3_health_facilities(df):
@@ -467,8 +505,9 @@ def fetch_grid3_health_facilities(df):
             if res_url:
                 import tempfile, os
                 logger.info(f"  Downloading GRID3 health ({res_fmt})...")
-                resp = requests.get(res_url, timeout=120, stream=True)
-                resp.raise_for_status()
+                resp = _safe_download(res_url, timeout=120, stream=True)
+                if resp is None:
+                    raise ConnectionError("GRID3 health download failed")
 
                 if res_fmt == 'CSV':
                     facilities = pd.read_csv(io.StringIO(resp.text))
@@ -561,8 +600,9 @@ def fetch_grid3_schools(df):
 
             if res_url:
                 logger.info(f"  Downloading GRID3 education ({res_fmt})...")
-                resp = requests.get(res_url, timeout=120)
-                resp.raise_for_status()
+                resp = _safe_download(res_url, timeout=120)
+                if resp is None:
+                    raise ConnectionError("GRID3 education download failed")
 
                 if res_fmt == 'CSV':
                     schools = pd.read_csv(io.StringIO(resp.text))
@@ -677,8 +717,9 @@ def fetch_worldpop_population(df):
             )
             if adm1_csv_url:
                 logger.info("  Downloading state-level population from HDX COD-PS (admin1 CSV)...")
-                resp = requests.get(adm1_csv_url, timeout=120)
-                resp.raise_for_status()
+                resp = _safe_download(adm1_csv_url, timeout=120)
+                if resp is None:
+                    raise ConnectionError("HDX COD-PS download failed")
                 pop_df = pd.read_csv(io.BytesIO(resp.content))
 
                 # COD-PS columns: ADM1_EN (state name), T_TL (total population)
@@ -1062,10 +1103,9 @@ def fetch_rainfall_from_gee(df):
 def _download_xlsx_idp(url, label):
     """Download a DTM Baseline Assessment XLSX and return site-level DataFrame."""
     try:
-        resp = requests.get(url, timeout=120, headers={
-            'User-Agent': 'IOPHIN/1.0 (poverty-hotspot-identifier)',
-        })
-        resp.raise_for_status()
+        resp = _safe_download(url, timeout=120)
+        if resp is None:
+            raise ConnectionError(f"{label} download failed")
         xls = pd.ExcelFile(io.BytesIO(resp.content))
         # Use the first (data) sheet
         df_raw = pd.read_excel(xls, sheet_name=xls.sheet_names[0])
@@ -1161,24 +1201,57 @@ def _fetch_idp_from_dtm_api():
         return pd.DataFrame(columns=['LGA_Name', 'idp_count'])
 
     try:
-        # Fetch Admin2-level IDP data for Nigeria
-        resp = requests.get(
-            f"{api_url}/idpAdmin2Data/GetAdmin2Datav2",
-            params={"CountryName": "Nigeria"},
-            headers={
-                "Ocp-Apim-Subscription-Key": api_key,
-                "Accept": "application/json",
-                "User-Agent": "Mozilla/5.0 (IOPHIN/1.0)",
-            },
-            timeout=60,
-        )
+        import time as _time
+
+        # DTM API v3 endpoint: /v3/displacement/admin2
+        # Normalise base URL: strip trailing /api or /v3 if present, then append /v3
+        base = api_url.rstrip('/')
+        for suffix in ('/api', '/v3'):
+            if base.endswith(suffix):
+                base = base[:-len(suffix)]
+        endpoint = f"{base}/v3/displacement/admin2"
+
+        # Retry loop for transient DNS/network failures
+        resp = None
+        last_err = None
+        for attempt in range(1, 4):
+            try:
+                resp = requests.get(
+                    endpoint,
+                    params={"CountryName": "Nigeria"},
+                    headers={
+                        "Ocp-Apim-Subscription-Key": api_key,
+                        "Accept": "application/json",
+                        "User-Agent": "IOPHIN/1.0 (poverty-hotspot-identifier)",
+                    },
+                    timeout=60,
+                )
+                break  # success
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+                last_err = e
+                if attempt < 3:
+                    wait = 2 ** attempt
+                    logger.info(f"  DTM API retry {attempt}/3 in {wait}s ({type(e).__name__})")
+                    _time.sleep(wait)
+
+        if resp is None:
+            logger.warning(f"  DTM API unreachable after 3 attempts: {last_err}")
+            return pd.DataFrame(columns=['LGA_Name', 'idp_count'])
 
         if resp.status_code == 404:
-            logger.info("  DTM API returned 404 — API may not be activated yet")
+            logger.info("  DTM API returned 404 — endpoint may have changed")
             return pd.DataFrame(columns=['LGA_Name', 'idp_count'])
 
         resp.raise_for_status()
-        data = resp.json()
+        raw_json = resp.json()
+
+        # v3 wraps results in {"result": [...]}
+        if isinstance(raw_json, dict) and 'result' in raw_json:
+            data = raw_json['result']
+        elif isinstance(raw_json, list):
+            data = raw_json
+        else:
+            data = []
 
         if not isinstance(data, list) or len(data) == 0:
             logger.warning("  DTM API returned empty dataset")
@@ -1276,10 +1349,9 @@ def fetch_idp_data(df):
     csv_agg = pd.DataFrame(columns=['LGA_Name', 'idp_count'])
 
     try:
-        resp = requests.get(csv_url, timeout=60, headers={
-            'User-Agent': 'IOPHIN/1.0',
-        })
-        resp.raise_for_status()
+        resp = _safe_download(csv_url, timeout=60)
+        if resp is None:
+            raise ConnectionError("DTM CSV fallback download failed")
         idp_csv = pd.read_csv(io.StringIO(resp.text))
         lga_data = idp_csv[idp_csv['adminLevel'] == 2].copy()
         if not lga_data.empty:
@@ -1381,8 +1453,9 @@ def fetch_food_prices(df):
             csv_url = next((r['url'] for r in resources if r['format'].upper() == 'CSV'), None)
             if csv_url:
                 logger.info("  Downloading WFP food prices from HDX (CSV)...")
-                resp = requests.get(csv_url, timeout=120)
-                resp.raise_for_status()
+                resp = _safe_download(csv_url, timeout=120)
+                if resp is None:
+                    raise ConnectionError("WFP food prices download failed")
                 price_df = pd.read_csv(io.BytesIO(resp.content))
 
                 # HDX WFP format has columns: date, admin1, admin2, market, commodity, price, ...
