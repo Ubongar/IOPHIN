@@ -1,24 +1,32 @@
 # Data License and Attribution
 
-## Data Disclaimer
+## Scope
 
-The socioeconomic datasets and geospatial boundaries included or referenced in this repository are the property of their respective owners and are used under open data licenses.
+This project includes code and references to third-party datasets. Dataset rights remain with original publishers.
 
-## Data Sources
+## Common Data Sources Used by the Project
 
-- **Multidimensional Poverty Index (MPI)** - National Bureau of Statistics (NBS) Nigeria
-- **Nigeria Living Standards Survey (NLSS)** - The World Bank
-- **Geospatial Boundaries** - GRID3
+- Nigeria MPI datasets (state and senatorial level)
+- GRID3 Nigeria LGA boundary data
+- VIIRS nightlight raster data
+- DTM/IDP displacement-related sources
+- OpenStreetMap/Overpass infrastructure-derived features
 
-## License Terms
+## License Responsibility
 
-These datasets are used for educational and research purposes under the **Creative Commons Attribution 4.0 International (CC-BY 4.0)** license.
+- You are responsible for verifying license terms, attribution, and redistribution rights for each dataset in your deployment.
+- Do not assume all sources share the same license model.
 
-## Important Notice
+## Recommended Use Practice
 
-**Users must agree to the data providers' terms of use before deploying this system for commercial or official policy purposes.**
+1. Keep source metadata with ingestion outputs.
+2. Preserve attribution in downstream reports/dashboards.
+3. Re-check terms before commercial or governmental deployment.
 
-For more information about the specific terms of use, please refer to:
-- [National Bureau of Statistics Nigeria](https://nigerianstat.gov.ng/)
-- [The World Bank Open Data](https://data.worldbank.org/)
-- [GRID3 Data](https://grid3.org/)
+## Useful Provider References
+
+- Nigeria National Bureau of Statistics
+- GRID3
+- Humanitarian Data Exchange (HDX)
+- OpenStreetMap
+- NASA/NOAA sources for nightlight products
