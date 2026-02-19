@@ -348,12 +348,13 @@ function App() {
         {/* Alerts view */}
         {activeView === 'alerts' && (
           <div className="view-panel">
-            <div className="p-4 space-y-6">
-              <div className="flex gap-2 mb-2">
+            <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
                 {(['anomalies', 'corridor', 'leaderboard', 'subscriptions'] as const).map(t => (
                   <button key={t} onClick={() => setActiveTab(t)}
-                    className={`text-xs px-3 py-1 rounded capitalize ${activeTab === t ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}>
-                    {t === 'corridor' ? 'Crisis Corridor' : t === 'subscriptions' ? 'Alert Subscriptions' : t.charAt(0).toUpperCase() + t.slice(1)}
+                    className="rankings-toggle-btn"
+                    style={activeTab === t ? { background: 'var(--blue)', color: '#fff', borderColor: 'var(--blue)' } : {}}>
+                    {t === 'corridor' ? 'Crisis Corridor' : t === 'subscriptions' ? 'Subscriptions' : t.charAt(0).toUpperCase() + t.slice(1)}
                   </button>
                 ))}
               </div>

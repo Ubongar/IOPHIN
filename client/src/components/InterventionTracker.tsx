@@ -8,6 +8,12 @@ interface Props {
   onSelectLGA?: (name: string) => void;
 }
 
+const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+  active: { bg: 'rgba(16,185,129,.12)', text: '#34d399', label: 'Active' },
+  completed: { bg: 'rgba(59,130,246,.12)', text: '#60a5fa', label: 'Completed' },
+  planned: { bg: 'rgba(245,158,11,.12)', text: '#fbbf24', label: 'Planned' },
+};
+
 export default function InterventionTracker({ interventions, userRole, onAdd, onSelectLGA }: Props) {
   const [statusFilter, setStatusFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -22,75 +28,119 @@ export default function InterventionTracker({ interventions, userRole, onAdd, on
     setForm({ program_name: '', organization: '', lga_name: '', state: '', intervention_type: '', status: 'active', budget_usd: '', beneficiaries: '' });
   };
 
-  const STATUS_COLORS: Record<string, string> = { active: 'text-green-400', completed: 'text-blue-400', planned: 'text-amber-400' };
+  const totalBudget = filtered.reduce((s, i) => s + (i.budget_usd || 0), 0);
+  const totalBeneficiaries = filtered.reduce((s, i) => s + (i.beneficiaries || 0), 0);
 
   return (
-    <div className="p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-100">Intervention Tracker</h2>
-        <div className="flex gap-2">
-          <select className="text-xs bg-gray-700 text-gray-200 rounded px-2 py-1 border border-gray-600"
+    <div className="rankings-container">
+      <div className="rankings-header">
+        <div>
+          <h2 className="rankings-title">Intervention Tracker</h2>
+          <p className="rankings-subtitle">
+            {filtered.length === interventions.length
+              ? `${interventions.length} programs tracked`
+              : `${filtered.length} of ${interventions.length} programs — filtered`}
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <select className="filter-select"
             value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
             <option value="">All Status</option>
             <option value="active">Active</option>
             <option value="planned">Planned</option>
             <option value="completed">Completed</option>
           </select>
-          {(userRole === 'admin' || userRole === 'government' || userRole === 'ngo') && (
+          {(userRole === 'admin' || userRole === 'government' || userRole === 'ngo' || !userRole) && (
             <button onClick={() => setShowForm(!showForm)}
-              className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded">
-              + Add
+              className="download-btn" style={{ width: 'auto', padding: '8px 16px', fontSize: 12 }}>
+              + Add Program
             </button>
           )}
         </div>
       </div>
 
+      {/* Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }}>
+        <div className="metric-card">
+          <span className="metric-label">Programs</span>
+          <span className="metric-value">{filtered.length}</span>
+        </div>
+        <div className="metric-card">
+          <span className="metric-label">Total Budget</span>
+          <span className="metric-value" style={{ fontSize: 18 }}>${totalBudget > 0 ? totalBudget.toLocaleString() : '—'}</span>
+        </div>
+        <div className="metric-card">
+          <span className="metric-label">Beneficiaries</span>
+          <span className="metric-value" style={{ fontSize: 18 }}>{totalBeneficiaries > 0 ? totalBeneficiaries.toLocaleString() : '—'}</span>
+        </div>
+      </div>
+
+      {/* Add Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-gray-800 rounded p-4 mb-4 grid grid-cols-2 gap-3 text-sm">
+        <form onSubmit={handleSubmit} className="intervention-form">
           {['program_name', 'organization', 'lga_name', 'state', 'intervention_type', 'budget_usd', 'beneficiaries'].map(f => (
-            <div key={f}>
-              <label className="text-xs text-gray-400 capitalize">{f.replace(/_/g, ' ')}</label>
-              <input className="w-full bg-gray-700 text-gray-200 rounded px-2 py-1 mt-0.5 text-xs border border-gray-600"
+            <div key={f} className="intervention-form-field">
+              <label className="report-label">{f.replace(/_/g, ' ')}</label>
+              <input className="intervention-input"
                 value={(form as any)[f]} onChange={e => setForm(prev => ({ ...prev, [f]: e.target.value }))}
-                required={['program_name', 'lga_name'].includes(f)} />
+                required={['program_name', 'lga_name'].includes(f)}
+                placeholder={f.replace(/_/g, ' ')} />
             </div>
           ))}
-          <div className="col-span-2 flex gap-2 justify-end">
-            <button type="button" onClick={() => setShowForm(false)} className="text-xs px-3 py-1 rounded bg-gray-700 text-gray-300">Cancel</button>
-            <button type="submit" className="text-xs px-3 py-1 rounded bg-blue-600 text-white">Save</button>
+          <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
+            <button type="button" onClick={() => setShowForm(false)}
+              className="rankings-toggle-btn" style={{ borderRadius: 8 }}>Cancel</button>
+            <button type="submit"
+              className="download-btn" style={{ width: 'auto', padding: '8px 20px', fontSize: 12 }}>Save</button>
           </div>
         </form>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs text-gray-300">
-          <thead className="text-gray-400 border-b border-gray-700">
+      {/* Table */}
+      <div className="rankings-table-wrap">
+        <table className="rankings-table">
+          <thead>
             <tr>
-              <th className="text-left py-2 pr-3">Program</th>
-              <th className="text-left py-2 pr-3">Organization</th>
-              <th className="text-left py-2 pr-3">LGA</th>
-              <th className="text-left py-2 pr-3">State</th>
-              <th className="text-center py-2 pr-3">Status</th>
-              <th className="text-right py-2">Budget (USD)</th>
+              <th>Program</th>
+              <th>Organization</th>
+              <th>LGA</th>
+              <th>State</th>
+              <th>Status</th>
+              <th className="hide-mobile">Budget (USD)</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map(i => (
-              <tr key={i.id} className="border-b border-gray-800 hover:bg-gray-700">
-                <td className="py-2 pr-3 font-medium">{i.program_name}</td>
-                <td className="py-2 pr-3">{i.organization}</td>
-                <td className="py-2 pr-3">
-                  <button className="text-blue-400 hover:underline" onClick={() => onSelectLGA?.(i.lga_name)}>{i.lga_name}</button>
+              <tr key={i.id} className="rankings-row">
+                <td className="lga-cell">{i.program_name}</td>
+                <td>{i.organization}</td>
+                <td>
+                  <button style={{ color: 'var(--blue-light)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit' }}
+                    onClick={() => onSelectLGA?.(i.lga_name)}>
+                    {i.lga_name}
+                  </button>
                 </td>
-                <td className="py-2 pr-3">{i.state}</td>
-                <td className={`py-2 pr-3 text-center font-semibold ${STATUS_COLORS[i.status] || ''}`}>{i.status}</td>
-                <td className="py-2 text-right">{i.budget_usd ? `$${i.budget_usd.toLocaleString()}` : '—'}</td>
+                <td>{i.state}</td>
+                <td>
+                  <span className="risk-pill" style={{
+                    background: STATUS_STYLES[i.status]?.bg || 'var(--bg-panel)',
+                    color: STATUS_STYLES[i.status]?.text || 'var(--text-tertiary)'
+                  }}>
+                    {STATUS_STYLES[i.status]?.label || i.status}
+                  </span>
+                </td>
+                <td className="mono-cell hide-mobile">{i.budget_usd ? `$${i.budget_usd.toLocaleString()}` : '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {filtered.length === 0 && <p className="text-center text-gray-500 py-6 text-sm">No interventions found.</p>}
       </div>
+
+      {filtered.length === 0 && (
+        <div className="rankings-empty">
+          <p>No interventions found.</p>
+        </div>
+      )}
     </div>
   );
 }

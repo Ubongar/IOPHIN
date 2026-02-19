@@ -1184,3 +1184,173 @@ body {
   /* Add bottom padding to sidebar scroll so download btn isn't blocked */
   .sidebar-scroll { padding-bottom: 24px; }
 }
+
+/* ── Search ── */
+.search-no-results {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-quaternary);
+  font-size: 13px;
+}
+.search-no-results-hint {
+  font-size: 11px;
+  color: var(--text-quaternary);
+  margin-top: 4px;
+  opacity: .7;
+}
+
+/* ── Report Builder ── */
+.report-config { display: flex; flex-direction: column; gap: 20px; }
+.report-section { display: flex; flex-direction: column; gap: 8px; }
+.report-label {
+  font-size: 12px; font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.report-label-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+}
+.report-scope-btns { display: flex; gap: 6px; }
+.report-scope-btn {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  color: var(--text-tertiary);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all .15s;
+}
+.report-scope-btn:hover { border-color: var(--blue); color: var(--text-primary); }
+.report-scope-btn.active {
+  background: var(--blue); color: #fff;
+  border-color: var(--blue);
+}
+.report-select-all {
+  font-size: 11px; font-weight: 500;
+  color: var(--blue); cursor: pointer;
+  background: none; border: none;
+  padding: 0; text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.report-state-grid {
+  display: flex; flex-wrap: wrap;
+  gap: 6px; max-height: 180px;
+  overflow-y: auto; padding: 2px;
+}
+.report-state-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  font-size: 11px; cursor: pointer;
+  transition: all .15s;
+  color: var(--text-tertiary);
+}
+.report-state-chip:hover { border-color: var(--blue); }
+.report-state-chip.selected {
+  border-color: var(--blue);
+  background: rgba(59,130,246,.1);
+  color: var(--blue);
+}
+.report-state-name { font-weight: 500; }
+.report-state-count {
+  font-size: 10px; opacity: .6;
+  font-variant-numeric: tabular-nums;
+}
+.report-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+.report-preview-card {
+  text-align: center; padding: 14px 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.report-preview-value {
+  font-size: 20px; font-weight: 700;
+  color: var(--text-primary);
+}
+.report-preview-label {
+  font-size: 10px; color: var(--text-quaternary);
+  margin-top: 2px;
+}
+.report-preview-danger { color: #f87171; }
+.report-message {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.report-message-error {
+  background: rgba(239,68,68,.1);
+  border: 1px solid rgba(239,68,68,.2);
+  color: #f87171;
+}
+.report-message-success {
+  background: rgba(74,222,128,.1);
+  border: 1px solid rgba(74,222,128,.2);
+  color: #4ade80;
+}
+.report-hint {
+  font-size: 11px; color: var(--text-quaternary);
+  margin-top: 8px; text-align: center;
+}
+
+/* ── Intervention Form ── */
+.intervention-form {
+  display: flex; flex-wrap: wrap;
+  gap: 8px; align-items: center;
+}
+.intervention-form-field {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.intervention-input {
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 12px;
+  transition: border-color .15s;
+}
+.intervention-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(59,130,246,.15);
+}
+.intervention-input::placeholder { color: var(--text-quaternary); }
+
+/* ── Budget Slider ── */
+.budget-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+}
+.budget-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 2px solid var(--bg-panel);
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  cursor: pointer;
+}
+.budget-slider::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 2px solid var(--bg-panel);
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  cursor: pointer;
+}

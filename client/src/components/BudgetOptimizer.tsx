@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { HotspotFeature } from '../types';
 
 interface Props {
@@ -13,71 +13,124 @@ interface Recommendation {
   allocated: number;
   composite: number;
   population: number;
+  pct: number;
 }
 
 export default function BudgetOptimizer({ features, onSelectLGA }: Props) {
   const [budget, setBudget] = useState(1000000);
 
-  const ranked: Recommendation[] = features
-    .map(f => {
-      const p = f.properties as any;
-      const composite = p.composite_poverty_score ?? 0;
-      const pop = p.population_density ?? 1;
-      const dist = Math.max(p.distance_to_urban_km ?? 10, 1);
-      const score = (composite * pop) / dist;
-      return { name: p.LGA_Name, state: p.State, score, composite, population: pop, allocated: 0 };
-    })
-    .filter(r => r.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 20);
+  const ranked: Recommendation[] = useMemo(() => {
+    const list = features
+      .map(f => {
+        const p = f.properties as any;
+        const composite = p.composite_poverty_score ?? 0;
+        const pop = p.population_density ?? 1;
+        const dist = Math.max(p.distance_to_urban_km ?? 10, 1);
+        const score = (composite * pop) / dist;
+        return { name: p.LGA_Name, state: p.State, score, composite, population: pop, allocated: 0, pct: 0 };
+      })
+      .filter(r => r.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 20);
 
-  const totalScore = ranked.reduce((s, r) => s + r.score, 0);
-  const withBudget = ranked.map(r => ({
-    ...r,
-    allocated: totalScore > 0 ? (r.score / totalScore) * budget : 0,
-  }));
+    const totalScore = list.reduce((s, r) => s + r.score, 0);
+    return list.map(r => ({
+      ...r,
+      allocated: totalScore > 0 ? (r.score / totalScore) * budget : 0,
+      pct: totalScore > 0 ? (r.score / totalScore) * 100 : 0,
+    }));
+  }, [features, budget]);
+
+  const formatBudget = (n: number) => {
+    if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
+    return `$${n}`;
+  };
 
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold text-gray-100 mb-4">Budget Optimizer</h2>
-      <div className="mb-4">
-        <label className="text-xs text-gray-400 mb-1 block">Total Budget: ${budget.toLocaleString()}</label>
+    <div className="rankings-container">
+      <div className="rankings-header">
+        <div>
+          <h2 className="rankings-title">Budget Optimizer</h2>
+          <p className="rankings-subtitle">
+            Optimal resource allocation across top 20 priority LGAs
+          </p>
+        </div>
+      </div>
+
+      {/* Budget Slider */}
+      <div className="metric-card" style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <span className="metric-label" style={{ margin: 0 }}>Total Budget</span>
+          <span className="metric-value" style={{ fontSize: 24, color: 'var(--blue-light)' }}>
+            {formatBudget(budget)}
+          </span>
+        </div>
         <input type="range" min={100000} max={50000000} step={100000} value={budget}
           onChange={e => setBudget(Number(e.target.value))}
-          className="w-full accent-blue-500" />
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+          className="budget-slider" />
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--text-quaternary)', marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
           <span>$100K</span><span>$50M</span>
         </div>
       </div>
-      <p className="text-xs text-gray-400 mb-3">
-        Ranked by: <code className="bg-gray-700 px-1 rounded">composite_score × population_density / distance_to_urban</code>
-      </p>
-      <div className="overflow-auto max-h-80">
-        <table className="w-full text-xs text-gray-300">
-          <thead className="text-gray-400 border-b border-gray-700">
+
+      {/* Formula explanation */}
+      <div className="source-chip" style={{ marginBottom: 16 }}>
+        <span className="source-label">Ranking Formula</span>
+        <span className="source-value">score × pop_density / urban_distance</span>
+      </div>
+
+      {/* Allocation Table */}
+      <div className="rankings-table-wrap">
+        <table className="rankings-table">
+          <thead>
             <tr>
-              <th className="text-left py-1 pr-2">#</th>
-              <th className="text-left py-1 pr-2">LGA</th>
-              <th className="text-left py-1 pr-2">State</th>
-              <th className="text-right py-1 pr-2">Score</th>
-              <th className="text-right py-1">Allocated</th>
+              <th>#</th>
+              <th>LGA</th>
+              <th>State</th>
+              <th className="hide-mobile">Priority Score</th>
+              <th>Allocation</th>
+              <th className="hide-mobile">Share</th>
             </tr>
           </thead>
           <tbody>
-            {withBudget.map((r, i) => (
-              <tr key={i} className="border-b border-gray-800 hover:bg-gray-700">
-                <td className="py-1 pr-2 text-gray-500">{i + 1}</td>
-                <td className="py-1 pr-2">
-                  <button className="text-blue-400 hover:underline" onClick={() => onSelectLGA?.(r.name)}>{r.name}</button>
+            {ranked.map((r, i) => (
+              <tr key={i} className="rankings-row" onClick={() => onSelectLGA?.(r.name)}>
+                <td className="rank-cell">{i + 1}</td>
+                <td className="lga-cell">
+                  <button style={{ color: 'var(--blue-light)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 600 }}
+                    onClick={(e) => { e.stopPropagation(); onSelectLGA?.(r.name); }}>
+                    {r.name}
+                  </button>
                 </td>
-                <td className="py-1 pr-2">{r.state}</td>
-                <td className="py-1 pr-2 text-right font-mono">{r.score.toFixed(2)}</td>
-                <td className="py-1 text-right font-mono text-green-400">${Math.round(r.allocated).toLocaleString()}</td>
+                <td>{r.state}</td>
+                <td className="mono-cell hide-mobile">{r.score.toFixed(2)}</td>
+                <td>
+                  <span className="mono-cell" style={{ color: '#34d399', fontWeight: 700 }}>
+                    ${Math.round(r.allocated).toLocaleString()}
+                  </span>
+                </td>
+                <td className="mono-cell hide-mobile">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ flex: 1, height: 4, borderRadius: 999, background: 'var(--bg-panel)', overflow: 'hidden', minWidth: 40 }}>
+                      <div style={{ width: `${r.pct}%`, height: '100%', borderRadius: 999, background: 'var(--blue-light)' }} />
+                    </div>
+                    <span style={{ fontSize: 10, color: 'var(--text-quaternary)', minWidth: 36, textAlign: 'right' }}>
+                      {r.pct.toFixed(1)}%
+                    </span>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {ranked.length === 0 && (
+        <div className="rankings-empty">
+          <p>No data available for budget optimization.</p>
+        </div>
+      )}
     </div>
   );
 }

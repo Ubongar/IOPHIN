@@ -10,6 +10,11 @@ function formatDelta(delta: number) {
   return `${sign}${delta.toFixed(3)}`;
 }
 
+const COL_STYLES = {
+  deteriorated: { accent: '#f87171', bg: 'rgba(239,68,68,.08)', border: 'rgba(239,68,68,.18)' },
+  improved:     { accent: '#4ade80', bg: 'rgba(74,222,128,.08)', border: 'rgba(74,222,128,.18)' },
+};
+
 export default function Leaderboard({ changes, onSelectLGA }: Props) {
   const deteriorated = [...changes]
     .filter(c => c.delta_composite > 0)
@@ -20,35 +25,46 @@ export default function Leaderboard({ changes, onSelectLGA }: Props) {
     .sort((a, b) => a.delta_composite - b.delta_composite)
     .slice(0, 10);
 
-  const Row = ({ entry, color }: { entry: ChangeLogEntry; color: string }) => (
-    <div
-      className="flex items-center justify-between py-1 px-2 rounded hover:bg-gray-700 cursor-pointer text-sm"
-      onClick={() => onSelectLGA?.(entry.lga_name)}
-    >
-      <span className="text-gray-200 truncate max-w-[120px]">{entry.lga_name}</span>
-      <span className="text-gray-400 text-xs">{entry.state}</span>
-      <span className={`font-mono text-xs font-bold ${color}`}>{formatDelta(entry.delta_composite)}</span>
+  const Column = ({ title, entries, style }: {
+    title: string; entries: ChangeLogEntry[];
+    style: typeof COL_STYLES.deteriorated;
+  }) => (
+    <div style={{ background: style.bg, border: `1px solid ${style.border}`,
+      borderRadius: 'var(--radius-md)', padding: 16 }}>
+      <h4 style={{ fontSize: 11, fontWeight: 700, color: style.accent,
+        textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
+        {title}
+      </h4>
+      {entries.length === 0 ? (
+        <p style={{ color: 'var(--text-quaternary)', fontSize: 12 }}>No data</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {entries.map((e, i) => (
+            <div key={i} onClick={() => onSelectLGA?.(e.lga_name)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '6px 10px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
+                transition: 'background .15s' }}
+              onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--bg-panel)')}
+              onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}>
+              <span style={{ color: 'var(--text-primary)', fontSize: 12, fontWeight: 500,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>
+                {e.lga_name}
+              </span>
+              <span style={{ color: 'var(--text-quaternary)', fontSize: 11, marginLeft: 8 }}>{e.state}</span>
+              <span style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 700, color: style.accent, marginLeft: 'auto', paddingLeft: 8 }}>
+                {formatDelta(e.delta_composite)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div>
-        <h4 className="text-xs font-semibold text-red-400 mb-2 uppercase tracking-wide">Most Deteriorated</h4>
-        {deteriorated.length === 0 ? (
-          <p className="text-gray-500 text-xs">No data</p>
-        ) : (
-          deteriorated.map((e, i) => <Row key={i} entry={e} color="text-red-400" />)
-        )}
-      </div>
-      <div>
-        <h4 className="text-xs font-semibold text-green-400 mb-2 uppercase tracking-wide">Most Improved</h4>
-        {improved.length === 0 ? (
-          <p className="text-gray-500 text-xs">No data</p>
-        ) : (
-          improved.map((e, i) => <Row key={i} entry={e} color="text-green-400" />)
-        )}
-      </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <Column title="Most Deteriorated" entries={deteriorated} style={COL_STYLES.deteriorated} />
+      <Column title="Most Improved" entries={improved} style={COL_STYLES.improved} />
     </div>
   );
 }

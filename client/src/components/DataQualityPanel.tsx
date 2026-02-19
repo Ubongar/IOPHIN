@@ -9,9 +9,9 @@ const TRACKED_FIELDS = ['MPI', 'mean_nightlight_intensity', 'composite_poverty_s
   'health_facility_count', 'school_count', 'ndvi_mean', 'rainfall_mm', 'idp_count', 'food_price_index'];
 
 function qualityColor(confidence: number) {
-  if (confidence >= 0.8) return 'text-green-400';
-  if (confidence >= 0.5) return 'text-amber-400';
-  return 'text-red-400';
+  if (confidence >= 0.8) return '#4ade80';
+  if (confidence >= 0.5) return '#fbbf24';
+  return '#f87171';
 }
 
 export default function DataQualityPanel({ features }: Props) {
@@ -27,44 +27,58 @@ export default function DataQualityPanel({ features }: Props) {
     ? (stats.reduce((s, r) => s + r.confidence, 0) / stats.length * 100).toFixed(1) : '0';
   const staleCount = stats.filter(s => !s.lastUpdated).length;
 
+  const SUMMARY = [
+    { value: `${avgConf}%`, label: 'Avg Completeness', color: '#4ade80' },
+    { value: stats.length, label: 'Total LGAs', color: 'var(--blue)' },
+    { value: staleCount, label: 'No Update Date', color: '#fbbf24' },
+  ];
+
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold text-gray-100 mb-2">Data Quality</h2>
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="bg-gray-800 rounded p-3 text-center">
-          <div className="text-xl font-bold text-green-400">{avgConf}%</div>
-          <div className="text-xs text-gray-400">Avg Completeness</div>
-        </div>
-        <div className="bg-gray-800 rounded p-3 text-center">
-          <div className="text-xl font-bold text-blue-400">{stats.length}</div>
-          <div className="text-xs text-gray-400">Total LGAs</div>
-        </div>
-        <div className="bg-gray-800 rounded p-3 text-center">
-          <div className="text-xl font-bold text-amber-400">{staleCount}</div>
-          <div className="text-xs text-gray-400">No Update Date</div>
-        </div>
+    <div>
+      <div className="rankings-header">
+        <h2 className="rankings-title">Data Quality</h2>
+        <p className="rankings-subtitle">
+          Field completeness across {stats.length} LGAs
+        </p>
       </div>
-      <div className="overflow-auto max-h-64">
-        <table className="w-full text-xs text-gray-300">
-          <thead className="text-gray-400 border-b border-gray-700">
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20 }}>
+        {SUMMARY.map(s => (
+          <div key={s.label} className="metric-card">
+            <div style={{ fontSize: 22, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-quaternary)', marginTop: 2 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="rankings-table-wrap">
+        <table className="rankings-table">
+          <thead>
             <tr>
-              <th className="text-left py-1 pr-2">LGA</th>
-              <th className="text-left py-1 pr-2">State</th>
-              <th className="text-center py-1 pr-2">Fields</th>
-              <th className="text-center py-1 pr-2">Confidence</th>
-              <th className="text-left py-1">Last Updated</th>
+              <th>LGA</th>
+              <th>State</th>
+              <th style={{ textAlign: 'center' }}>Fields</th>
+              <th style={{ textAlign: 'center' }}>Confidence</th>
+              <th>Last Updated</th>
             </tr>
           </thead>
           <tbody>
             {stats.slice(0, 50).map((s, i) => (
-              <tr key={i} className="border-b border-gray-800">
-                <td className="py-1 pr-2">{s.name}</td>
-                <td className="py-1 pr-2">{s.state}</td>
-                <td className="py-1 pr-2 text-center">{s.filled}/{TRACKED_FIELDS.length}</td>
-                <td className={`py-1 pr-2 text-center font-semibold ${qualityColor(s.confidence)}`}>
-                  {(s.confidence * 100).toFixed(0)}%
+              <tr key={i} className="rankings-row">
+                <td className="lga-cell">{s.name}</td>
+                <td>{s.state}</td>
+                <td style={{ textAlign: 'center' }}>
+                  <span className="mono-cell">{s.filled}/{TRACKED_FIELDS.length}</span>
                 </td>
-                <td className="py-1 text-gray-500">
+                <td style={{ textAlign: 'center' }}>
+                  <span className="risk-pill" style={{
+                    background: `${qualityColor(s.confidence)}18`,
+                    color: qualityColor(s.confidence),
+                  }}>
+                    {(s.confidence * 100).toFixed(0)}%
+                  </span>
+                </td>
+                <td style={{ color: 'var(--text-quaternary)', fontSize: 11 }}>
                   {s.lastUpdated ? formatDistanceToNow(new Date(s.lastUpdated), { addSuffix: true }) : '⚠ Unknown'}
                 </td>
               </tr>

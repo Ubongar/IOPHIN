@@ -23,7 +23,11 @@ export default function AlertsManager({ features, subscriptions, onRefresh }: Pr
   const [subError, setSubError] = useState('');
 
   if (!isAuthenticated) {
-    return <div className="p-4 text-gray-400 text-sm">Please log in to manage alert subscriptions.</div>;
+    return (
+      <div className="rankings-empty">
+        <p>Please log in to manage alert subscriptions.</p>
+      </div>
+    );
   }
 
   const lgaNames = [...new Set(features.map(f => f.properties.LGA_Name))].sort();
@@ -52,46 +56,63 @@ export default function AlertsManager({ features, subscriptions, onRefresh }: Pr
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold text-gray-100 mb-4">Alert Subscriptions</h2>
-      <div className="bg-gray-800 rounded p-4 mb-4">
-        <h3 className="text-sm font-semibold text-gray-300 mb-3">Subscribe to LGA</h3>
-        <div className="flex gap-2 flex-wrap">
-          <select className="text-xs bg-gray-700 text-gray-200 rounded px-2 py-1 border border-gray-600 flex-1 min-w-32"
+    <div>
+      <div className="rankings-header">
+        <h2 className="rankings-title">Alert Subscriptions</h2>
+        <p className="rankings-subtitle">Subscribe to risk changes and anomalies for specific LGAs</p>
+      </div>
+
+      <div className="metric-card" style={{ marginBottom: 20, padding: 20 }}>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 14 }}>Subscribe to LGA</h3>
+        <div className="intervention-form">
+          <select className="filter-select" style={{ flex: 1, minWidth: 160 }}
             value={lgaName} onChange={e => setLgaName(e.target.value)}>
             <option value="">Select LGA...</option>
             {lgaNames.map(n => <option key={n} value={n}>{n}</option>)}
           </select>
-          <select className="text-xs bg-gray-700 text-gray-200 rounded px-2 py-1 border border-gray-600"
-            value={alertType} onChange={e => setAlertType(e.target.value)}>
+          <select className="filter-select" value={alertType} onChange={e => setAlertType(e.target.value)}>
             <option value="risk_change">Risk Change</option>
             <option value="anomaly">Anomaly</option>
           </select>
-          <label className="flex items-center gap-1 text-xs text-gray-300">
-            <input type="checkbox" checked={notifyEmail} onChange={e => setNotifyEmail(e.target.checked)} />
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-tertiary)', cursor: 'pointer' }}>
+            <input type="checkbox" checked={notifyEmail} onChange={e => setNotifyEmail(e.target.checked)}
+              style={{ accentColor: 'var(--blue)' }} />
             Email
           </label>
-          <button onClick={subscribe} disabled={!lgaName || saving}
-            className="text-xs bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-3 py-1 rounded">
+          <button onClick={subscribe} disabled={!lgaName || saving} className="download-btn"
+            style={{ width: 'auto', padding: '8px 20px', fontSize: 12, opacity: (!lgaName || saving) ? 0.5 : 1 }}>
             Subscribe
           </button>
         </div>
-        {subError && <p className="text-red-400 text-xs mt-2">{subError}</p>}
+        {subError && <p style={{ color: '#f87171', fontSize: 12, marginTop: 8 }}>{subError}</p>}
       </div>
-      <h3 className="text-sm font-semibold text-gray-300 mb-2">Active Subscriptions ({subscriptions.length})</h3>
-      <div className="space-y-1">
+
+      <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 12 }}>
+        Active Subscriptions ({subscriptions.length})
+      </h3>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {subscriptions.map(s => (
-          <div key={s.id} className="flex items-center justify-between bg-gray-800 rounded px-3 py-2">
-            <div className="text-xs text-gray-300">
-              <span className="font-medium">{s.lga_name || s.state}</span>
-              <span className="text-gray-500 ml-2">{s.alert_type}</span>
-              {s.notify_email && <span className="ml-2 text-blue-400">✉</span>}
+          <div key={s.id} className="metric-card" style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px'
+          }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+              <span style={{ fontWeight: 600 }}>{s.lga_name || s.state}</span>
+              <span className="risk-pill" style={{
+                marginLeft: 10, background: 'rgba(99,102,241,.12)', color: '#818cf8'
+              }}>{s.alert_type.replace('_', ' ')}</span>
+              {s.notify_email && <span style={{ marginLeft: 8, color: 'var(--blue)' }}>✉</span>}
             </div>
-            <button onClick={() => unsubscribe(s.id)}
-              className="text-xs text-red-400 hover:text-red-300 ml-2">✕</button>
+            <button onClick={() => unsubscribe(s.id)} style={{
+              background: 'rgba(239,68,68,.1)', border: '1px solid rgba(239,68,68,.2)',
+              color: '#f87171', borderRadius: 'var(--radius-sm)', padding: '4px 10px',
+              fontSize: 11, cursor: 'pointer', fontWeight: 600, transition: 'all .15s'
+            }}>Remove</button>
           </div>
         ))}
-        {subscriptions.length === 0 && <p className="text-gray-500 text-sm">No active subscriptions.</p>}
+        {subscriptions.length === 0 && (
+          <div className="rankings-empty"><p>No active subscriptions.</p></div>
+        )}
       </div>
     </div>
   );

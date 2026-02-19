@@ -53,6 +53,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA, onSearchTermCh
   const handleSelect = (feature: HotspotFeature) => {
     setSearchTerm('');
     setShowResults(false);
+    onSearchTermChange?.('');
     onSelectLGA(feature);
   };
 
@@ -64,7 +65,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA, onSearchTermCh
   };
 
   const handleFocus = () => {
-    if (hasResults) {
+    if (searchTerm.length >= 2) {
       setShowResults(true);
     }
   };
@@ -138,34 +139,41 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA, onSearchTermCh
         </div>
       </div>
 
-      {showResults && filteredResults.length > 0 && (
+      {showResults && searchTerm.length >= 2 && (
         <div 
           id={resultsId}
           className="search-results"
           role="listbox"
           aria-label="Search results"
         >
-          {filteredResults.map((feature, index) => (
-            <button
-              id={`search-result-${index}`}
-              key={`${feature.properties.State}-${feature.properties.LGA_Name}`}
-              onClick={() => handleSelect(feature)}
-              className={`search-result-item ${index === focusedIndex ? 'focused' : ''}`}
-              role="option"
-              type="button"
-              aria-selected={index === focusedIndex}
-            >
-              <div className="flex-1">
-                <div className="search-result-title">{feature.properties.LGA_Name}</div>
-                <div className="search-result-subtitle">{feature.properties.State} State</div>
-              </div>
-              <div className="search-result-badge" style={{ 
-                backgroundColor: RISK_COLORS[feature.properties.risk_level]
-              }}>
-                {feature.properties.risk_level}
-              </div>
-            </button>
-          ))}
+          {filteredResults.length > 0 ? (
+            filteredResults.map((feature, index) => (
+              <button
+                id={`search-result-${index}`}
+                key={`${feature.properties.State}-${feature.properties.LGA_Name}`}
+                onClick={() => handleSelect(feature)}
+                className={`search-result-item ${index === focusedIndex ? 'focused' : ''}`}
+                role="option"
+                type="button"
+                aria-selected={index === focusedIndex}
+              >
+                <div className="flex-1">
+                  <div className="search-result-title">{feature.properties.LGA_Name}</div>
+                  <div className="search-result-subtitle">{feature.properties.State} State</div>
+                </div>
+                <div className="search-result-badge" style={{ 
+                  backgroundColor: RISK_COLORS[feature.properties.risk_level]
+                }}>
+                  {feature.properties.risk_level}
+                </div>
+              </button>
+            ))
+          ) : (
+            <div className="search-no-results">
+              <p>No results for &ldquo;{searchTerm}&rdquo;</p>
+              <p className="search-no-results-hint">Try a different LGA or state name</p>
+            </div>
+          )}
         </div>
       )}
     </div>

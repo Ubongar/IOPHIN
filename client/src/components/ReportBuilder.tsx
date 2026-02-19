@@ -1,4 +1,10 @@
-import { useState } from 'react';
+/**
+ * ReportBuilder — Generate PDF reports of poverty analytics
+ * Supports national, state, and summary scopes.
+ * Uses client-side CSV export as fallback when server PDF is unavailable.
+ */
+
+import { useState, useMemo } from 'react';
 import axios from 'axios';
 import type { StateAggregation } from '../types';
 import { useAuthStore } from '../store';
@@ -15,64 +21,181 @@ export default function ReportBuilder({ states }: Props) {
   const [scope, setScope] = useState<'national' | 'state' | 'summary'>('national');
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const toggleState = (s: string) =>
     setSelectedStates(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
 
+  const selectAll = () => {
+    if (selectedStates.length === states.length) {
+      setSelectedStates([]);
+    } else {
+      setSelectedStates(states.map(s => s.state));
+    }
+  };
+
+  const reportData = useMemo(() => {
+    if (scope === 'national' || scope === 'summary') return states;
+    return states.filter(s => selectedStates.includes(s.state));
+  }, [scope, states, selectedStates]);
+
+  const generateClientReport = () => {
+    const headers = ['State', 'LGA Count', 'Avg Composite Score', 'Avg MPI', 'Avg Nightlight', 'High Risk Count', 'Health Facilities', 'Schools'];
+    const rows = reportData.map(s => [
+      s.state, s.lgaCount, s.avgCompositeScore?.toFixed(4) ?? 'N/A',
+      s.avgMPI?.toFixed(4) ?? 'N/A', s.avgNightlight?.toFixed(2) ?? 'N/A',
+      s.highRiskCount, s.totalHealthFacilities, s.totalSchools
+    ]);
+
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `iophin_report_${scope}_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    return true;
+  };
+
   const generate = async () => {
+    if (scope === 'state' && selectedStates.length === 0) {
+      setError('Please select at least one state');
+      return;
+    }
+
     setGenerating(true);
     setError('');
+    setSuccess('');
+
     try {
       const response = await axios.post(`${API}/v1/reports/generate`,
         { scope, states: selectedStates },
-        { headers: token ? { Authorization: `Bearer ${token}` } : {}, responseType: 'blob' }
+        { headers: token ? { Authorization: `Bearer ${token}` } : {}, responseType: 'blob', timeout: 30000 }
       );
       const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const a = document.createElement('a');
       a.href = url;
-      a.download = `iophin_report_${Date.now()}.pdf`;
+      a.download = `iophin_report_${scope}_${Date.now()}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (err: any) {
-      setError(err.message || 'Report generation failed');
+      setSuccess('PDF report downloaded successfully');
+    } catch {
+      try {
+        generateClientReport();
+        setSuccess('CSV report exported (PDF requires server connection)');
+      } catch (csvErr: any) {
+        setError(csvErr.message || 'Report generation failed');
+      }
     } finally {
       setGenerating(false);
     }
   };
 
+  const totalLGAs = reportData.reduce((s, r) => s + r.lgaCount, 0);
+  const avgScore = reportData.length > 0
+    ? (reportData.reduce((s, r) => s + (r.avgCompositeScore ?? 0), 0) / reportData.length)
+    : 0;
+  const totalHighRisk = reportData.reduce((s, r) => s + r.highRiskCount, 0);
+
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold text-gray-100 mb-4">Report Builder</h2>
-      <div className="space-y-4">
+    <div className="rankings-container">
+      <div className="rankings-header">
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Scope</label>
-          <div className="flex gap-2">
+          <h2 className="rankings-title">Report Builder</h2>
+          <p className="rankings-subtitle">
+            Generate analytical reports across {states.length} states
+          </p>
+        </div>
+      </div>
+
+      <div className="report-config">
+        <div className="report-section">
+          <label className="report-label">Report Scope</label>
+          <div className="report-scope-btns">
             {(['national', 'state', 'summary'] as const).map(s => (
               <button key={s} onClick={() => setScope(s)}
-                className={`text-xs px-3 py-1 rounded ${scope === s ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
+                className={'report-scope-btn' + (scope === s ? ' active' : '')}>
+                {s === 'national' ? '🌍 National' : s === 'state' ? '📍 By State' : '📊 Summary'}
               </button>
             ))}
           </div>
         </div>
+
         {scope === 'state' && (
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Select States</label>
-            <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
+          <div className="report-section">
+            <div className="report-label-row">
+              <label className="report-label">Select States</label>
+              <button onClick={selectAll} className="report-select-all">
+                {selectedStates.length === states.length ? 'Deselect All' : 'Select All'}
+              </button>
+            </div>
+            <div className="report-state-grid">
               {states.map(s => (
                 <button key={s.state} onClick={() => toggleState(s.state)}
-                  className={`text-xs px-2 py-0.5 rounded ${selectedStates.includes(s.state) ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}>
-                  {s.state}
+                  className={'report-state-chip' + (selectedStates.includes(s.state) ? ' selected' : '')}>
+                  <span className="report-state-name">{s.state}</span>
+                  <span className="report-state-count">{s.lgaCount} LGAs</span>
                 </button>
               ))}
             </div>
           </div>
         )}
-        {error && <p className="text-red-400 text-xs">{error}</p>}
-        <button onClick={generate} disabled={generating}
-          className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-sm px-4 py-2 rounded">
-          {generating ? 'Generating...' : '⬇ Generate PDF Report'}
+
+        <div className="report-section">
+          <label className="report-label">Report Preview</label>
+          <div className="report-preview-grid">
+            <div className="report-preview-card">
+              <div className="report-preview-value">{reportData.length}</div>
+              <div className="report-preview-label">States</div>
+            </div>
+            <div className="report-preview-card">
+              <div className="report-preview-value">{totalLGAs}</div>
+              <div className="report-preview-label">Total LGAs</div>
+            </div>
+            <div className="report-preview-card">
+              <div className="report-preview-value">{avgScore.toFixed(3)}</div>
+              <div className="report-preview-label">Avg Score</div>
+            </div>
+            <div className="report-preview-card">
+              <div className="report-preview-value report-preview-danger">{totalHighRisk}</div>
+              <div className="report-preview-label">High Risk</div>
+            </div>
+          </div>
+        </div>
+
+        {error && (
+          <div className="report-message report-message-error">
+            <span>⚠</span> {error}
+          </div>
+        )}
+        {success && (
+          <div className="report-message report-message-success">
+            <span>✓</span> {success}
+          </div>
+        )}
+
+        <button onClick={generate} disabled={generating || states.length === 0}
+          className="download-btn">
+          {generating ? (
+            <>
+              <div className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
+              Generating...
+            </>
+          ) : (
+            <>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Generate Report
+            </>
+          )}
         </button>
+
+        {states.length === 0 && (
+          <p className="report-hint">No state data available. Reports require database mode or loaded data.</p>
+        )}
       </div>
     </div>
   );
