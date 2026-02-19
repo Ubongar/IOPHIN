@@ -56,7 +56,7 @@ function App() {
   const [interventions, setInterventions] = useState<Intervention[]>([]);
   const [recentChangesLocal, setRecentChangesLocal] = useState<ChangeLogEntry[]>([]);
   const [tourActive, setTourActive] = useState(false);
-  const [activeTab, setActiveTab] = useState<'anomalies' | 'corridor' | 'leaderboard'>('anomalies');
+  const [activeTab, setActiveTab] = useState<'anomalies' | 'corridor' | 'leaderboard' | 'subscriptions'>('anomalies');
   const { theme, toggleTheme } = useTheme();
 
   // WebSocket for real-time alerts
@@ -350,10 +350,10 @@ function App() {
           <div className="view-panel">
             <div className="p-4 space-y-6">
               <div className="flex gap-2 mb-2">
-                {(['anomalies', 'corridor', 'leaderboard'] as const).map(t => (
+                {(['anomalies', 'corridor', 'leaderboard', 'subscriptions'] as const).map(t => (
                   <button key={t} onClick={() => setActiveTab(t)}
                     className={`text-xs px-3 py-1 rounded capitalize ${activeTab === t ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}>
-                    {t === 'corridor' ? 'Crisis Corridor' : t.charAt(0).toUpperCase() + t.slice(1)}
+                    {t === 'corridor' ? 'Crisis Corridor' : t === 'subscriptions' ? 'Alert Subscriptions' : t.charAt(0).toUpperCase() + t.slice(1)}
                   </button>
                 ))}
               </div>
@@ -373,6 +373,9 @@ function App() {
                     const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
                     if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
                   }} />
+              )}
+              {activeTab === 'subscriptions' && (
+                <AlertsManager features={hotspotsData?.features || []} subscriptions={[]} onRefresh={() => fetchData(true)} />
               )}
             </div>
           </div>
