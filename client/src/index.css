@@ -8,83 +8,103 @@
 @tailwind components;
 @tailwind utilities;
 
-.map-3d-popup {
-  background: #0f1720 !important;
-  color: #fff !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: 0 18px 64px rgba(0,0,0,.6) !important;
-  font-family: 'Inter', sans-serif !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  z-index: 99999 !important;
-  overflow: visible !important;
-}
-.map-3d-popup .tooltip-title {
-  color: #fff !important;
-  font-weight: 900 !important;
-  font-size: 18px !important;
-  text-decoration: underline !important;
-  letter-spacing: 0.01em;
-}
-.map-3d-popup .tooltip-subtitle {
-  color: #e0e0e0 !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-}
-.map-3d-popup .tooltip-score-line {
-  color: #fff !important;
-  font-weight: 800 !important;
-  font-size: 15px !important;
-}
-.map-3d-popup .tooltip-click-hint {
-  color: #ffd700 !important;
-  font-weight: 700 !important;
-  font-size: 12px !important;
-}
-.map-3d-popup .tooltip-badge {
-  font-size: 13px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.04em;
-  box-shadow: 0 0 12px #0008 !important;
-}
+/* ============================================================
+   MAP TOOLTIP — single source of truth, theme-aware
+   Uses existing design tokens from :root / [data-theme='light']
+   ============================================================ */
 
-/* Ensure Mapbox/MapLibre popup wrappers are also styled and on top */
-.mapboxgl-popup, .mapboxgl-popup-content {
-  z-index: 99999 !important;
-  pointer-events: auto !important;
-  background: transparent !important;
-}
-
-/* Style the triangular tip so it matches the popup background */
-.mapboxgl-popup-tip {
-  filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
-}
-
-/* The pseudo-element that forms the tip needs color override */
-.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-  border-top-color: #0f1720 !important;
-}
-
-/* Apply our dark content styling to Mapbox popup content when our class is present */
+/* Strip MapLibre's default popup chrome */
+.map-3d-popup .maplibregl-popup-content,
 .mapboxgl-popup-content.map-3d-popup,
 .mapboxgl-popup.map-3d-popup .mapboxgl-popup-content {
-  background: #0f1720 !important;
-  color: #fff !important;
-  border-radius: var(--radius-md) !important;
-  padding: 12px !important;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
-/* MapLibre 3D popup override: always dark for readability */
-.map-3d-popup {
-  background: var(--bg-sidebar) !important;
-  color: var(--text-primary) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: 0 12px 48px rgba(0,0,0,.3) !important;
-  font-family: 'Inter', sans-serif !important;
+
+/* Popup z-index and pointer events */
+.mapboxgl-popup,
+.mapboxgl-popup-content,
+.maplibregl-popup,
+.maplibregl-popup-content {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
 }
-.map-3d-popup .tooltip-title,
-.map-3d-popup .tooltip-subtitle,
-.map-3d-popup .tooltip-score-line,
-.map-3d-popup .tooltip-click-hint {
-  color: var(--text-primary) !important;
+
+/* Tip arrow — matches sidebar background per theme */
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  border-top-color: var(--bg-sidebar) !important;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.2));
+}
+
+/* Tooltip container */
+.map-tooltip-inner {
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0,0,0,.25), 0 2px 8px rgba(0,0,0,.15);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  min-width: 200px;
+  max-width: 260px;
+  font-family: 'Inter', sans-serif;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.map-tooltip-compact {
+  padding: 10px 12px;
+  min-width: 180px;
+}
+
+/* Tooltip layout */
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+/* Text elements — all driven by existing theme variables */
+.tooltip-title {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.tooltip-subtitle {
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: 1px;
+}
+.tooltip-score-line {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+.tooltip-click-hint {
+  color: var(--text-quaternary);
+  font-size: 0.72rem;
+  font-style: italic;
+  margin-top: 5px;
+}
+
+/* Badge — background set inline (risk colour), text always white */
+.tooltip-badge {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
 }
 
 
