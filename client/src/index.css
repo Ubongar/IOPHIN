@@ -1,10 +1,22 @@
-﻿.map-3d-popup {
-  background: #18181b !important;
+﻿/* MapLibre GL CSS for 3D maps */
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.map-3d-popup {
+  background: #0f1720 !important;
   color: #fff !important;
   border-radius: var(--radius-md) !important;
-  box-shadow: 0 12px 48px rgba(0,0,0,.45) !important;
+  box-shadow: 0 18px 64px rgba(0,0,0,.6) !important;
   font-family: 'Inter', sans-serif !important;
-  border: 2px solid #fff !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  z-index: 99999 !important;
+  overflow: visible !important;
 }
 .map-3d-popup .tooltip-title {
   color: #fff !important;
@@ -34,6 +46,32 @@
   letter-spacing: 0.04em;
   box-shadow: 0 0 12px #0008 !important;
 }
+
+/* Ensure Mapbox/MapLibre popup wrappers are also styled and on top */
+.mapboxgl-popup, .mapboxgl-popup-content {
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  background: transparent !important;
+}
+
+/* Style the triangular tip so it matches the popup background */
+.mapboxgl-popup-tip {
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
+}
+
+/* The pseudo-element that forms the tip needs color override */
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: #0f1720 !important;
+}
+
+/* Apply our dark content styling to Mapbox popup content when our class is present */
+.mapboxgl-popup-content.map-3d-popup,
+.mapboxgl-popup.map-3d-popup .mapboxgl-popup-content {
+  background: #0f1720 !important;
+  color: #fff !important;
+  border-radius: var(--radius-md) !important;
+  padding: 12px !important;
+}
 /* MapLibre 3D popup override: always dark for readability */
 .map-3d-popup {
   background: var(--bg-sidebar) !important;
@@ -48,15 +86,7 @@
 .map-3d-popup .tooltip-click-hint {
   color: var(--text-primary) !important;
 }
-/* MapLibre GL CSS for 3D maps */
-@import 'maplibre-gl/dist/maplibre-gl.css';
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* ============================================================
    IOPHIN Design System  Refined Dark/Light Theme
