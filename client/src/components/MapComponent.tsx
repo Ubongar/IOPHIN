@@ -1,13 +1,13 @@
 /**
- * MapComponent - Core Interactive Map
- * Renders Nigeria's LGAs with risk-based color coding using React-Leaflet
- * Premium dark cartography with glowing risk boundaries
+ * MapComponent - 3D Interactive Map
+ * Renders Nigeria's LGAs with risk-based 3D extruded polygons using MapLibre GL
+ * Risk areas rise from the map proportional to their severity score
  */
 
-import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
-import { LatLngBounds } from 'leaflet';
-import type { GeoJSON as GeoJSONType, PathOptions } from 'leaflet';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import Map, { Source, Layer, NavigationControl, Popup } from 'react-map-gl/maplibre';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { RISK_COLORS } from '../types';
 import type { HotspotsGeoJSON, HotspotFeature, RiskLevel } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
@@ -19,298 +19,173 @@ interface MapComponentProps {
   filterKey?: string;
 }
 
-/**
- * Custom hook to fit map bounds to Nigeria
- */
-const FitBounds: React.FC<{ data: HotspotsGeoJSON | null }> = ({ data }) => {
-  const map = useMap();
+/** Map the risk_level string → fill color for MapLibre expression */
+const RISK_MATCH_EXPR: any = [
+  'match',
+  ['get', 'risk_level'],
+  'Critical', RISK_COLORS.Critical,
+  'High', RISK_COLORS.High,
+  'Medium', RISK_COLORS.Medium,
+  'Low', RISK_COLORS.Low,
+  'Minimal', RISK_COLORS.Minimal,
+  '#999999',
+];
 
-  useEffect(() => {
-    if (data && data.features.length > 0) {
-      const bounds = new LatLngBounds([]);
-      data.features.forEach((feature) => {
-        if (feature.geometry.type === 'Polygon') {
-          feature.geometry.coordinates[0].forEach((coord) => {
-            if (Array.isArray(coord) && coord.length >= 2) {
-              const lng = coord[0];
-              const lat = coord[1];
-              bounds.extend([lat as number, lng as number]);
-            }
-          });
-        } else if (feature.geometry.type === 'MultiPolygon') {
-          feature.geometry.coordinates.forEach((polygon) => {
-            polygon[0].forEach((coord) => {
-              if (Array.isArray(coord) && coord.length >= 2) {
-                const lng = coord[0];
-                const lat = coord[1];
-                bounds.extend([lat as number, lng as number]);
-              }
-            });
-          });
-        }
-      });
-      map.fitBounds(bounds, { padding: [50, 50] });
+/** Map risk_level → extrusion height (meters). Higher risk = taller. */
+const RISK_HEIGHT_EXPR: any = [
+  'match',
+  ['get', 'risk_level'],
+  'Critical', 45000,
+  'High', 35000,
+  'Medium', 22000,
+  'Low', 12000,
+  'Minimal', 5000,
+  3000,
+];
+
+/** Darken a hex colour by a fixed amount */
+const darkenColor = (hex: string, amount: number): string => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.max(0, (num >> 16) - amount);
+  const g = Math.max(0, ((num >> 8) & 0x00ff) - amount);
+  const b = Math.max(0, (num & 0x0000ff) - amount);
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+};
+
+const RISK_BORDER_EXPR: any = [
+  'match',
+  ['get', 'risk_level'],
+  'Critical', darkenColor(RISK_COLORS.Critical, 40),
+  'High', darkenColor(RISK_COLORS.High, 40),
+  'Medium', darkenColor(RISK_COLORS.Medium, 40),
+  'Low', darkenColor(RISK_COLORS.Low, 40),
+  'Minimal', darkenColor(RISK_COLORS.Minimal, 40),
+  '#666666',
+];
+
+/** Dark and light base map styles (free, no token needed) */
+const MAP_STYLES = {
+  dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+  light: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+};
+
+/** Compute bounding box from GeoJSON features */
+const computeBBox = (features: HotspotFeature[]): [[number, number], [number, number]] | null => {
+  let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+  const processCoords = (coords: number[][]) => {
+    coords.forEach(([lng, lat]) => {
+      if (lng < minLng) minLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lng > maxLng) maxLng = lng;
+      if (lat > maxLat) maxLat = lat;
+    });
+  };
+  features.forEach((f) => {
+    if (f.geometry.type === 'Polygon') {
+      (f.geometry.coordinates as number[][][]).forEach(processCoords);
+    } else if (f.geometry.type === 'MultiPolygon') {
+      (f.geometry.coordinates as number[][][][]).forEach((poly) => poly.forEach(processCoords));
     }
-  }, [data, map]);
-
-  return null;
+  });
+  return minLng !== Infinity ? [[minLng, minLat], [maxLng, maxLat]] : null;
 };
 
 const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selectedLGA, filterKey }) => {
-  const geoJsonLayerRef = useRef<GeoJSONType | null>(null);
   const mapRef = useRef<any>(null);
-  const prevSelectedRef = useRef<HotspotFeature | null>(null);
+  const [hoveredFeature, setHoveredFeature] = useState<HotspotFeature | null>(null);
+  const [popupCoords, setPopupCoords] = useState<[number, number] | null>(null);
   const [featureCount, setFeatureCount] = useState(0);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const prevSelectedRef = useRef<HotspotFeature | null>(null);
   const { theme } = useTheme();
-
-  /** Compute LatLngBounds from features */
-  const computeBounds = (features: HotspotFeature[]): LatLngBounds | null => {
-    if (!features.length) return null;
-    const bounds = new LatLngBounds([]);
-    features.forEach((feature) => {
-      if (feature.geometry.type === 'Polygon') {
-        feature.geometry.coordinates[0].forEach((coord) => {
-          if (Array.isArray(coord) && coord.length >= 2) {
-            bounds.extend([coord[1] as number, coord[0] as number]);
-          }
-        });
-      } else if (feature.geometry.type === 'MultiPolygon') {
-        feature.geometry.coordinates.forEach((polygon) => {
-          polygon[0].forEach((coord) => {
-            if (Array.isArray(coord) && coord.length >= 2) {
-              bounds.extend([coord[1] as number, coord[0] as number]);
-            }
-          });
-        });
-      }
-    });
-    return bounds.isValid() ? bounds : null;
-  };
 
   useEffect(() => {
     if (data) setFeatureCount(data.features.length);
   }, [data]);
 
-  // Zoom to selected LGA or zoom back to full bounds when cleared
+  /** Fit map to Nigeria bounds on data load */
+  useEffect(() => {
+    if (!data || !mapRef.current || !mapLoaded) return;
+    const map = mapRef.current.getMap();
+    const bbox = computeBBox(data.features);
+    if (bbox) {
+      map.fitBounds(bbox, { padding: 50, duration: 1000 });
+    }
+  }, [data, mapLoaded]);
+
+  /** Fly to selected LGA or reset view */
   useEffect(() => {
     const wasSelected = prevSelectedRef.current !== null;
     prevSelectedRef.current = selectedLGA ?? null;
 
-    if (!mapRef.current) return;
+    if (!mapRef.current || !mapLoaded) return;
+    const map = mapRef.current.getMap();
 
-    // If LGA was deselected, zoom back to full data bounds
-    if (!selectedLGA && wasSelected) {
-      if (data) {
-        const bounds = computeBounds(data.features);
-        if (bounds) {
-          mapRef.current.fitBounds(bounds, {
-            padding: [50, 50],
-            animate: true,
-            duration: 0.5,
-          });
+    if (!selectedLGA) {
+      // Reset to Nigeria bounds when deselected
+      if (wasSelected && data) {
+        const bbox = computeBBox(data.features);
+        if (bbox) {
+          map.fitBounds(bbox, { padding: 50, duration: 800 });
         }
       }
       return;
     }
 
-    if (!selectedLGA) return;
-
-    const zoomToSelected = () => {
-      if (!geoJsonLayerRef.current) return false;
-      let found = false;
-      geoJsonLayerRef.current.eachLayer((layer: any) => {
-        if (found) return;
-        if (layer.feature?.properties?.LGA_Name === selectedLGA.properties.LGA_Name &&
-            layer.feature?.properties?.State === selectedLGA.properties.State) {
-          const bounds = layer.getBounds();
-          mapRef.current.fitBounds(bounds, { 
-            padding: [100, 100],
-            maxZoom: 10,
-            animate: true,
-            duration: 0.5,
-          });
-          // Briefly highlight the selected feature
-          layer.setStyle({ weight: 3, color: '#ffffff', fillOpacity: 0.9 });
-          setTimeout(() => {
-            if (geoJsonLayerRef.current) geoJsonLayerRef.current.resetStyle(layer);
-          }, 2000);
-          found = true;
-        }
-      });
-      return found;
-    };
-
-    // Try immediately, retry after a short delay if layers aren't ready yet
-    if (!zoomToSelected()) {
-      const timer = setTimeout(zoomToSelected, 300);
-      return () => clearTimeout(timer);
+    // Fly to selected feature bounds
+    const bbox = computeBBox([selectedLGA]);
+    if (bbox) {
+      map.fitBounds(bbox, { padding: 100, maxZoom: 10, duration: 800 });
     }
-  }, [selectedLGA]);
+  }, [selectedLGA, data, mapLoaded]);
 
-  /**
-   * Component to capture map instance and handle resize
-   */
-  const MapInstanceCapture: React.FC = () => {
-    const map = useMap();
-    mapRef.current = map;
+  /** Handle hover — highlight feature + tooltip */
+  const onHover = useCallback((e: any) => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const features = map.queryRenderedFeatures(e.point, { layers: ['lga-extrusion', 'lga-fill'] });
 
-    // Invalidate size periodically to handle visibility changes (mobile view switches)
-    useEffect(() => {
-      const observer = new ResizeObserver(() => {
-        map.invalidateSize();
-      });
-      const container = map.getContainer();
-      if (container.parentElement) {
-        observer.observe(container.parentElement);
+    if (features.length > 0) {
+      map.getCanvas().style.cursor = 'pointer';
+      const f = features[0];
+      setHoveredFeature(f as unknown as HotspotFeature);
+      setPopupCoords([e.lngLat.lng, e.lngLat.lat]);
+
+      // Highlight: set filter on highlight layer
+      map.setFilter('lga-highlight', [
+        'all',
+        ['==', ['get', 'LGA_Name'], f.properties.LGA_Name],
+        ['==', ['get', 'State'], f.properties.State],
+      ]);
+    } else {
+      map.getCanvas().style.cursor = '';
+      setHoveredFeature(null);
+      setPopupCoords(null);
+      map.setFilter('lga-highlight', ['==', ['get', 'LGA_Name'], '']);
+    }
+  }, []);
+
+  /** Handle click — trigger sidebar detail */
+  const onClick = useCallback((e: any) => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const features = map.queryRenderedFeatures(e.point, { layers: ['lga-extrusion', 'lga-fill'] });
+
+    if (features.length > 0) {
+      const props = features[0].properties;
+      // Find matching feature from original data (has full geometry)
+      if (data) {
+        const match = data.features.find(
+          (f) => f.properties.LGA_Name === props.LGA_Name && f.properties.State === props.State
+        );
+        if (match) onFeatureClick(match);
       }
-      // Also invalidate on initial mount and after a short delay
-      setTimeout(() => map.invalidateSize(), 200);
-      return () => observer.disconnect();
-    }, [map]);
-
-    return null;
-  };
-
-  /** Darken a hex colour for borders */
-  const darkenColor = (hex: string, amount: number): string => {
-    const num = parseInt(hex.replace('#', ''), 16);
-    const r = Math.max(0, (num >> 16) - amount);
-    const g = Math.max(0, ((num >> 8) & 0x00ff) - amount);
-    const b = Math.max(0, (num & 0x0000ff) - amount);
-    return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
-  };
-
-  /**
-   * Style function: Color LGAs based on risk level with refined visuals
-   */
-  const styleFeature = (feature?: any): PathOptions => {
-    if (!feature || !feature.properties) return {};
-
-    const riskLevel = feature.properties.risk_level as RiskLevel;
-    const color = RISK_COLORS[riskLevel] || '#999999';
-    const borderColor = darkenColor(color, 40);
-
-    return {
-      fillColor: color,
-      weight: 1.5,
-      opacity: 0.9,
-      color: borderColor,
-      fillOpacity: 0.8,
-      dashArray: '',
-    };
-  };
-
-  /**
-   * Highlight feature on hover — bright glow effect
-   */
-  const highlightFeature = (e: any) => {
-    const layer = e.target;
-    const riskLevel = layer.feature?.properties?.risk_level as RiskLevel;
-    const color = RISK_COLORS[riskLevel] || '#ffffff';
-
-    layer.setStyle({
-      weight: 3,
-      color: '#ffffff',
-      fillOpacity: 0.85,
-      fillColor: color,
-    });
-    layer.bringToFront();
-  };
-
-  /**
-   * Reset feature style on mouse out
-   */
-  const resetHighlight = (e: any) => {
-    if (geoJsonLayerRef.current) {
-      geoJsonLayerRef.current.resetStyle(e.target);
     }
-  };
+  }, [data, onFeatureClick]);
 
-  /**
-   * Handle feature click: Zoom and trigger sidebar update
-   */
-  const clickFeature = (feature: HotspotFeature, layer: any) => {
-    layer.on({
-      click: () => {
-        // Zoom to feature using captured map instance
-        if (mapRef.current) {
-          const bounds = layer.getBounds();
-          mapRef.current.fitBounds(bounds, { 
-            padding: [100, 100],
-            maxZoom: 10 
-          });
-        }
-
-        // Trigger sidebar update
-        onFeatureClick(feature);
-      },
-    });
-  };
-
-  /**
-   * Bind events to each feature — lightweight tooltip & click-only selection
-   */
-  const onEachFeature = (feature: any, layer: any) => {
-    const typedFeature = feature as HotspotFeature;
-    const { LGA_Name, State, risk_level, MPI, composite_poverty_score } = typedFeature.properties;
-    const riskColor = RISK_COLORS[risk_level as RiskLevel] || '#999';
-
-    // Lightweight tooltip — just name, state, risk, and key score
-    const container = document.createElement('div');
-    container.className = 'map-tooltip-inner map-tooltip-compact';
-
-    const header = document.createElement('div');
-    header.className = 'tooltip-header';
-
-    const titleBlock = document.createElement('div');
-    const titleEl = document.createElement('div');
-    titleEl.className = 'tooltip-title';
-    titleEl.textContent = LGA_Name ?? '';
-    titleBlock.appendChild(titleEl);
-    const subtitleEl = document.createElement('div');
-    subtitleEl.className = 'tooltip-subtitle';
-    subtitleEl.textContent = `${State ?? ''} State`;
-    titleBlock.appendChild(subtitleEl);
-    header.appendChild(titleBlock);
-
-    const badge = document.createElement('div');
-    badge.className = 'tooltip-badge';
-    badge.style.background = riskColor;
-    badge.style.boxShadow = `0 0 8px ${riskColor}88`;
-    badge.textContent = risk_level;
-    header.appendChild(badge);
-
-    container.appendChild(header);
-
-    // One-line score summary
-    const scoreLine = document.createElement('div');
-    scoreLine.className = 'tooltip-score-line';
-    const scoreVal = composite_poverty_score != null ? composite_poverty_score.toFixed(4) : MPI.toFixed(4);
-    const scoreLabel = composite_poverty_score != null ? 'Composite' : 'MPI';
-    scoreLine.textContent = `${scoreLabel}: ${scoreVal}`;
-    container.appendChild(scoreLine);
-
-    const clickHint = document.createElement('div');
-    clickHint.className = 'tooltip-click-hint';
-    clickHint.textContent = 'Click for details';
-    container.appendChild(clickHint);
-
-    layer.bindTooltip(container, {
-      sticky: false,
-      className: 'custom-tooltip custom-tooltip-compact',
-      direction: 'top',
-      offset: [0, -10],
-    });
-
-    // Event handlers
-    layer.on({
-      mouseover: highlightFeature,
-      mouseout: resetHighlight,
-    });
-
-    // Click handler
-    clickFeature(typedFeature, layer);
-  };
+  const onMapLoad = useCallback(() => {
+    setMapLoaded(true);
+  }, []);
 
   if (!data) {
     return (
@@ -327,41 +202,114 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     );
   }
 
+  const riskColor = hoveredFeature
+    ? RISK_COLORS[(hoveredFeature.properties?.risk_level as RiskLevel)] || '#999'
+    : '#999';
+
   return (
-    <MapContainer
-      center={[9.0820, 8.6753]}
-      zoom={6}
-      style={{ height: '100%', width: '100%' }}
-      zoomControl={false}
-      className="z-0 map-container"
+    <Map
+      ref={mapRef}
+      mapLib={maplibregl}
+      key={theme}
+      initialViewState={{
+        longitude: 8.6753,
+        latitude: 9.0820,
+        zoom: 5.8,
+        pitch: 45,
+        bearing: -10,
+      }}
+      style={{ width: '100%', height: '100%' }}
+      mapStyle={MAP_STYLES[theme as 'dark' | 'light'] || MAP_STYLES.dark}
+      onMouseMove={onHover}
+      onClick={onClick}
+      onLoad={onMapLoad}
+      maxPitch={70}
       minZoom={5}
       maxZoom={13}
     >
-      <MapInstanceCapture />
+      <NavigationControl position="top-right" visualizePitch showCompass />
 
-      {/* Theme-aware base layer */}
-      <TileLayer
-        key={theme}
-        attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-        url={theme === 'dark' 
-          ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        }
-        subdomains="abcd"
-      />
+      <Source id="lga-data" type="geojson" data={data} key={filterKey || 'all'}>
+        {/* 3D extruded fill — the main visual */}
+        <Layer
+          id="lga-extrusion"
+          type="fill-extrusion"
+          paint={{
+            'fill-extrusion-color': RISK_MATCH_EXPR,
+            'fill-extrusion-height': RISK_HEIGHT_EXPR,
+            'fill-extrusion-base': 0,
+            'fill-extrusion-opacity': 0.82,
+          }}
+        />
 
-      {/* GeoJSON risk overlay — keyed to re-render on filter changes */}
-      <GeoJSON
-        key={filterKey || 'all'}
-        data={data}
-        style={styleFeature}
-        onEachFeature={onEachFeature}
-        ref={(ref) => {
-          geoJsonLayerRef.current = ref;
-        }}
-      />
-      <FitBounds data={data} />
-    </MapContainer>
+        {/* Flat fill for picking (invisible under extrusions but helps with click detection) */}
+        <Layer
+          id="lga-fill"
+          type="fill"
+          paint={{
+            'fill-color': RISK_MATCH_EXPR,
+            'fill-opacity': 0,
+          }}
+        />
+
+        {/* Border lines on top of extrusions */}
+        <Layer
+          id="lga-borders"
+          type="line"
+          paint={{
+            'line-color': RISK_BORDER_EXPR,
+            'line-width': 0.8,
+            'line-opacity': 0.6,
+          }}
+        />
+
+        {/* Hover highlight line */}
+        <Layer
+          id="lga-highlight"
+          type="line"
+          filter={['==', ['get', 'LGA_Name'], '']}
+          paint={{
+            'line-color': '#ffffff',
+            'line-width': 2.5,
+            'line-opacity': 0.9,
+          }}
+        />
+      </Source>
+
+      {/* Hover popup */}
+      {hoveredFeature && popupCoords && (
+        <Popup
+          longitude={popupCoords[0]}
+          latitude={popupCoords[1]}
+          closeButton={false}
+          closeOnClick={false}
+          anchor="bottom"
+          offset={15}
+          className="map-3d-popup"
+        >
+          <div className="map-tooltip-inner map-tooltip-compact">
+            <div className="tooltip-header">
+              <div>
+                <div className="tooltip-title">{hoveredFeature.properties?.LGA_Name}</div>
+                <div className="tooltip-subtitle">{hoveredFeature.properties?.State} State</div>
+              </div>
+              <div
+                className="tooltip-badge"
+                style={{ background: riskColor, boxShadow: `0 0 8px ${riskColor}88` }}
+              >
+                {hoveredFeature.properties?.risk_level}
+              </div>
+            </div>
+            <div className="tooltip-score-line">
+              {hoveredFeature.properties?.composite_poverty_score != null
+                ? `Composite: ${Number(hoveredFeature.properties.composite_poverty_score).toFixed(4)}`
+                : `MPI: ${Number(hoveredFeature.properties?.MPI || 0).toFixed(4)}`}
+            </div>
+            <div className="tooltip-click-hint">Click for details</div>
+          </div>
+        </Popup>
+      )}
+    </Map>
   );
 };
 

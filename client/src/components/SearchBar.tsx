@@ -32,7 +32,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA, onSearchTermCh
     ).slice(0, 10); // Limit to 10 results
   }, [searchTerm, data]);
 
-  const hasResults = filteredResults.length > 0 && searchTerm.length > 0;
 
   // Reset focused index when results change
   useEffect(() => {

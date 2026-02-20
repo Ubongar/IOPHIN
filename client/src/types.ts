@@ -31,21 +31,10 @@ export interface HotspotProperties {
   clustering_method?: string;
 }
 
-export interface HotspotFeature {
-  type: 'Feature';
-  properties: HotspotProperties;
-  geometry: {
-    type: 'Polygon' | 'MultiPolygon';
-    coordinates: number[][][] | number[][][][];
-  };
-}
+import type { Feature, FeatureCollection, Polygon, MultiPolygon } from 'geojson';
 
-export interface HotspotsGeoJSON {
-  type: 'FeatureCollection';
-  name?: string;
-  crs?: any;
-  features: HotspotFeature[];
-}
+export type HotspotFeature = Feature<Polygon | MultiPolygon, HotspotProperties>;
+export type HotspotsGeoJSON = FeatureCollection<Polygon | MultiPolygon, HotspotProperties>;
 
 export interface Stats {
   totalLGAs: number;

@@ -1,5 +1,5 @@
-﻿/* Leaflet CSS is required for maps */
-@import 'leaflet/dist/leaflet.css';
+﻿/* MapLibre GL CSS for 3D maps */
+@import 'maplibre-gl/dist/maplibre-gl.css';
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
