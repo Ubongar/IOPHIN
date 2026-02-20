@@ -1,4 +1,54 @@
-﻿/* MapLibre GL CSS for 3D maps */
+﻿.map-3d-popup {
+  background: #18181b !important;
+  color: #fff !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 12px 48px rgba(0,0,0,.45) !important;
+  font-family: 'Inter', sans-serif !important;
+  border: 2px solid #fff !important;
+}
+.map-3d-popup .tooltip-title {
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
+  text-decoration: underline !important;
+  letter-spacing: 0.01em;
+}
+.map-3d-popup .tooltip-subtitle {
+  color: #e0e0e0 !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+.map-3d-popup .tooltip-score-line {
+  color: #fff !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+}
+.map-3d-popup .tooltip-click-hint {
+  color: #ffd700 !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+}
+.map-3d-popup .tooltip-badge {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 12px #0008 !important;
+}
+/* MapLibre 3D popup override: always dark for readability */
+.map-3d-popup {
+  background: var(--bg-sidebar) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 12px 48px rgba(0,0,0,.3) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+.map-3d-popup .tooltip-title,
+.map-3d-popup .tooltip-subtitle,
+.map-3d-popup .tooltip-score-line,
+.map-3d-popup .tooltip-click-hint {
+  color: var(--text-primary) !important;
+}
+/* MapLibre GL CSS for 3D maps */
 @import 'maplibre-gl/dist/maplibre-gl.css';
 
 /* Import Google Fonts */
