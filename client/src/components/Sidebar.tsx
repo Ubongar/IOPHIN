@@ -1,11 +1,13 @@
 ﻿/**
  * Sidebar  Production Analytics Panel
  * Clean hierarchy, consistent spacing, working report download.
+ * Shows dynamic risk distribution based on tiering mode (absolute vs relative)
  */
 
+import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { RISK_COLORS } from '../types';
-import type { HotspotFeature, Stats, RiskLevel } from '../types';
+import type { HotspotFeature, Stats, RiskLevel, HotspotsGeoJSON } from '../types';
 import { useFilterStore } from '../store';
 import { getDynamicRiskLevel } from '../utils/riskTiers';
 
@@ -13,6 +15,7 @@ interface SidebarProps {
   stats: Stats | null;
   selectedLGA: HotspotFeature | null;
   onClose?: () => void;
+  hotspotsData?: HotspotsGeoJSON | null;
 }
 
 /* -- Helpers -- */
@@ -169,17 +172,32 @@ const generateReport = (selectedLGA: HotspotFeature | null, stats: Stats | null)
 
 /* ============================================================ */
 
-const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose, hotspotsData }) => {
+  const tieringMode = useFilterStore((s) => s.tieringMode);
+
+  /* -- Calculate dynamic risk distribution based on tiering mode -- */
+  const dynamicRiskDistribution = useMemo(() => {
+    if (!hotspotsData) {
+      // Fall back to stats if no hotspots data
+      return stats?.riskDistribution || { critical: 0, high: 0, medium: 0, low: 0, minimal: 0 };
+    }
+    
+    const distribution = { critical: 0, high: 0, medium: 0, low: 0, minimal: 0 };
+    hotspotsData.features.forEach(feature => {
+      const dynamicRisk = getDynamicRiskLevel(feature, tieringMode);
+      distribution[dynamicRisk.toLowerCase() as keyof typeof distribution]++;
+    });
+    return distribution;
+  }, [hotspotsData, tieringMode, stats]);
 
   /* -- Pie data helper -- */
   const getPieData = () => {
-    if (!stats) return [];
     return [
-      { name: 'Critical', value: stats.riskDistribution.critical ?? 0, color: RISK_COLORS.Critical },
-      { name: 'High', value: stats.riskDistribution.high, color: RISK_COLORS.High },
-      { name: 'Medium', value: stats.riskDistribution.medium, color: RISK_COLORS.Medium },
-      { name: 'Low', value: stats.riskDistribution.low, color: RISK_COLORS.Low },
-      { name: 'Minimal', value: stats.riskDistribution.minimal, color: RISK_COLORS.Minimal },
+      { name: 'Critical', value: dynamicRiskDistribution.critical ?? 0, color: RISK_COLORS.Critical },
+      { name: 'High', value: dynamicRiskDistribution.high, color: RISK_COLORS.High },
+      { name: 'Medium', value: dynamicRiskDistribution.medium, color: RISK_COLORS.Medium },
+      { name: 'Low', value: dynamicRiskDistribution.low, color: RISK_COLORS.Low },
+      { name: 'Minimal', value: dynamicRiskDistribution.minimal, color: RISK_COLORS.Minimal },
     ];
   };
 
@@ -196,7 +214,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
      NATIONAL SUMMARY
      ================================================================ */
   const renderNationalSummary = () => {
-    if (!stats) {
+    if (!stats && !hotspotsData) {
       return (
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
@@ -208,7 +226,8 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
     }
 
     const pieData = getPieData();
-    const total = stats.totalLGAs;
+    // Use dynamic total based on hotspots data if available
+    const total = hotspotsData?.features.length || stats?.totalLGAs || 0;
 
     return (
       <div className="sidebar-content fade-in-up">
@@ -216,18 +235,32 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
         <div className="sidebar-section-header">
           <h2 className="sidebar-title">National Overview</h2>
           <p className="sidebar-subtitle">Poverty Hotspot Distribution - Nigeria</p>
+          {/* Tiering mode indicator */}
+          <span className="risk-mode-indicator" style={{ 
+            background: tieringMode === 'absolute' ? 'rgba(239,68,68,0.15)' : 'rgba(99,102,241,0.15)', 
+            color: tieringMode === 'absolute' ? '#ef4444' : '#818cf8',
+            fontSize: 10, 
+            padding: '2px 8px', 
+            borderRadius: 4, 
+            fontWeight: 600,
+            border: tieringMode === 'absolute' ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(99,102,241,0.3)',
+            marginTop: 4,
+            display: 'inline-block'
+          }}>
+            {tieringMode === 'cluster' ? 'RELATIVE MODE' : 'ABSOLUTE MODE'}
+          </span>
         </div>
 
         {/* Key metrics */}
         <div className="grid grid-cols-2 gap-2.5">
-          <MetricCard label="LGAs" value={stats.totalLGAs} sub="Areas tracked" />
-          <MetricCard label="States" value={stats.statesCount} sub="States covered" />
-          <MetricCard label="Avg MPI" value={stats.averageMPI} sub="Poverty Index" />
-          <MetricCard label="Nightlight" value={stats.averageNightlight} sub="VIIRS radiance" />
+          <MetricCard label="LGAs" value={total} sub="Areas tracked" />
+          <MetricCard label="States" value={stats?.statesCount || 0} sub="States covered" />
+          <MetricCard label="Avg MPI" value={stats?.averageMPI || 'N/A'} sub="Poverty Index" />
+          <MetricCard label="Nightlight" value={stats?.averageNightlight || 'N/A'} sub="VIIRS radiance" />
         </div>
 
         {/* Conflict alert */}
-        {stats.conflictZones != null && stats.conflictZones > 0 && (
+        {stats?.conflictZones != null && stats.conflictZones > 0 && (
           <div className="alert-banner alert-danger">
             <div className="alert-icon danger">
               <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -329,7 +362,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
             VIIRS Nighttime Lights &middot; Nigeria MPI &middot; Senatorial MPI &middot; GRID3 &middot;
             WorldPop &middot; ACLED &middot; IOM DTM &middot; WFP &middot; GEE (NDVI/Rainfall) &middot; OSM
           </p>
-          {stats.dataSource && (
+          {stats?.dataSource && (
             <div className="source-chip">
               <span className="source-label">Source</span>
               <span className="source-value">{stats.dataSource}</span>
@@ -338,7 +371,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
         </div>
 
         {/* Download */}
-        <button className="download-btn" onClick={() => generateReport(null, stats)}>
+        <button className="download-btn" onClick={() => generateReport(null, stats || null)}>
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -358,7 +391,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
     const p = selectedLGA.properties;
     const prob = povertyProb(p.MPI, p.mean_nightlight_intensity);
     const pColor = probColor(prob);
-    const tieringMode = useFilterStore((s) => s.tieringMode);
+    // Use tieringMode from component scope (already retrieved via useFilterStore at top level)
     const dynamicRisk = getDynamicRiskLevel(selectedLGA as HotspotFeature, tieringMode);
     const riskColor = RISK_COLORS[dynamicRisk as RiskLevel] ?? '#999';
 
@@ -385,6 +418,17 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
             <span className="risk-dot-white" />
             <span>{p.cluster_label} · {dynamicRisk}</span>
           </div>
+          <span className="risk-mode-indicator" style={{ 
+            background: tieringMode === 'absolute' ? 'rgba(239,68,68,0.15)' : 'rgba(99,102,241,0.15)', 
+            color: tieringMode === 'absolute' ? '#ef4444' : '#818cf8',
+            fontSize: 10, 
+            padding: '2px 6px', 
+            borderRadius: 4, 
+            fontWeight: 600,
+            border: tieringMode === 'absolute' ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(99,102,241,0.3)'
+          }}>
+            {tieringMode === 'cluster' ? 'RELATIVE' : 'ABSOLUTE'}
+          </span>
           <span className="risk-tooltip" title={"Risk tiers are relative by default (cluster-ranked using composite poverty score, nightlights and other indicators). You can enable absolute thresholds via config.RISK_TIERING_MODE='absolute'."} style={{ color: '#bbb', fontSize: 12 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />

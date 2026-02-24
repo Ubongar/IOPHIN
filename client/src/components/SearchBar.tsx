@@ -1,10 +1,13 @@
 /**
  * SearchBar - Component for searching and filtering LGAs
+ * Shows dynamic risk levels based on tiering mode (absolute vs relative)
  */
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import type { HotspotFeature } from '../types';
 import { RISK_COLORS } from '../types';
+import { useFilterStore } from '../store';
+import { getDynamicRiskLevel } from '../utils/riskTiers';
 
 interface SearchBarProps {
   data: HotspotFeature[] | null;
@@ -19,6 +22,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA, onSearchTermCh
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
   const resultsId = 'search-results-list';
+  const tieringMode = useFilterStore((s) => s.tieringMode);
 
   const filteredResults = useMemo(() => {
     if (!searchTerm || searchTerm.length < 2 || !data) {
@@ -146,27 +150,31 @@ const SearchBar: React.FC<SearchBarProps> = ({ data, onSelectLGA, onSearchTermCh
           aria-label="Search results"
         >
           {filteredResults.length > 0 ? (
-            filteredResults.map((feature, index) => (
-              <button
-                id={`search-result-${index}`}
-                key={`${feature.properties.State}-${feature.properties.LGA_Name}`}
-                onClick={() => handleSelect(feature)}
-                className={`search-result-item ${index === focusedIndex ? 'focused' : ''}`}
-                role="option"
-                type="button"
-                aria-selected={index === focusedIndex}
-              >
-                <div className="flex-1">
-                  <div className="search-result-title">{feature.properties.LGA_Name}</div>
-                  <div className="search-result-subtitle">{feature.properties.State} State</div>
-                </div>
-                <div className="search-result-badge" style={{ 
-                  backgroundColor: RISK_COLORS[feature.properties.risk_level]
-                }}>
-                  {feature.properties.risk_level}
-                </div>
-              </button>
-            ))
+            filteredResults.map((feature, index) => {
+              // Use dynamic risk level based on tiering mode
+              const dynamicRisk = getDynamicRiskLevel(feature, tieringMode);
+              return (
+                <button
+                  id={`search-result-${index}`}
+                  key={`${feature.properties.State}-${feature.properties.LGA_Name}`}
+                  onClick={() => handleSelect(feature)}
+                  className={`search-result-item ${index === focusedIndex ? 'focused' : ''}`}
+                  role="option"
+                  type="button"
+                  aria-selected={index === focusedIndex}
+                >
+                  <div className="flex-1">
+                    <div className="search-result-title">{feature.properties.LGA_Name}</div>
+                    <div className="search-result-subtitle">{feature.properties.State} State</div>
+                  </div>
+                  <div className="search-result-badge" style={{ 
+                    backgroundColor: RISK_COLORS[dynamicRisk]
+                  }}>
+                    {dynamicRisk}
+                  </div>
+                </button>
+              );
+            })
           ) : (
             <div className="search-no-results">
               <p>No results for &ldquo;{searchTerm}&rdquo;</p>

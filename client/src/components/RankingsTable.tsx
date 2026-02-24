@@ -1,11 +1,14 @@
 /**
  * RankingsTable — Top-N worst/best LGAs by composite poverty score
  * Supports search text & state/risk filter props for cross-view filtering.
+ * Shows dynamic risk levels based on tiering mode (absolute vs relative)
  */
 
 import { useState, useMemo } from 'react';
 import { RISK_COLORS } from '../types';
-import type { RankingEntry, RiskLevel } from '../types';
+import type { RankingEntry, RiskLevel, HotspotsGeoJSON } from '../types';
+import { useFilterStore } from '../store';
+import { getDynamicRiskLevel } from '../utils/riskTiers';
 
 interface Props {
   rankings: RankingEntry[];
@@ -13,12 +16,36 @@ interface Props {
   searchQuery?: string;
   stateFilter?: string;
   riskFilter?: string;
+  hotspotsData?: HotspotsGeoJSON | null;
 }
 
 const fmt = (n: number, d = 2) => (n != null ? n.toFixed(d) : '—');
 
-const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '', stateFilter = '', riskFilter = '' }) => {
+// Helper to compute dynamic risk level from ranking entry using hotspots data
+const getDynamicRiskFromRanking = (
+  ranking: RankingEntry,
+  hotspotsData: HotspotsGeoJSON | null | undefined,
+  tieringMode: 'cluster' | 'absolute'
+): RiskLevel => {
+  if (!hotspotsData) {
+    return ranking.riskLevel as RiskLevel;
+  }
+
+  // Find the matching feature in hotspots data
+  const feature = hotspotsData.features.find(
+    f => f.properties.LGA_Name === ranking.lgaName && f.properties.State === ranking.state
+  );
+
+  if (!feature) {
+    return ranking.riskLevel as RiskLevel;
+  }
+
+  return getDynamicRiskLevel(feature, tieringMode);
+};
+
+const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '', stateFilter = '', riskFilter = '', hotspotsData }) => {
   const [order, setOrder] = useState<'worst' | 'best'>('worst');
+  const tieringMode = useFilterStore((s) => s.tieringMode);
 
   const sorted = useMemo(() => {
     let list = [...rankings];
@@ -37,9 +64,12 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
       list = list.filter(r => r.state === stateFilter);
     }
 
-    // Apply risk filter
+    // Apply risk filter using dynamic risk levels
     if (riskFilter) {
-      list = list.filter(r => r.riskLevel === riskFilter);
+      list = list.filter(r => {
+        const dynamicRisk = getDynamicRiskFromRanking(r, hotspotsData, tieringMode);
+        return dynamicRisk === riskFilter;
+      });
     }
 
     // Sort
@@ -50,7 +80,7 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
     );
 
     return list;
-  }, [rankings, order, searchQuery, stateFilter, riskFilter]);
+  }, [rankings, order, searchQuery, stateFilter, riskFilter, hotspotsData, tieringMode]);
 
   return (
     <div className="rankings-container">
@@ -95,31 +125,34 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
             </tr>
           </thead>
           <tbody>
-            {sorted.map((r, i) => (
-              <tr
-                key={r.lgaName + r.state}
-                className="rankings-row"
-                onClick={() => onSelectLGA(r.lgaName)}
-              >
-                <td className="rank-cell">{i + 1}</td>
-                <td className="lga-cell">{r.lgaName}</td>
-                <td>{r.state}</td>
-                <td className="mono-cell">{fmt(r.compositeScore, 4)}</td>
-                <td className="mono-cell">{fmt(r.mpi, 4)}</td>
-                <td className="mono-cell hide-mobile">{fmt(r.nightlight)}</td>
-                <td>
-                  <span
-                    className="risk-pill"
-                    style={{ background: (RISK_COLORS[r.riskLevel as RiskLevel] || '#999') + '30',
-                             color: RISK_COLORS[r.riskLevel as RiskLevel] || '#999' }}
-                  >
-                    {r.riskLevel}
-                  </span>
-                </td>
-                <td className="mono-cell hide-mobile">{r.healthFacilities}</td>
-                <td className="mono-cell hide-mobile">{r.schools}</td>
-              </tr>
-            ))}
+            {sorted.map((r, i) => {
+              const dynamicRisk = getDynamicRiskFromRanking(r, hotspotsData, tieringMode);
+              return (
+                <tr
+                  key={r.lgaName + r.state}
+                  className="rankings-row"
+                  onClick={() => onSelectLGA(r.lgaName)}
+                >
+                  <td className="rank-cell">{i + 1}</td>
+                  <td className="lga-cell">{r.lgaName}</td>
+                  <td>{r.state}</td>
+                  <td className="mono-cell">{fmt(r.compositeScore, 4)}</td>
+                  <td className="mono-cell">{fmt(r.mpi, 4)}</td>
+                  <td className="mono-cell hide-mobile">{fmt(r.nightlight)}</td>
+                  <td>
+                    <span
+                      className="risk-pill"
+                      style={{ background: (RISK_COLORS[dynamicRisk] || '#999') + '30',
+                               color: RISK_COLORS[dynamicRisk] || '#999' }}
+                    >
+                      {dynamicRisk}
+                    </span>
+                  </td>
+                  <td className="mono-cell hide-mobile">{r.healthFacilities}</td>
+                  <td className="mono-cell hide-mobile">{r.schools}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

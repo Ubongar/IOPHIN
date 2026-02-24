@@ -25,6 +25,7 @@ import AuthModal from './components/AuthModal';
 import { useTheme } from './contexts/ThemeContext';
 import { useDataStore, useFilterStore, useMapStore, useAlertStore, useAuthStore } from './store';
 import { useWebSocket } from './hooks/useWebSocket';
+import { getDynamicRiskLevel } from './utils/riskTiers';
 import type { HotspotFeature, RiskLevel, ViewMode, Intervention, ChangeLogEntry } from './types';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -54,6 +55,10 @@ function App() {
   const { unreadCount: alertCount } = useAlertStore();
   const { isAuthenticated, user, logout: authLogout } = useAuthStore();
 
+  // Tiering mode - must be declared before filteredData
+  const tieringMode = useFilterStore((s) => s.tieringMode);
+  const setTieringMode = useFilterStore((s) => s.setTieringMode);
+
   // Local state
   const [interventions, setInterventions] = useState<Intervention[]>([]);
   const [recentChangesLocal, setRecentChangesLocal] = useState<ChangeLogEntry[]>([]);
@@ -73,17 +78,21 @@ function App() {
     return Array.from(set).sort();
   }, [hotspotsData]);
 
-  // Filtered data for map
+  // Filtered data for map - uses dynamic risk levels based on tiering mode
   const filteredData = useMemo(() => {
     if (!hotspotsData) return null;
     if (!stateFilter && !riskFilter) return hotspotsData;
     const features = hotspotsData.features.filter(f => {
       if (stateFilter && f.properties.State !== stateFilter) return false;
-      if (riskFilter && f.properties.risk_level !== riskFilter) return false;
+      // Use dynamic risk level based on tiering mode for filtering
+      if (riskFilter) {
+        const dynamicRisk = getDynamicRiskLevel(f, tieringMode);
+        if (dynamicRisk !== riskFilter) return false;
+      }
       return true;
     });
     return { ...hotspotsData, features };
-  }, [hotspotsData, stateFilter, riskFilter]);
+  }, [hotspotsData, stateFilter, riskFilter, tieringMode]);
 
   const fetchData = async (isBackground = false) => {
     try {
@@ -124,10 +133,6 @@ function App() {
       if (!isBackground) setLoading(false);
     }
   };
-
-  // Runtime config for UI toggles (persisted server-side when possible)
-  const tieringMode = useFilterStore((s) => s.tieringMode);
-  const setTieringMode = useFilterStore((s) => s.setTieringMode);
 
   useEffect(() => {
     // Load server runtime config if available
@@ -232,7 +237,7 @@ function App() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <Sidebar stats={stats} selectedLGA={selectedLGA} onClose={handleCloseLGA} />
+        <Sidebar stats={stats} selectedLGA={selectedLGA} onClose={handleCloseLGA} hotspotsData={hotspotsData} />
       </div>
 
       {/* Main Content */}
@@ -336,6 +341,7 @@ function App() {
         {activeView === 'rankings' && (
           <div className="view-panel">
             <RankingsTable rankings={rankings} searchQuery={searchQuery} stateFilter={stateFilter} riskFilter={riskFilter}
+              hotspotsData={hotspotsData}
               onSelectLGA={(name: string) => {
                 const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
                 if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
