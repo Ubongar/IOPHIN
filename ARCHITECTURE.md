@@ -1,4 +1,4 @@
-# IOPHIN — Architecture (Current)
+# IOPHIN — Architecture (v3.0)
 
 ## System Overview
 
@@ -60,6 +60,7 @@ React Dashboard (client/)
 - `components/*`: map and extended analytics/planning/reporting surfaces.
 - `store/*`: Zustand stores (`data`, `filters`, `auth`, `alerts`, `map`).
 - `hooks/useWebSocket.ts`: live server updates.
+- `utils/riskTiers.ts`: dynamic risk tier calculation.
 
 ### Risk tiering modes
 
@@ -70,17 +71,19 @@ The system supports two modes for converting numeric poverty scores into human-r
 
 The frontend exposes a small toggle to switch modes at runtime (persisted to localStorage and optionally to the running server process via `/api/config`).
 
-## Frontend Navigation (Current)
+## Frontend Navigation (v3.0)
 
-- `map`
-- `rankings`
-- `states`
-- `interventions`
-- `seasonal`
-- `budget`
-- `reports`
-- `alerts`
-- `settings` (data quality)
+| View | Component | Description |
+|------|-----------|-------------|
+| `map` | `MapComponent.tsx` | Interactive choropleth map with risk visualization |
+| `rankings` | `RankingsTable.tsx` | Sortable table of LGAs by poverty indicators |
+| `states` | `StateOverview.tsx` | Aggregate statistics by state |
+| `interventions` | `InterventionTracker.tsx` | Track and manage intervention programs |
+| `seasonal` | `SeasonalCalendar.tsx` | Seasonal calendar for planning |
+| `budget` | `BudgetOptimizer.tsx` | Resource allocation optimization |
+| `reports` | `ReportBuilder.tsx` | PDF report generation |
+| `alerts` | `AlertsManager.tsx` | Alert subscription management |
+| `settings` | `DataQualityPanel.tsx` | Data quality monitoring |
 
 ## Request/Data Flow
 
@@ -94,20 +97,34 @@ The frontend exposes a small toggle to switch modes at runtime (persisted to loc
 ## Scheduled Dynamic Processing
 
 `src/config.py` drives interval settings (via env with defaults), including:
-- conflict
-- infrastructure
-- viirs
-- ml_retrain
-- grid3
-- ndvi
-- rainfall
-- population
-- idp
-- food_price
-- external_enrichment
-- gee_environmental
-- anomaly_detection
-- predictive_model
+- conflict (1h default)
+- infrastructure (6h default)
+- viirs (24h default)
+- ml_retrain (12h default)
+- grid3 (168h/weekly default)
+- ndvi (24h default)
+- rainfall (24h default)
+- population (720h/monthly default)
+- idp (168h/weekly default)
+- food_price (168h/weekly default)
+- external_enrichment (24h default)
+- gee_environmental (24h default)
+- anomaly_detection (configurable)
+- predictive_model (configurable)
+
+## External Data Sources
+
+| Source | Type | Purpose |
+|--------|------|---------|
+| Nigeria MPI | CSV | Multidimensional Poverty Index data |
+| GRID3 | Shapefile | LGA boundary geometries |
+| VIIRS | Raster | Nightlight intensity data |
+| ACLED | API | Conflict incident data |
+| DTM/IOM | API | IDP displacement tracking |
+| Google Earth Engine | API | Environmental data (NDVI, rainfall) |
+| HDX | API | Humanitarian data exchange |
+| WorldPop | API | Population density data |
+| OpenStreetMap | Overpass | Infrastructure (health facilities, schools, roads) |
 
 ## Deployment Topologies
 
@@ -124,3 +141,13 @@ The frontend exposes a small toggle to switch modes at runtime (persisted to loc
 - `client`
 
 See `docker-compose.yml` and `SETUP.md` for details.
+
+## Security Features
+
+- JWT-based authentication with bcrypt password hashing
+- Role-based access control (admin, government, ngo, user)
+- Rate limiting on API endpoints
+- Helmet.js security headers
+- CORS configuration with environment-based origins
+- Auth rate limiting (20 requests per 15 minutes)
+- Protected write operations requiring authentication

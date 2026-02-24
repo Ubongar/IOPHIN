@@ -2,18 +2,44 @@
 
 IOPHIN is a full-stack geospatial intelligence platform for identifying and monitoring poverty risk across Nigeria LGAs.
 
+## System Version
+
+**Current Version:** 3.0 (February 2026)
+
 The current codebase includes:
 - A Python intelligence engine (`src/`) for feature extraction, clustering, forecasting, anomaly detection, and scheduled refresh.
 - A Node.js API (`server/`) with Redis cache, JWT auth, WebSocket broadcast, reporting endpoints, and PostgreSQL-first data access.
 - A React + TypeScript dashboard (`client/`) with multi-view analytics, intervention planning tools, and real-time alert surfaces.
 
-## What’s in this version
+## What's in this version
 
-- Expanded dashboard navigation (map, rankings, state overview, interventions, seasonal, budget optimizer, reports, alerts, data quality).
-- Advanced backend modules for auth, subscriptions, reports, anomalies, correlations, forecasts, saved views, and change tracking.
-- PostGIS + materialized-view SQL bootstrap in `server/init.sql`.
-- Redis-backed response caching and Socket.IO integration for live events.
-- Dockerized stack with `postgres`, `redis`, `server`, and `client` services.
+### Core Features (Original v1.0)
+- Basic Python pipeline for feature extraction and clustering from MPI and nightlight data
+- Simple Node.js API with basic endpoints for hotspots and statistics
+- React dashboard with interactive choropleth map view
+- Static data processing with CSV/GeoJSON output
+
+### Added in v2.0
+- PostgreSQL database integration with PostGIS spatial support
+- Redis caching for improved API performance
+- JWT authentication with role-based access control
+- WebSocket real-time updates via Socket.IO
+- Expanded API routes under `/api/v1/*`
+- Anomaly detection and forecasting modules
+- Intervention tracking system
+- Alert subscription management
+
+### Added in v3.0 (Current)
+- **9 Dashboard Views**: Map, Rankings, State Overview, Interventions, Seasonal Calendar, Budget Optimizer, Reports, Alerts, Data Quality
+- **Risk Tiering Modes**: Cluster-relative (default) and absolute threshold modes with UI toggle
+- **Advanced Analytics**: Correlation analysis, crisis corridor identification, leaderboards
+- **Report Generation**: PDF report builder with customizable content
+- **Saved Views**: Share and save dashboard configurations
+- **Theme Support**: Dark and light mode toggle
+- **Scrollytelling Tour**: Interactive onboarding experience
+- **Data Quality Panel**: Monitor data freshness and completeness
+- **Enhanced Scheduler**: Configurable intervals for 12+ data refresh jobs
+- **External API Integration**: ACLED conflict, DTM IDP, Google Earth Engine, HDX, WorldPop
 
 ## Tech Stack
 
@@ -98,7 +124,7 @@ python -m src.scheduler_service
 
 Open `http://localhost:5173`.
 
-## New: Risk Tiering Modes
+## Risk Tiering Modes
 
 The application supports two modes for mapping numeric poverty scores to human-readable risk tiers:
 
@@ -129,6 +155,8 @@ Services:
 - `GET /api/states`
 - `GET /api/rankings`
 - `GET /api/history/:lga`
+- `GET /api/config` - Returns current risk tiering configuration
+- `POST /api/config` - Update risk tiering mode (admin only)
 
 ### V1 expanded endpoints (`/api/v1/*`)
 - Auth: `POST /auth/register`, `POST /auth/login`
@@ -142,6 +170,35 @@ Services:
 - Saved views: `GET /saved-views`, `POST /saved-views`, `GET /saved-views/:token`
 - Reports: `POST /reports/generate`
 
+## Frontend Components
+
+### Navigation Views
+| View | Description |
+|------|-------------|
+| Map | Interactive choropleth map with LGA risk visualization |
+| Rankings | Sortable table of LGAs by poverty score |
+| State Overview | Aggregate statistics by state |
+| Interventions | Track and manage intervention programs |
+| Seasonal | Seasonal calendar for planning |
+| Budget Optimizer | Allocate resources based on risk |
+| Reports | Generate PDF reports |
+| Alerts | Manage alert subscriptions |
+| Data Quality | Monitor data freshness and coverage |
+
+### Key Components
+- `MapComponent.tsx` - Main map with choropleth layers
+- `Sidebar.tsx` - LGA detail panel with statistics
+- `RankingsTable.tsx` - Sortable rankings display
+- `AnomalyPanel.tsx` - Anomaly detection results
+- `InterventionTracker.tsx` - Intervention management
+- `BudgetOptimizer.tsx` - Resource allocation tool
+- `ReportBuilder.tsx` - PDF report generation
+- `AlertsManager.tsx` - Alert subscription management
+- `CrisisCorridor.tsx` - Crisis corridor identification
+- `Leaderboard.tsx` - Performance comparisons
+- `DataQualityPanel.tsx` - Data quality metrics
+- `ScrollytellingTour.tsx` - Interactive onboarding
+
 ## Repository Structure
 
 ```text
@@ -152,6 +209,7 @@ IOPHIN/
 │   │   ├── contexts/           # Theme context
 │   │   ├── hooks/              # WebSocket hook
 │   │   ├── store/              # Zustand stores
+│   │   ├── utils/              # Risk tier utilities
 │   │   ├── App.tsx             # Main multi-view shell
 │   │   └── types.ts
 │   └── package.json
@@ -166,8 +224,21 @@ IOPHIN/
 │   ├── init.sql                # PostGIS + advanced tables/views
 │   └── package.json
 ├── src/                        # Python intelligence engine
-├── data/                       # raw + processed datasets
+│   ├── main.py                 # Static pipeline orchestration
+│   ├── scheduler_service.py    # Dynamic monitoring scheduler
+│   ├── feature_extraction.py   # Raster/API enrichment
+│   ├── model_engine.py         # Clustering and scoring
+│   ├── predictive_model.py     # Forecasting
+│   ├── anomaly_detection.py    # Anomaly detection
+│   ├── advanced_model.py       # Advanced analytics
+│   ├── spatial_statistics.py   # Spatial analysis
+│   ├── temporal_analysis.py    # Temporal analysis
+│   └── migrate_to_db.py        # DB migration
+├── data/
+│   ├── raw/                    # Source datasets
+│   └── processed/              # Model outputs
 ├── docs/
+├── scripts/
 ├── docker-compose.yml
 └── requirements.txt
 ```

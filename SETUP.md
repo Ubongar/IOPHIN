@@ -1,4 +1,4 @@
-# IOPHIN — Setup Guide (Current)
+# IOPHIN — Setup Guide (v3.0)
 
 ## Prerequisites
 
@@ -91,6 +91,20 @@ NASA_LAADS_TOKEN=
 GEE_PROJECT=
 GEE_SERVICE_ACCOUNT=
 GEE_KEY_FILE=./gee/gen-lang-client-0206534143-b4d81af822c7.json
+
+# Scheduler intervals (hours)
+SCHEDULER_CONFLICT_INTERVAL=1
+SCHEDULER_VIIRS_INTERVAL=24
+SCHEDULER_INFRASTRUCTURE_INTERVAL=6
+SCHEDULER_ML_RETRAIN_INTERVAL=12
+SCHEDULER_GRID3_INTERVAL=168
+SCHEDULER_NDVI_INTERVAL=24
+SCHEDULER_RAINFALL_INTERVAL=24
+SCHEDULER_POPULATION_INTERVAL=720
+SCHEDULER_IDP_INTERVAL=168
+SCHEDULER_FOOD_PRICE_INTERVAL=168
+SCHEDULER_EXTERNAL_ENRICHMENT_INTERVAL=24
+SCHEDULER_GEE_ENVIRONMENTAL_INTERVAL=24
 ```
 
 ## 7) Initialize DB extensions/tables (recommended)
@@ -98,6 +112,16 @@ GEE_KEY_FILE=./gee/gen-lang-client-0206534143-b4d81af822c7.json
 Run `server/init.sql` against your database (required for advanced v1 features and materialized views).
 
 If using Docker compose with the provided mount, this runs automatically on first container initialization.
+
+### Manual initialization
+
+```bash
+# Using psql
+psql -U postgres -d iophin_db -f server/init.sql
+
+# Or using Docker
+docker exec -i iophin-postgres psql -U postgres -d iophin_db < server/init.sql
+```
 
 ## 8) Generate model outputs and migrate
 
@@ -125,10 +149,41 @@ python -m src.scheduler_service
 
 - `http://localhost:5000/api/health`
 - `http://localhost:5000/api/hotspots`
+- `http://localhost:5000/api/config`
 - `http://localhost:5173`
 
-## Optional: full Docker startup
+## Optional: Full Docker startup
 
 ```bash
 docker compose up --build
 ```
+
+This starts all services:
+- `postgres` — PostgreSQL with PostGIS
+- `redis` — Redis cache
+- `server` — Node.js API
+- `client` — React frontend
+
+## Post-Setup Configuration
+
+### Create Admin User
+
+```bash
+curl -X POST http://localhost:5000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"securepassword","full_name":"Admin User","role":"admin"}'
+```
+
+### Verify Risk Tiering Mode
+
+```bash
+curl http://localhost:5000/api/config
+```
+
+### Test WebSocket Connection
+
+The frontend automatically connects via Socket.IO. Check browser console for connection messages.
+
+## Troubleshooting
+
+See `TROUBLESHOOTING.md` for common issues and solutions.
