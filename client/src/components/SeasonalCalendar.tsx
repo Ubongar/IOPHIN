@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { HotspotFeature } from '../types';
 
 interface Props {
   features: HotspotFeature[];
+  searchQuery?: string;
+  stateFilter?: string;
 }
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -36,9 +38,33 @@ function heatLevel(val: number): string {
   return 'low';
 }
 
-export default function SeasonalCalendar({ features }: Props) {
+export default function SeasonalCalendar({ features, searchQuery = '', stateFilter = '' }: Props) {
   const [selectedLGA, setSelectedLGA] = useState('');
-  const lgaNames = [...new Set(features.map(f => f.properties.LGA_Name))].sort();
+  
+  const filteredFeatures = useMemo(() => {
+    let list = [...features];
+    
+    // Apply state filter
+    if (stateFilter) {
+      list = list.filter(f => f.properties.State === stateFilter);
+    }
+    
+    // Apply search filter
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(f =>
+        f.properties.LGA_Name.toLowerCase().includes(term) ||
+        f.properties.State.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
+  }, [features, searchQuery, stateFilter]);
+  
+  const lgaNames = useMemo(() => 
+    [...new Set(filteredFeatures.map(f => f.properties.LGA_Name))].sort(),
+    [filteredFeatures]
+  );
 
   const currentMonth = new Date().getMonth();
 

@@ -330,6 +330,7 @@ function App() {
         {activeView === 'interventions' && (
           <div className="view-panel">
             <InterventionTracker interventions={interventions} onAdd={addIntervention}
+              searchQuery={searchQuery} stateFilter={stateFilter}
               onSelectLGA={(name) => {
                 const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
                 if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
@@ -340,7 +341,8 @@ function App() {
         {/* Seasonal view */}
         {activeView === 'seasonal' && (
           <div className="view-panel">
-            <SeasonalCalendar features={hotspotsData?.features || []} />
+            <SeasonalCalendar features={hotspotsData?.features || []}
+              searchQuery={searchQuery} stateFilter={stateFilter} />
           </div>
         )}
 
@@ -348,6 +350,7 @@ function App() {
         {activeView === 'budget' && (
           <div className="view-panel">
             <BudgetOptimizer features={hotspotsData?.features || []}
+              searchQuery={searchQuery} stateFilter={stateFilter} riskFilter={riskFilter}
               onSelectLGA={(name) => {
                 const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
                 if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
@@ -358,7 +361,7 @@ function App() {
         {/* Reports view */}
         {activeView === 'reports' && (
           <div className="view-panel">
-            <ReportBuilder states={stateAgg} />
+            <ReportBuilder states={stateAgg} searchQuery={searchQuery} />
           </div>
         )}
 
@@ -377,23 +380,28 @@ function App() {
               </div>
               {activeTab === 'anomalies' && (
                 <AnomalyPanel anomalies={anomalies} onAcknowledge={acknowledgeAnomaly}
+                  searchQuery={searchQuery} stateFilter={stateFilter}
                   onSelectLGA={(name) => {
                     const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
                     if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
                   }} />
               )}
               {activeTab === 'corridor' && (
-                <CrisisCorridor features={hotspotsData?.features || []} />
+                <CrisisCorridor features={hotspotsData?.features || []}
+                  searchQuery={searchQuery} stateFilter={stateFilter} />
               )}
               {activeTab === 'leaderboard' && (
                 <Leaderboard changes={recentChangesLocal}
+                  searchQuery={searchQuery} stateFilter={stateFilter}
                   onSelectLGA={(name) => {
                     const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
                     if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
                   }} />
               )}
               {activeTab === 'subscriptions' && (
-                <AlertsManager features={hotspotsData?.features || []} subscriptions={[]} onRefresh={() => fetchData(true)} />
+                <AlertsManager features={hotspotsData?.features || []} subscriptions={[]} 
+                  searchQuery={searchQuery} stateFilter={stateFilter}
+                  onRefresh={() => fetchData(true)} />
               )}
             </div>
           </div>
@@ -402,7 +410,8 @@ function App() {
         {/* Settings / Data Quality view */}
         {activeView === 'settings' && (
           <div className="view-panel">
-            <DataQualityPanel features={hotspotsData?.features || []} />
+            <DataQualityPanel features={hotspotsData?.features || []}
+              searchQuery={searchQuery} stateFilter={stateFilter} />
           </div>
         )}
 

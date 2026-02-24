@@ -1,8 +1,11 @@
+import { useMemo } from 'react';
 import type { ChangeLogEntry } from '../types';
 
 interface Props {
   changes: ChangeLogEntry[];
   onSelectLGA?: (name: string) => void;
+  searchQuery?: string;
+  stateFilter?: string;
 }
 
 function formatDelta(delta: number) {
@@ -15,15 +18,41 @@ const COL_STYLES = {
   improved:     { accent: '#4ade80', bg: 'rgba(74,222,128,.08)', border: 'rgba(74,222,128,.18)' },
 };
 
-export default function Leaderboard({ changes, onSelectLGA }: Props) {
-  const deteriorated = [...changes]
-    .filter(c => c.delta_composite > 0)
-    .sort((a, b) => b.delta_composite - a.delta_composite)
-    .slice(0, 10);
-  const improved = [...changes]
-    .filter(c => c.delta_composite < 0)
-    .sort((a, b) => a.delta_composite - b.delta_composite)
-    .slice(0, 10);
+export default function Leaderboard({ changes, onSelectLGA, searchQuery = '', stateFilter = '' }: Props) {
+  // First filter changes based on search and state filter
+  const filteredChanges = useMemo(() => {
+    let list = [...changes];
+    
+    if (stateFilter) {
+      list = list.filter(c => c.state === stateFilter);
+    }
+    
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(c =>
+        c.lga_name.toLowerCase().includes(term) ||
+        c.state.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
+  }, [changes, searchQuery, stateFilter]);
+
+  const deteriorated = useMemo(() => 
+    [...filteredChanges]
+      .filter(c => c.delta_composite > 0)
+      .sort((a, b) => b.delta_composite - a.delta_composite)
+      .slice(0, 10),
+    [filteredChanges]
+  );
+  
+  const improved = useMemo(() => 
+    [...filteredChanges]
+      .filter(c => c.delta_composite < 0)
+      .sort((a, b) => a.delta_composite - b.delta_composite)
+      .slice(0, 10),
+    [filteredChanges]
+  );
 
   const Column = ({ title, entries, style }: {
     title: string; entries: ChangeLogEntry[];

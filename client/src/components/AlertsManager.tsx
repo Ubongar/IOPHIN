@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import axios from 'axios';
 import type { HotspotFeature } from '../types';
 import { useAuthStore } from '../store';
@@ -11,9 +11,11 @@ interface Props {
   features: HotspotFeature[];
   subscriptions: Subscription[];
   onRefresh?: () => void;
+  searchQuery?: string;
+  stateFilter?: string;
 }
 
-export default function AlertsManager({ features, subscriptions, onRefresh }: Props) {
+export default function AlertsManager({ features, subscriptions, onRefresh, searchQuery = '', stateFilter = '' }: Props) {
   const token = useAuthStore(s => s.token);
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const [lgaName, setLgaName] = useState('');
@@ -21,6 +23,44 @@ export default function AlertsManager({ features, subscriptions, onRefresh }: Pr
   const [notifyEmail, setNotifyEmail] = useState(true);
   const [saving, setSaving] = useState(false);
   const [subError, setSubError] = useState('');
+
+  // Filter features based on search and state filter
+  const filteredFeatures = useMemo(() => {
+    let list = [...features];
+    
+    if (stateFilter) {
+      list = list.filter(f => f.properties.State === stateFilter);
+    }
+    
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(f =>
+        f.properties.LGA_Name.toLowerCase().includes(term) ||
+        f.properties.State.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
+  }, [features, searchQuery, stateFilter]);
+
+  // Filter subscriptions based on search and state filter
+  const filteredSubscriptions = useMemo(() => {
+    let list = [...subscriptions];
+    
+    if (stateFilter) {
+      list = list.filter(s => s.state === stateFilter);
+    }
+    
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(s =>
+        s.lga_name.toLowerCase().includes(term) ||
+        s.state.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
+  }, [subscriptions, searchQuery, stateFilter]);
 
   if (!isAuthenticated) {
     return (
@@ -30,7 +70,10 @@ export default function AlertsManager({ features, subscriptions, onRefresh }: Pr
     );
   }
 
-  const lgaNames = [...new Set(features.map(f => f.properties.LGA_Name))].sort();
+  const lgaNames = useMemo(() => 
+    [...new Set(filteredFeatures.map(f => f.properties.LGA_Name))].sort(),
+    [filteredFeatures]
+  );
 
   const subscribe = async () => {
     if (!lgaName) return;
@@ -88,11 +131,11 @@ export default function AlertsManager({ features, subscriptions, onRefresh }: Pr
       </div>
 
       <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 12 }}>
-        Active Subscriptions ({subscriptions.length})
+        Active Subscriptions ({filteredSubscriptions.length})
       </h3>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {subscriptions.map(s => (
+        {filteredSubscriptions.map(s => (
           <div key={s.id} className="metric-card" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px'
           }}>

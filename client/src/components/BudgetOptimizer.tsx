@@ -4,6 +4,9 @@ import type { HotspotFeature } from '../types';
 interface Props {
   features: HotspotFeature[];
   onSelectLGA?: (name: string) => void;
+  searchQuery?: string;
+  stateFilter?: string;
+  riskFilter?: string;
 }
 
 interface Recommendation {
@@ -16,11 +19,37 @@ interface Recommendation {
   pct: number;
 }
 
-export default function BudgetOptimizer({ features, onSelectLGA }: Props) {
+export default function BudgetOptimizer({ features, onSelectLGA, searchQuery = '', stateFilter = '', riskFilter = '' }: Props) {
   const [budget, setBudget] = useState(1000000);
 
+  // First apply filters from the global search/filter
+  const filteredFeatures = useMemo(() => {
+    let list = [...features];
+    
+    // Apply state filter
+    if (stateFilter) {
+      list = list.filter(f => f.properties.State === stateFilter);
+    }
+    
+    // Apply risk filter
+    if (riskFilter) {
+      list = list.filter(f => f.properties.risk_level === riskFilter);
+    }
+    
+    // Apply search filter
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(f =>
+        f.properties.LGA_Name.toLowerCase().includes(term) ||
+        f.properties.State.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
+  }, [features, searchQuery, stateFilter, riskFilter]);
+
   const ranked: Recommendation[] = useMemo(() => {
-    const list = features
+    const list = filteredFeatures
       .map(f => {
         const p = f.properties as any;
         const composite = p.composite_poverty_score ?? 0;
@@ -39,7 +68,7 @@ export default function BudgetOptimizer({ features, onSelectLGA }: Props) {
       allocated: totalScore > 0 ? (r.score / totalScore) * budget : 0,
       pct: totalScore > 0 ? (r.score / totalScore) * 100 : 0,
     }));
-  }, [features, budget]);
+  }, [filteredFeatures, budget]);
 
   const formatBudget = (n: number) => {
     if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;

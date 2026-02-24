@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from 'date-fns';
+import { useMemo } from 'react';
 import type { AnomalyAlert } from '../types';
 
 interface Props {
@@ -6,6 +7,8 @@ interface Props {
   onSelectLGA?: (name: string) => void;
   onAcknowledge?: (id: number) => void;
   userRole?: string;
+  searchQuery?: string;
+  stateFilter?: string;
 }
 
 const SEVERITY_STYLES: Record<string, { bg: string; border: string; color: string; icon: string }> = {
@@ -15,8 +18,27 @@ const SEVERITY_STYLES: Record<string, { bg: string; border: string; color: strin
   low:      { bg: 'rgba(59,130,246,.08)', border: 'rgba(59,130,246,.2)', color: '#60a5fa', icon: '🔵' },
 };
 
-export default function AnomalyPanel({ anomalies, onSelectLGA, onAcknowledge }: Props) {
-  const active = anomalies.filter(a => !a.acknowledged);
+export default function AnomalyPanel({ anomalies, onSelectLGA, onAcknowledge, searchQuery = '', stateFilter = '' }: Props) {
+  const active = useMemo(() => {
+    let list = anomalies.filter(a => !a.acknowledged);
+    
+    // Apply state filter
+    if (stateFilter) {
+      list = list.filter(a => a.state === stateFilter);
+    }
+    
+    // Apply search filter
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(a =>
+        a.lga_name.toLowerCase().includes(term) ||
+        a.state.toLowerCase().includes(term) ||
+        (a.description && a.description.toLowerCase().includes(term))
+      );
+    }
+    
+    return list;
+  }, [anomalies, searchQuery, stateFilter]);
 
   if (active.length === 0) {
     return (

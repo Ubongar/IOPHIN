@@ -1,8 +1,11 @@
 import { formatDistanceToNow } from 'date-fns';
+import { useMemo } from 'react';
 import type { HotspotFeature } from '../types';
 
 interface Props {
   features: HotspotFeature[];
+  searchQuery?: string;
+  stateFilter?: string;
 }
 
 const TRACKED_FIELDS = ['MPI', 'mean_nightlight_intensity', 'composite_poverty_score',
@@ -14,14 +17,36 @@ function qualityColor(confidence: number) {
   return '#f87171';
 }
 
-export default function DataQualityPanel({ features }: Props) {
-  const stats = features.map(f => {
-    const p = f.properties as any;
-    const filled = TRACKED_FIELDS.filter(k => p[k] != null && !isNaN(p[k])).length;
-    const confidence = filled / TRACKED_FIELDS.length;
-    const lastUpdated = p.last_updated;
-    return { name: p.LGA_Name, state: p.State, confidence, filled, lastUpdated };
-  }).sort((a, b) => a.confidence - b.confidence);
+export default function DataQualityPanel({ features, searchQuery = '', stateFilter = '' }: Props) {
+  // First filter features based on search and state filter
+  const filteredFeatures = useMemo(() => {
+    let list = [...features];
+    
+    if (stateFilter) {
+      list = list.filter(f => f.properties.State === stateFilter);
+    }
+    
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(f =>
+        f.properties.LGA_Name.toLowerCase().includes(term) ||
+        f.properties.State.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
+  }, [features, searchQuery, stateFilter]);
+
+  const stats = useMemo(() => 
+    filteredFeatures.map(f => {
+      const p = f.properties as any;
+      const filled = TRACKED_FIELDS.filter(k => p[k] != null && !isNaN(p[k])).length;
+      const confidence = filled / TRACKED_FIELDS.length;
+      const lastUpdated = p.last_updated;
+      return { name: p.LGA_Name, state: p.State, confidence, filled, lastUpdated };
+    }).sort((a, b) => a.confidence - b.confidence),
+    [filteredFeatures]
+  );
 
   const avgConf = stats.length > 0
     ? (stats.reduce((s, r) => s + r.confidence, 0) / stats.length * 100).toFixed(1) : '0';

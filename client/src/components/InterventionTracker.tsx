@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { Intervention } from '../types';
 
 interface Props {
@@ -6,6 +6,8 @@ interface Props {
   userRole?: string;
   onAdd?: (data: Partial<Intervention>) => void;
   onSelectLGA?: (name: string) => void;
+  searchQuery?: string;
+  stateFilter?: string;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
@@ -14,12 +16,37 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
   planned: { bg: 'rgba(245,158,11,.12)', text: '#fbbf24', label: 'Planned' },
 };
 
-export default function InterventionTracker({ interventions, userRole, onAdd, onSelectLGA }: Props) {
+export default function InterventionTracker({ interventions, userRole, onAdd, onSelectLGA, searchQuery = '', stateFilter = '' }: Props) {
   const [statusFilter, setStatusFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ program_name: '', organization: '', lga_name: '', state: '', intervention_type: '', status: 'active', budget_usd: '', beneficiaries: '' });
 
-  const filtered = statusFilter ? interventions.filter(i => i.status === statusFilter) : interventions;
+  const filtered = useMemo(() => {
+    let list = [...interventions];
+    
+    // Apply search filter
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(i =>
+        i.program_name.toLowerCase().includes(term) ||
+        i.lga_name.toLowerCase().includes(term) ||
+        i.state.toLowerCase().includes(term) ||
+        (i.organization && i.organization.toLowerCase().includes(term))
+      );
+    }
+    
+    // Apply state filter
+    if (stateFilter) {
+      list = list.filter(i => i.state === stateFilter);
+    }
+    
+    // Apply status filter
+    if (statusFilter) {
+      list = list.filter(i => i.status === statusFilter);
+    }
+    
+    return list;
+  }, [interventions, searchQuery, stateFilter, statusFilter]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

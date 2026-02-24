@@ -13,9 +13,10 @@ const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 interface Props {
   states: StateAggregation[];
+  searchQuery?: string;
 }
 
-export default function ReportBuilder({ states }: Props) {
+export default function ReportBuilder({ states, searchQuery = '' }: Props) {
   const token = useAuthStore(s => s.token);
   const [selectedStates, setSelectedStates] = useState<string[]>([]);
   const [scope, setScope] = useState<'national' | 'state' | 'summary'>('national');
@@ -27,17 +28,25 @@ export default function ReportBuilder({ states }: Props) {
     setSelectedStates(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
 
   const selectAll = () => {
-    if (selectedStates.length === states.length) {
+    const filteredStateNames = filteredStates.map(s => s.state);
+    if (selectedStates.length === filteredStateNames.length) {
       setSelectedStates([]);
     } else {
-      setSelectedStates(states.map(s => s.state));
+      setSelectedStates(filteredStateNames);
     }
   };
 
+  // Apply search filter to states list
+  const filteredStates = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) return states;
+    const term = searchQuery.toLowerCase();
+    return states.filter(s => s.state.toLowerCase().includes(term));
+  }, [states, searchQuery]);
+
   const reportData = useMemo(() => {
-    if (scope === 'national' || scope === 'summary') return states;
-    return states.filter(s => selectedStates.includes(s.state));
-  }, [scope, states, selectedStates]);
+    if (scope === 'national' || scope === 'summary') return filteredStates;
+    return filteredStates.filter(s => selectedStates.includes(s.state));
+  }, [scope, filteredStates, selectedStates]);
 
   const generateClientReport = () => {
     const headers = ['State', 'LGA Count', 'Avg Composite Score', 'Avg MPI', 'Avg Nightlight', 'High Risk Count', 'Health Facilities', 'Schools'];
@@ -104,7 +113,9 @@ export default function ReportBuilder({ states }: Props) {
         <div>
           <h2 className="rankings-title">Report Builder</h2>
           <p className="rankings-subtitle">
-            Generate analytical reports across {states.length} states
+            {filteredStates.length === states.length
+              ? `Generate analytical reports across ${states.length} states`
+              : `${filteredStates.length} of ${states.length} states — filtered`}
           </p>
         </div>
       </div>
@@ -127,11 +138,11 @@ export default function ReportBuilder({ states }: Props) {
             <div className="report-label-row">
               <label className="report-label">Select States</label>
               <button onClick={selectAll} className="report-select-all">
-                {selectedStates.length === states.length ? 'Deselect All' : 'Select All'}
+                {selectedStates.length === filteredStates.length ? 'Deselect All' : 'Select All'}
               </button>
             </div>
             <div className="report-state-grid">
-              {states.map(s => (
+              {filteredStates.map(s => (
                 <button key={s.state} onClick={() => toggleState(s.state)}
                   className={'report-state-chip' + (selectedStates.includes(s.state) ? ' selected' : '')}>
                   <span className="report-state-name">{s.state}</span>

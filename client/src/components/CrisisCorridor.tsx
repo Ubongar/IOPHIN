@@ -1,8 +1,11 @@
+import { useMemo } from 'react';
 import type { HotspotFeature } from '../types';
 
 interface Props {
   features: HotspotFeature[];
   onShowOnMap?: (names: string[]) => void;
+  searchQuery?: string;
+  stateFilter?: string;
 }
 
 const DIMENSIONS = [
@@ -17,8 +20,27 @@ function getWorstQuartileCutoff(values: number[]) {
   return sorted[Math.floor(sorted.length * 0.25)] ?? Infinity;
 }
 
-export default function CrisisCorridor({ features, onShowOnMap }: Props) {
-  const props = features.map(f => f.properties);
+export default function CrisisCorridor({ features, onShowOnMap, searchQuery = '', stateFilter = '' }: Props) {
+  // First filter features based on search and state filter
+  const filteredFeatures = useMemo(() => {
+    let list = [...features];
+    
+    if (stateFilter) {
+      list = list.filter(f => f.properties.State === stateFilter);
+    }
+    
+    if (searchQuery.length >= 2) {
+      const term = searchQuery.toLowerCase();
+      list = list.filter(f =>
+        f.properties.LGA_Name.toLowerCase().includes(term) ||
+        f.properties.State.toLowerCase().includes(term)
+      );
+    }
+    
+    return list;
+  }, [features, searchQuery, stateFilter]);
+
+  const props = filteredFeatures.map(f => f.properties);
 
   const cutoffs: Record<string, number> = {};
   DIMENSIONS.forEach(d => {
@@ -26,19 +48,22 @@ export default function CrisisCorridor({ features, onShowOnMap }: Props) {
     cutoffs[d.key] = getWorstQuartileCutoff(vals);
   });
 
-  const corridorLGAs = features
-    .map(f => {
-      const p = f.properties as any;
-      const badDimensions = DIMENSIONS.filter(d => {
-        const v = p[d.key];
-        return typeof v === 'number' && v >= cutoffs[d.key];
-      });
-      return { name: f.properties.LGA_Name, state: f.properties.State,
-        badCount: badDimensions.length, dims: badDimensions.map(d => d.label),
-        composite: p.composite_poverty_score ?? 0 };
-    })
-    .filter(l => l.badCount >= 3)
-    .sort((a, b) => b.badCount - a.badCount || b.composite - a.composite);
+  const corridorLGAs = useMemo(() => 
+    filteredFeatures
+      .map(f => {
+        const p = f.properties as any;
+        const badDimensions = DIMENSIONS.filter(d => {
+          const v = p[d.key];
+          return typeof v === 'number' && v >= cutoffs[d.key];
+        });
+        return { name: f.properties.LGA_Name, state: f.properties.State,
+          badCount: badDimensions.length, dims: badDimensions.map(d => d.label),
+          composite: p.composite_poverty_score ?? 0 };
+      })
+      .filter(l => l.badCount >= 3)
+      .sort((a, b) => b.badCount - a.badCount || b.composite - a.composite),
+    [filteredFeatures, cutoffs]
+  );
 
   return (
     <div>

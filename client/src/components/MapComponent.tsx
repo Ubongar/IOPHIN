@@ -2,6 +2,7 @@
  * MapComponent - 3D Interactive Map
  * Renders Nigeria's LGAs with risk-based 3D extruded polygons using MapLibre GL
  * Risk areas rise from the map proportional to their severity score
+ * Features: Zoom controls, 360-degree view, smooth navigation
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -98,6 +99,15 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
   const [mapLoaded, setMapLoaded] = useState(false);
   const prevSelectedRef = useRef<HotspotFeature | null>(null);
   const { theme } = useTheme();
+  
+  // View state for controlled map
+  const [viewState, setViewState] = useState({
+    longitude: 8.6753,
+    latitude: 9.0820,
+    zoom: 5.5,
+    pitch: 45,
+    bearing: -10,
+  });
 
   useEffect(() => {
     if (data) setFeatureCount(data.features.length);
@@ -187,6 +197,51 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     setMapLoaded(true);
   }, []);
 
+  /** Reset view to Nigeria bounds */
+  const handleResetView = useCallback(() => {
+    if (!data || !mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const bbox = computeBBox(data.features);
+    if (bbox) {
+      map.fitBounds(bbox, { padding: 50, duration: 1000 });
+      // Reset pitch and bearing
+      map.easeTo({ pitch: 45, bearing: -10, duration: 1000 });
+    }
+  }, [data]);
+
+  /** Toggle 3D/2D view */
+  const handleToggle3D = useCallback(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const currentPitch = map.getPitch();
+    map.easeTo({ 
+      pitch: currentPitch > 0 ? 0 : 45, 
+      duration: 800 
+    });
+  }, []);
+
+  /** Rotate view 360 degrees */
+  const handleRotate = useCallback((direction: 'left' | 'right') => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    const currentBearing = map.getBearing();
+    const newBearing = direction === 'right' ? currentBearing + 45 : currentBearing - 45;
+    map.easeTo({ bearing: newBearing, duration: 500 });
+  }, []);
+
+  /** Zoom handlers */
+  const handleZoomIn = useCallback(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    map.easeTo({ zoom: map.getZoom() + 0.5, duration: 300 });
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current.getMap();
+    map.easeTo({ zoom: map.getZoom() - 0.5, duration: 300 });
+  }, []);
+
   if (!data) {
     return (
       <div className="w-full h-full flex items-center justify-center app-bg">
@@ -207,109 +262,201 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     : '#999';
 
   return (
-    <Map
-      ref={mapRef}
-      mapLib={maplibregl}
-      key={theme}
-      initialViewState={{
-        longitude: 8.6753,
-        latitude: 9.0820,
-        zoom: 5.8,
-        pitch: 45,
-        bearing: -10,
-      }}
-      style={{ width: '100%', height: '100%' }}
-      mapStyle={MAP_STYLES[theme as 'dark' | 'light'] || MAP_STYLES.dark}
-      onMouseMove={onHover}
-      onClick={onClick}
-      onLoad={onMapLoad}
-      maxPitch={70}
-      minZoom={5}
-      maxZoom={13}
-    >
-      <NavigationControl position="top-right" visualizePitch showCompass />
+    <div className="relative w-full h-full">
+      <Map
+        ref={mapRef}
+        mapLib={maplibregl}
+        key={theme}
+        {...viewState}
+        onMove={evt => setViewState(evt.viewState)}
+        style={{ width: '100%', height: '100%' }}
+        mapStyle={MAP_STYLES[theme as 'dark' | 'light'] || MAP_STYLES.dark}
+        onMouseMove={onHover}
+        onClick={onClick}
+        onLoad={onMapLoad}
+        maxPitch={85}
+        minZoom={4}
+        maxZoom={15}
+        dragRotate={true}
+        dragPan={true}
+        scrollZoom={true}
+        doubleClickZoom={true}
+        touchZoomRotate={true}
+        keyboard={true}
+      >
+        <NavigationControl position="top-right" visualizePitch showCompass />
 
-      <Source id="lga-data" type="geojson" data={data} key={filterKey || 'all'}>
-        {/* 3D extruded fill — the main visual */}
-        <Layer
-          id="lga-extrusion"
-          type="fill-extrusion"
-          paint={{
-            'fill-extrusion-color': RISK_MATCH_EXPR,
-            'fill-extrusion-height': RISK_HEIGHT_EXPR,
-            'fill-extrusion-base': 0,
-            'fill-extrusion-opacity': 0.82,
-          }}
-        />
+        <Source id="lga-data" type="geojson" data={data} key={filterKey || 'all'}>
+          {/* 3D extruded fill — the main visual */}
+          <Layer
+            id="lga-extrusion"
+            type="fill-extrusion"
+            paint={{
+              'fill-extrusion-color': RISK_MATCH_EXPR,
+              'fill-extrusion-height': RISK_HEIGHT_EXPR,
+              'fill-extrusion-base': 0,
+              'fill-extrusion-opacity': 0.82,
+            }}
+          />
 
-        {/* Flat fill for picking (invisible under extrusions but helps with click detection) */}
-        <Layer
-          id="lga-fill"
-          type="fill"
-          paint={{
-            'fill-color': RISK_MATCH_EXPR,
-            'fill-opacity': 0,
-          }}
-        />
+          {/* Flat fill for picking (invisible under extrusions but helps with click detection) */}
+          <Layer
+            id="lga-fill"
+            type="fill"
+            paint={{
+              'fill-color': RISK_MATCH_EXPR,
+              'fill-opacity': 0,
+            }}
+          />
 
-        {/* Border lines on top of extrusions */}
-        <Layer
-          id="lga-borders"
-          type="line"
-          paint={{
-            'line-color': RISK_BORDER_EXPR,
-            'line-width': 0.8,
-            'line-opacity': 0.6,
-          }}
-        />
+          {/* Border lines on top of extrusions */}
+          <Layer
+            id="lga-borders"
+            type="line"
+            paint={{
+              'line-color': RISK_BORDER_EXPR,
+              'line-width': 0.8,
+              'line-opacity': 0.6,
+            }}
+          />
 
-        {/* Hover highlight line */}
-        <Layer
-          id="lga-highlight"
-          type="line"
-          filter={['==', ['get', 'LGA_Name'], '']}
-          paint={{
-            'line-color': '#ffffff',
-            'line-width': 2.5,
-            'line-opacity': 0.9,
-          }}
-        />
-      </Source>
+          {/* Hover highlight line */}
+          <Layer
+            id="lga-highlight"
+            type="line"
+            filter={['==', ['get', 'LGA_Name'], '']}
+            paint={{
+              'line-color': '#ffffff',
+              'line-width': 2.5,
+              'line-opacity': 0.9,
+            }}
+          />
+        </Source>
 
-      {/* Hover popup */}
-      {hoveredFeature && popupCoords && (
-        <Popup
-          longitude={popupCoords[0]}
-          latitude={popupCoords[1]}
-          closeButton={false}
-          closeOnClick={false}
-          anchor="bottom"
-          offset={15}
-          className="map-3d-popup"
+        {/* Hover popup */}
+        {hoveredFeature && popupCoords && (
+          <Popup
+            longitude={popupCoords[0]}
+            latitude={popupCoords[1]}
+            closeButton={false}
+            closeOnClick={false}
+            anchor="bottom"
+            offset={15}
+            className="map-3d-popup"
+          >
+            <div className="map-tooltip-inner map-tooltip-compact">
+              <div className="tooltip-header">
+                <div>
+                  <div className="tooltip-title">{hoveredFeature.properties?.LGA_Name}</div>
+                  <div className="tooltip-subtitle">{hoveredFeature.properties?.State} State</div>
+                </div>
+                <div
+                  className="tooltip-badge"
+                  style={{ background: riskColor, boxShadow: `0 0 8px ${riskColor}88` }}
+                >
+                  {hoveredFeature.properties?.risk_level}
+                </div>
+              </div>
+              <div className="tooltip-score-line">
+                {hoveredFeature.properties?.composite_poverty_score != null
+                  ? `Composite: ${Number(hoveredFeature.properties.composite_poverty_score).toFixed(4)}`
+                  : `MPI: ${Number(hoveredFeature.properties?.MPI || 0).toFixed(4)}`}
+              </div>
+              <div className="tooltip-click-hint">Click for details</div>
+            </div>
+          </Popup>
+        )}
+      </Map>
+
+      {/* Custom Zoom Controls */}
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 z-10">
+        <button
+          onClick={handleZoomIn}
+          className="map-control-btn"
+          title="Zoom In"
+          aria-label="Zoom In"
         >
-          <div className="map-tooltip-inner map-tooltip-compact">
-            <div className="tooltip-header">
-              <div>
-                <div className="tooltip-title">{hoveredFeature.properties?.LGA_Name}</div>
-                <div className="tooltip-subtitle">{hoveredFeature.properties?.State} State</div>
-              </div>
-              <div
-                className="tooltip-badge"
-                style={{ background: riskColor, boxShadow: `0 0 8px ${riskColor}88` }}
-              >
-                {hoveredFeature.properties?.risk_level}
-              </div>
-            </div>
-            <div className="tooltip-score-line">
-              {hoveredFeature.properties?.composite_poverty_score != null
-                ? `Composite: ${Number(hoveredFeature.properties.composite_poverty_score).toFixed(4)}`
-                : `MPI: ${Number(hoveredFeature.properties?.MPI || 0).toFixed(4)}`}
-            </div>
-            <div className="tooltip-click-hint">Click for details</div>
-          </div>
-        </Popup>
-      )}
-    </Map>
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v12M6 12h12" />
+          </svg>
+        </button>
+        <button
+          onClick={handleZoomOut}
+          className="map-control-btn"
+          title="Zoom Out"
+          aria-label="Zoom Out"
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 12h12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* 360-degree Rotation Controls */}
+      <div className="absolute left-4 bottom-24 flex flex-col gap-1 z-10">
+        <div className="flex gap-1">
+          <button
+            onClick={() => handleRotate('left')}
+            className="map-control-btn"
+            title="Rotate Left"
+            aria-label="Rotate Left"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+            </svg>
+          </button>
+          <button
+            onClick={() => handleRotate('right')}
+            className="map-control-btn"
+            title="Rotate Right"
+            aria-label="Rotate Right"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* View Control Buttons */}
+      <div className="absolute left-4 bottom-4 flex flex-col gap-1 z-10">
+        <button
+          onClick={handleToggle3D}
+          className="map-control-btn"
+          title="Toggle 3D/2D View"
+          aria-label="Toggle 3D View"
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </button>
+        <button
+          onClick={handleResetView}
+          className="map-control-btn"
+          title="Reset View"
+          aria-label="Reset View"
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Zoom Level Indicator */}
+      <div className="absolute bottom-4 right-4 z-10">
+        <div className="map-zoom-indicator">
+          <span className="text-xs font-mono">Zoom: {viewState.zoom.toFixed(1)}</span>
+          <span className="text-xs opacity-60 ml-2">Pitch: {viewState.pitch.toFixed(0)}°</span>
+        </div>
+      </div>
+
+      {/* Navigation Instructions */}
+      <div className="absolute top-4 left-4 z-10">
+        <div className="map-instructions">
+          <span className="text-xs opacity-70">🖱 Drag to pan • Right-drag to rotate • Scroll to zoom</span>
+        </div>
+      </div>
+    </div>
   );
 };
 
