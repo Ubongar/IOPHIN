@@ -19,6 +19,8 @@ import { initWebSocket } from './websocket.js';
 import { registerUser, loginUser, authMiddleware, requireAuth, requireRole } from './auth.js';
 import { createSubscription, deleteSubscription, getUserSubscriptions } from './alerts.js';
 import { generateReport } from './reports.js';
+import rbac, { requirePermission, requireSuperAdmin, NIGERIAN_STATES } from './rbac.js';
+import bcrypt from 'bcryptjs';
 
 // Load environment variables
 dotenv.config();
@@ -537,6 +539,182 @@ v1.post('/reports/generate', authMiddleware, async (req, res) => {
   try {
     await generateReport(res, req.body);
   } catch (error) { res.status(500).json({ error: 'Report generation failed' }); }
+});
+
+// ══════════════════════════════════════════════════════
+//  RBAC / USER MANAGEMENT ENDPOINTS
+// ══════════════════════════════════════════════════════
+
+// ── Roles & Permissions ───────────────────────────────
+v1.get('/roles', requireAuth, async (req, res) => {
+  try {
+    const roles = await rbac.getRoles();
+    res.json(roles || []);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.get('/permissions', requireAuth, async (req, res) => {
+  try {
+    const permissions = await rbac.getPermissions();
+    res.json(permissions || []);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.get('/roles/:id/permissions', requireAuth, async (req, res) => {
+  try {
+    const permissions = await rbac.getRolePermissions(req.params.id);
+    res.json(permissions || []);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+// ── User Management (Super Admin & Admin) ─────────────
+v1.get('/users', requireAuth, requirePermission('users.view'), async (req, res) => {
+  try {
+    const { page, limit, search, role, state } = req.query;
+    const result = await rbac.getUsers({
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 10,
+      search: search || '',
+      role: role || '',
+      state: state || ''
+    });
+    if (!result) return res.status(500).json({ error: 'Failed to fetch users' });
+    res.json(result);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.get('/users/:id', requireAuth, requirePermission('users.view'), async (req, res) => {
+  try {
+    const user = await rbac.getUserById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.post('/users', requireAuth, requirePermission('users.create'), async (req, res) => {
+  try {
+    const { username, email, password, fullName, roleId, organization, geographicScopes } = req.body;
+    if (!email || !password || !fullName) {
+      return res.status(400).json({ error: 'Email, password, and full name are required' });
+    }
+    // Validate password
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters with at least one letter and one digit' });
+    }
+    const passwordHash = await bcrypt.hash(password, 12);
+    const result = await rbac.createUser({
+      username,
+      email,
+      passwordHash,
+      fullName,
+      roleId: roleId || 3, // Default to 'user' role
+      organization,
+      geographicScopes: geographicScopes || []
+    }, req.user.id);
+    res.status(201).json(result);
+  } catch (error) {
+    if (error.message.includes('already')) {
+      return res.status(409).json({ error: error.message });
+    }
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+v1.put('/users/:id', requireAuth, requirePermission('users.edit'), async (req, res) => {
+  try {
+    const { username, email, fullName, roleId, organization, isActive, geographicScopes } = req.body;
+    const updatedUser = await rbac.updateUser(req.params.id, {
+      username,
+      email,
+      fullName,
+      roleId,
+      organization,
+      isActive,
+      geographicScopes
+    }, req.user.id);
+    if (!updatedUser) return res.status(404).json({ error: 'User not found' });
+    res.json(updatedUser);
+  } catch (error) {
+    if (error.message.includes('already')) {
+      return res.status(409).json({ error: error.message });
+    }
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+v1.patch('/users/:id/revoke', requireAuth, requirePermission('users.delete'), async (req, res) => {
+  try {
+    const user = await rbac.revokeUserAccess(req.params.id, req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ success: true, user });
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.patch('/users/:id/restore', requireAuth, requirePermission('users.edit'), async (req, res) => {
+  try {
+    const user = await rbac.restoreUserAccess(req.params.id, req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ success: true, user });
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.delete('/users/:id', requireAuth, requireSuperAdmin, async (req, res) => {
+  try {
+    const deleted = await rbac.deleteUser(req.params.id, req.user.id);
+    if (!deleted) return res.status(404).json({ error: 'User not found' });
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+// ── Geographic Scopes ─────────────────────────────────
+v1.get('/geographic-scopes/states', requireAuth, async (req, res) => {
+  try {
+    res.json(NIGERIAN_STATES);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.get('/geographic-scopes/states-with-lga', requireAuth, async (req, res) => {
+  try {
+    const states = await rbac.getStatesWithLGA();
+    res.json(states);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.get('/users/:id/scopes', requireAuth, async (req, res) => {
+  try {
+    const scopes = await rbac.getUserGeographicScopes(req.params.id);
+    res.json(scopes);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+// ── Audit Log ─────────────────────────────────────────
+v1.get('/audit-log', requireAuth, requirePermission('users.view'), async (req, res) => {
+  try {
+    const { page, limit, userId, action } = req.query;
+    const logs = await rbac.getAuditLog({
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 50,
+      userId: userId || null,
+      action: action || null
+    });
+    res.json(logs || []);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+// ── Current User Profile ───────────────────────────────
+v1.get('/me', requireAuth, async (req, res) => {
+  try {
+    const user = await rbac.getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+v1.get('/me/permissions', requireAuth, async (req, res) => {
+  try {
+    const permissions = await rbac.getUserPermissions(req.user.id);
+    res.json(permissions);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
 });
 
 app.use('/api/v1', v1);

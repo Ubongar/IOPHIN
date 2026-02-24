@@ -93,17 +93,137 @@ CREATE TABLE IF NOT EXISTS interventions (
 CREATE INDEX IF NOT EXISTS idx_interventions_lga ON interventions (lga_name);
 CREATE INDEX IF NOT EXISTS idx_interventions_state ON interventions (state);
 
+-- ── RBAC: Roles Table ───────────────────────────────────────
+CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    is_system_role BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Insert default roles
+INSERT INTO roles (name, display_name, description, is_system_role) VALUES
+    ('super_admin', 'Super Administrator', 'Full system access with user management capabilities', TRUE),
+    ('admin', 'Administrator', 'Administrative access to manage data and view reports', TRUE),
+    ('user', 'User', 'Standard user access to view and analyze data', TRUE)
+ON CONFLICT (name) DO NOTHING;
+
+-- ── RBAC: Permissions Table ─────────────────────────────────
+CREATE TABLE IF NOT EXISTS permissions (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    display_name VARCHAR(150) NOT NULL,
+    description TEXT,
+    module VARCHAR(50),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Insert default permissions
+INSERT INTO permissions (name, display_name, description, module) VALUES
+    ('users.view', 'View Users', 'View user list and details', 'users'),
+    ('users.create', 'Create Users', 'Create new user accounts', 'users'),
+    ('users.edit', 'Edit Users', 'Edit user details and roles', 'users'),
+    ('users.delete', 'Delete Users', 'Delete or revoke user access', 'users'),
+    ('data.view', 'View Data', 'View poverty hotspot data', 'data'),
+    ('data.edit', 'Edit Data', 'Create, update, delete data records', 'data'),
+    ('data.export', 'Export Data', 'Export data to files', 'data'),
+    ('reports.view', 'View Reports', 'View generated reports', 'reports'),
+    ('reports.create', 'Create Reports', 'Generate new reports', 'reports'),
+    ('alerts.view', 'View Alerts', 'View system alerts', 'alerts'),
+    ('alerts.manage', 'Manage Alerts', 'Configure and manage alerts', 'alerts'),
+    ('interventions.view', 'View Interventions', 'View intervention programs', 'interventions'),
+    ('interventions.manage', 'Manage Interventions', 'Create and edit interventions', 'interventions'),
+    ('settings.view', 'View Settings', 'View system settings', 'settings'),
+    ('settings.edit', 'Edit Settings', 'Modify system settings', 'settings')
+ON CONFLICT (name) DO NOTHING;
+
+-- ── RBAC: Role-Permission Mapping ───────────────────────────
+CREATE TABLE IF NOT EXISTS role_permissions (
+    role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
+    permission_id INTEGER REFERENCES permissions(id) ON DELETE CASCADE,
+    PRIMARY KEY (role_id, permission_id)
+);
+
+-- Assign permissions to roles
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'super_admin'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p
+WHERE r.name = 'admin' AND p.name IN (
+    'data.view', 'data.edit', 'data.export',
+    'reports.view', 'reports.create',
+    'alerts.view', 'alerts.manage',
+    'interventions.view', 'interventions.manage',
+    'settings.view'
+) ON CONFLICT DO NOTHING;
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p
+WHERE r.name = 'user' AND p.name IN (
+    'data.view', 'data.export',
+    'reports.view',
+    'alerts.view',
+    'interventions.view'
+) ON CONFLICT DO NOTHING;
+
 -- ── User Accounts & RBAC ───────────────────────────────────
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(255),
-    role VARCHAR(50) DEFAULT 'public',
+    role_id INTEGER DEFAULT 3 REFERENCES roles(id),
     organization VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    last_active TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    last_login TIMESTAMP WITH TIME ZONE
+    last_login TIMESTAMP WITH TIME ZONE,
+    created_by INTEGER REFERENCES users(id)
 );
+
+-- Add role_id column to existing users table if it doesn't exist
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role_id INTEGER DEFAULT 3 REFERENCES roles(id);
+
+-- Add is_active column to existing users table if it doesn't exist
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+
+-- Add other missing columns to existing users table if they don't exist
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_active TIMESTAMP WITH TIME ZONE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login TIMESTAMP WITH TIME ZONE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS created_by INTEGER REFERENCES users(id);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS organization VARCHAR(255);
+
+-- ── User Geographic Scopes ──────────────────────────────────
+CREATE TABLE IF NOT EXISTS user_geographic_scopes (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    state VARCHAR(100) NOT NULL,
+    lga_name VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, state, lga_name)
+);
+CREATE INDEX IF NOT EXISTS idx_user_geo_user ON user_geographic_scopes (user_id);
+CREATE INDEX IF NOT EXISTS idx_user_geo_state ON user_geographic_scopes (state);
+
+-- ── Audit Log for User Actions ──────────────────────────────
+CREATE TABLE IF NOT EXISTS user_audit_log (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    action VARCHAR(100) NOT NULL,
+    target_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    details JSONB,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user ON user_audit_log (user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_target ON user_audit_log (target_user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_date ON user_audit_log (created_at DESC);
 
 -- ── Alert Subscriptions ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS alert_subscriptions (

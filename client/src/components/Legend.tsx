@@ -20,11 +20,11 @@ const Legend: React.FC = () => {
   const riskLevels = useMemo(() => {
     if (tieringMode === 'absolute') {
       return [
-        { level: 'Critical' as RiskLevel, label: 'Extreme Deprivation', mpiRange: `> ${ABSOLUTE_THRESHOLDS.High}` },
-        { level: 'High' as RiskLevel, label: 'Severe Poverty', mpiRange: `${ABSOLUTE_THRESHOLDS.Medium}–${ABSOLUTE_THRESHOLDS.High}` },
-        { level: 'Medium' as RiskLevel, label: 'Significant Deprivation', mpiRange: `${ABSOLUTE_THRESHOLDS.Low}–${ABSOLUTE_THRESHOLDS.Medium}` },
-        { level: 'Low' as RiskLevel, label: 'Moderate Vulnerability', mpiRange: `${ABSOLUTE_THRESHOLDS.Minimal}–${ABSOLUTE_THRESHOLDS.Low}` },
-        { level: 'Minimal' as RiskLevel, label: 'Relatively Stable', mpiRange: `< ${ABSOLUTE_THRESHOLDS.Minimal}` },
+        { level: 'Critical' as RiskLevel, label: 'Extreme Deprivation', mpiRange: `MPI > ${ABSOLUTE_THRESHOLDS.Critical}` },
+        { level: 'High' as RiskLevel, label: 'Severe Poverty', mpiRange: `MPI ${ABSOLUTE_THRESHOLDS.Medium}–${ABSOLUTE_THRESHOLDS.High}` },
+        { level: 'Medium' as RiskLevel, label: 'Significant Deprivation', mpiRange: `MPI ${ABSOLUTE_THRESHOLDS.Low}–${ABSOLUTE_THRESHOLDS.Medium}` },
+        { level: 'Low' as RiskLevel, label: 'Moderate Vulnerability', mpiRange: `MPI ${ABSOLUTE_THRESHOLDS.Minimal}–${ABSOLUTE_THRESHOLDS.Low}` },
+        { level: 'Minimal' as RiskLevel, label: 'Relatively Stable', mpiRange: `MPI < ${ABSOLUTE_THRESHOLDS.Minimal}` },
       ];
     }
     return [

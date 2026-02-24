@@ -518,6 +518,39 @@ def get_history_for_lga(lga_name, limit=50):
         session.close()
 
 
+def get_all_history() -> pd.DataFrame:
+    """
+    Return the full HotspotHistory table as a DataFrame.
+
+    Columns include: lga_name, state, snapshot_date, mpi,
+    composite_poverty_score, risk_level, mean_nightlight_intensity, etc.
+    This is what the predictive model and temporal analysis need.
+    """
+    session = SessionLocal()
+    try:
+        rows = session.query(HotspotHistory).order_by(
+            HotspotHistory.lga_name, HotspotHistory.snapshot_date
+        ).all()
+        if not rows:
+            return pd.DataFrame()
+        df = pd.DataFrame([r.to_dict() for r in rows])
+
+        # Normalize column names — to_dict() may return 'LGA_Name'/'State'
+        # (mixed-case) but downstream code expects lowercase snake_case.
+        col_map = {
+            'LGA_Name': 'lga_name', 'LGA_NAME': 'lga_name', 'lganame': 'lga_name',
+            'State': 'state', 'STATE': 'state',
+            'MPI': 'mpi',
+            'Headcount_Ratio': 'headcount_ratio',
+            'Intensity_of_Deprivation': 'intensity_of_deprivation',
+            'In_Severe_Poverty': 'in_severe_poverty',
+        }
+        df = df.rename(columns={k: v for k, v in col_map.items() if k in df.columns})
+        return df
+    finally:
+        session.close()
+
+
 # ─── Migration ────────────────────────────────────────────────────────────────
 
 def migrate_from_geojson(geojson_path):

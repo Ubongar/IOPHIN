@@ -198,8 +198,69 @@ export interface User {
   id: number;
   email: string;
   full_name: string;
-  role: 'admin' | 'government' | 'ngo' | 'public';
+  role: 'super_admin' | 'admin' | 'government' | 'ngo' | 'public' | 'user';
   organization?: string;
 }
 
-export type ViewMode = 'map' | 'rankings' | 'states' | 'interventions' | 'conflict' | 'seasonal' | 'budget' | 'reports' | 'alerts' | 'settings';
+// ── RBAC Types ─────────────────────────────────────────────────────────────
+
+export interface Role {
+  id: number;
+  name: string;
+  display_name: string;
+  description?: string;
+  is_system_role: boolean;
+  created_at: string;
+}
+
+export interface Permission {
+  id: number;
+  name: string;
+  display_name: string;
+  description?: string;
+  module: string;
+}
+
+export interface GeographicScope {
+  state: string;
+  lga_name?: string;
+}
+
+export interface UserWithRBAC {
+  id: number;
+  username?: string;
+  email: string;
+  full_name: string;
+  organization?: string;
+  is_active: boolean;
+  last_active?: string;
+  last_login?: string;
+  created_at: string;
+  role_id: number;
+  role_name: string;
+  role_display_name: string;
+  assigned_states?: string[];
+  geographic_scopes?: GeographicScope[];
+  permissions?: Permission[];
+}
+
+export interface UsersListResponse {
+  users: UserWithRBAC[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  action: string;
+  details: Record<string, unknown>;
+  ip_address?: string;
+  created_at: string;
+  performed_by_email?: string;
+  performed_by_name?: string;
+  target_email?: string;
+  target_name?: string;
+}
+
+export type ViewMode = 'map' | 'rankings' | 'states' | 'interventions' | 'conflict' | 'seasonal' | 'budget' | 'reports' | 'alerts' | 'settings' | 'users';

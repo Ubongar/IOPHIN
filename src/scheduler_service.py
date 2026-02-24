@@ -27,6 +27,7 @@ from src.db_utils import (
     upsert_conflict_flag,
     upsert_hotspots_from_dataframe,
     get_all_hotspots,
+    get_all_history,
     save_history_snapshot,
 )
 from src.model_engine import build_analytical_model
@@ -422,11 +423,11 @@ class IOPHINScheduler:
         logger.info("=" * 60)
         logger.info("PREDICTIVE MODEL: Forecasting all LGAs...")
         try:
-            hotspots = get_all_hotspots()
-            if not hotspots:
-                logger.warning("No data — skipping predictive model")
+            from src.db_utils import get_all_history
+            history_df = get_all_history()
+            if history_df is None or history_df.empty:
+                logger.warning("No history data — skipping predictive model (will populate after first snapshot)")
                 return
-            history_df = pd.DataFrame(hotspots)
             from src.predictive_model import forecast_all_lgas
             forecasts = forecast_all_lgas(history_df=history_df)
             if not forecasts.empty:
@@ -442,11 +443,11 @@ class IOPHINScheduler:
         logger.info("=" * 60)
         logger.info("TEMPORAL ANALYSIS: Computing trend indicators...")
         try:
-            hotspots = get_all_hotspots()
-            if not hotspots:
-                logger.warning("No data — skipping temporal analysis")
+            from src.db_utils import get_all_history
+            history_df = get_all_history()
+            if history_df is None or history_df.empty:
+                logger.warning("No history data — skipping temporal analysis (will populate after first snapshot)")
                 return
-            history_df = pd.DataFrame(hotspots)
             from src.temporal_analysis import compute_temporal_trends, detect_tier_crossings
             trends = compute_temporal_trends(history_df)
             crossings = detect_tier_crossings(history_df)

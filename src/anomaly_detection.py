@@ -79,12 +79,19 @@ def detect_multivariate_anomalies(df: pd.DataFrame, contamination: float = 0.05)
         logger.warning("pyod not available; using sklearn IsolationForest")
         use_pyod = False
 
-    available_features = [c for c in FEATURE_COLS if c in df.columns]
+    # Only keep columns that have at least some non-NaN values so that
+    # median() doesn't return NaN (which makes fillna a no-op and crashes sklearn)
+    available_features = [
+        c for c in FEATURE_COLS
+        if c in df.columns and df[c].notna().any()
+    ]
     if len(available_features) < 3:
         logger.warning("Not enough feature columns for multivariate anomaly detection")
         return pd.DataFrame()
 
-    X = df[available_features].fillna(df[available_features].median()).values
+    feature_df = df[available_features].copy()
+    col_medians = feature_df.median().fillna(0)   # guard: if median is still NaN → 0
+    X = feature_df.fillna(col_medians).fillna(0).values  # double fillna catches edge cases
 
     try:
         if use_pyod:
@@ -110,13 +117,15 @@ def detect_multivariate_anomalies(df: pd.DataFrame, contamination: float = 0.05)
     if anomaly_rows.empty:
         return pd.DataFrame()
 
+    # Pre-compute medians and stds once outside the loop
+    medians = df[available_features].median().fillna(0)
+    stds = df[available_features].std().fillna(0).replace(0, 1)
+
     output = []
     for _, row in anomaly_rows.iterrows():
         lga = row.get('lga_name') or row.get('LGA_Name', 'Unknown')
         # Find the most deviant feature
-        row_vals = row[available_features].fillna(0)
-        medians = df[available_features].median()
-        stds = df[available_features].std().replace(0, 1)
+        row_vals = row[available_features].infer_objects(copy=False).fillna(0)
         z_scores = ((row_vals - medians) / stds).abs()
         top_feature = z_scores.idxmax()
         output.append({

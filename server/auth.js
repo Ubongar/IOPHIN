@@ -10,7 +10,7 @@ const { Pool } = pg;
 const pool = new Pool({ connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false });
 
-const ROLES = ['admin', 'government', 'ngo', 'public'];
+const ROLES = ['super_admin', 'admin', 'government', 'ngo', 'public', 'user'];
 
 // Fail fast in production if JWT_SECRET is not set
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -51,20 +51,49 @@ async function createToken(payload) {
   return jwt.sign(payload, EFFECTIVE_JWT_SECRET, { expiresIn: '7d' });
 }
 
-export async function registerUser(email, password, fullName, role = 'public', organization = null) {
+// Get role ID by name
+async function getRoleId(roleName) {
+  const result = await pool.query('SELECT id FROM roles WHERE name = $1', [roleName]);
+  return result.rows[0]?.id || 3; // Default to 'user' role (id: 3)
+}
+
+// Get role name by ID
+async function getRoleName(roleId) {
+  const result = await pool.query('SELECT name FROM roles WHERE id = $1', [roleId]);
+  return result.rows[0]?.name || 'user';
+}
+
+export async function registerUser(email, password, fullName, role = 'user', organization = null) {
   if (!validateEmail(email)) throw new Error('Invalid email format');
   if (!validatePassword(password)) {
     throw new Error('Password must be at least 8 characters and contain at least one letter and one digit');
   }
-  if (!ROLES.includes(role)) role = 'public';
+  
+  // Get role ID from role name
+  const roleId = await getRoleId(role);
   const passwordHash = await hashPassword(password);
+  
   try {
     const result = await pool.query(
-      `INSERT INTO users (email, password_hash, full_name, role, organization)
-       VALUES ($1, $2, $3, $4, $5) RETURNING id, email, full_name, role, organization, created_at`,
-      [email.toLowerCase(), passwordHash, fullName, role, organization]
+      `INSERT INTO users (email, password_hash, full_name, role_id, organization, is_active)
+       VALUES ($1, $2, $3, $4, $5, TRUE)
+       RETURNING id, email, full_name, role_id, organization, created_at`,
+      [email.toLowerCase(), passwordHash, fullName, roleId, organization]
     );
-    return { user: result.rows[0] };
+    
+    const user = result.rows[0];
+    const roleName = await getRoleName(user.role_id);
+    
+    return { 
+      user: {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        role: roleName,
+        organization: user.organization,
+        created_at: user.created_at
+      }
+    };
   } catch (err) {
     if (err.code === '23505') throw new Error('Email already registered');
     throw err;
@@ -73,16 +102,49 @@ export async function registerUser(email, password, fullName, role = 'public', o
 
 export async function loginUser(email, password) {
   if (!validateEmail(email)) throw new Error('Invalid credentials');
+  
   const result = await pool.query(
-    'SELECT * FROM users WHERE email = $1', [email.toLowerCase()]
+    `SELECT u.*, r.name as role_name 
+     FROM users u 
+     LEFT JOIN roles r ON u.role_id = r.id 
+     WHERE u.email = $1`,
+    [email.toLowerCase()]
   );
+  
   if (result.rows.length === 0) throw new Error('Invalid credentials');
+  
   const user = result.rows[0];
+  
+  // Check if user is active
+  if (!user.is_active) {
+    throw new Error('Account has been deactivated. Please contact administrator.');
+  }
+  
   const valid = await comparePassword(password, user.password_hash);
   if (!valid) throw new Error('Invalid credentials');
-  await pool.query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
-  const token = await createToken({ id: user.id, email: user.email, role: user.role });
-  return { token, user: { id: user.id, email: user.email, full_name: user.full_name, role: user.role } };
+  
+  // Update last_login and last_active
+  await pool.query(
+    'UPDATE users SET last_login = NOW(), last_active = NOW() WHERE id = $1',
+    [user.id]
+  );
+  
+  const token = await createToken({ 
+    id: user.id, 
+    email: user.email, 
+    role: user.role_name || 'user',
+    roleId: user.role_id
+  });
+  
+  return { 
+    token, 
+    user: { 
+      id: user.id, 
+      email: user.email, 
+      full_name: user.full_name, 
+      role: user.role_name || 'user'
+    } 
+  };
 }
 
 export async function authMiddleware(req, res, next) {
@@ -94,7 +156,33 @@ export async function authMiddleware(req, res, next) {
   const token = authHeader.split(' ')[1];
   try {
     const jwt = (await import('jsonwebtoken')).default;
-    req.user = jwt.verify(token, EFFECTIVE_JWT_SECRET);
+    const decoded = jwt.verify(token, EFFECTIVE_JWT_SECRET);
+    
+    // Fetch fresh user data including role
+    const userResult = await pool.query(
+      `SELECT u.id, u.email, u.full_name, u.role_id, u.is_active, r.name as role_name
+       FROM users u
+       LEFT JOIN roles r ON u.role_id = r.id
+       WHERE u.id = $1`,
+      [decoded.id]
+    );
+    
+    if (userResult.rows.length === 0 || !userResult.rows[0].is_active) {
+      req.user = null;
+      return next();
+    }
+    
+    const user = userResult.rows[0];
+    req.user = {
+      id: user.id,
+      email: user.email,
+      full_name: user.full_name,
+      role: user.role_name || 'user',
+      roleId: user.role_id
+    };
+    
+    // Update last_active
+    pool.query('UPDATE users SET last_active = NOW() WHERE id = $1', [user.id]).catch(() => {});
   } catch {
     req.user = null;
   }
@@ -113,3 +201,5 @@ export function requireRole(...roles) {
     next();
   };
 }
+
+export { ROLES };
