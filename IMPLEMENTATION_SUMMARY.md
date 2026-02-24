@@ -37,6 +37,15 @@
 - WebSocket hook is wired for real-time behavior.
 - Extended components include alert management, interventions, seasonal planning, budget optimization, report building, crisis corridor, and data quality.
 
+## Risk Tiering Modes
+
+The system supports two modes for assigning human-readable risk tiers:
+
+- `cluster` (default): cluster-relative mapping based on composite poverty score, nightlights, and other indicators.
+- `absolute`: fixed numeric thresholds applied to `composite_poverty_score` (configure via `src/config.py` or env vars `THRESHOLD_*`).
+
+The frontend exposes a toggle (top toolbar) to switch modes at runtime; the toggle persists in localStorage and attempts to POST to `/api/config` to update the running process (admin only).
+
 ## Build/Run Summary
 
 - API: `cd server && npm run dev`

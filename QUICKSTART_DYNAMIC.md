@@ -44,3 +44,7 @@ npm run dev
 ```bash
 docker compose up --build
 ```
+
+### Note: Risk Tiering Modes
+
+This system supports two risk-tiering modes: `cluster` (default) and `absolute`. Use the frontend toolbar toggle or set `RISK_TIERING_MODE` in your environment to `absolute` to use fixed thresholds (`THRESHOLD_MINIMAL`, `THRESHOLD_LOW`, `THRESHOLD_MEDIUM`, `THRESHOLD_HIGH`, `THRESHOLD_CRITICAL`).

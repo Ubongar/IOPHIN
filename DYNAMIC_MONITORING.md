@@ -13,12 +13,10 @@ Dynamic monitoring keeps poverty risk intelligence fresh by running scheduled da
 
 ## Typical Scheduler Job Categories
 
-- conflict updates
-- infrastructure updates
-- environmental refresh (VIIRS/NDVI/rainfall)
-- full model retraining
-- anomaly detection
-- predictive model refresh
+
+### Note: Risk Tiering Modes
+
+Risk labels used by alerts and dashboards can be derived using cluster-relative ranking (default) or absolute thresholds on `composite_poverty_score`. Configure `RISK_TIERING_MODE` in `src/config.py` or via environment variables.
 
 ## Data Persistence Targets
 

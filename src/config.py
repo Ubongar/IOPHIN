@@ -138,6 +138,23 @@ FORECAST_HORIZONS = [3, 6]  # months
 # Population weighting
 USE_POPULATION_WEIGHTED_MPI = True
 
+# Risk tiering mode: 'cluster' uses the existing clustering->rank mapping.
+# 'absolute' uses fixed thresholds on composite poverty score (or other chosen metric).
+# Set via env var RISK_TIERING_MODE ('cluster' or 'absolute')
+RISK_TIERING_MODE = os.getenv('RISK_TIERING_MODE', 'cluster')
+
+# Absolute thresholds for mapping a numeric score to risk tiers when
+# RISK_TIERING_MODE == 'absolute'. Thresholds are upper bounds for each tier
+# expressed on the same scale as `composite_poverty_score` (adjust as needed).
+# Example defaults are conservative and should be tuned to your data.
+ABSOLUTE_RISK_THRESHOLDS = {
+    'Minimal': float(os.getenv('THRESHOLD_MINIMAL', 0.05)),
+    'Low': float(os.getenv('THRESHOLD_LOW', 0.10)),
+    'Medium': float(os.getenv('THRESHOLD_MEDIUM', 0.20)),
+    'High': float(os.getenv('THRESHOLD_HIGH', 0.40)),
+    'Critical': float(os.getenv('THRESHOLD_CRITICAL', 1.0)),
+}
+
 # ACLED API credentials
 ACLED_EMAIL = os.getenv('ACLED_EMAIL', '')
 ACLED_API_KEY = os.getenv('ACLED_API_KEY', '')

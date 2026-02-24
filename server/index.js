@@ -110,7 +110,7 @@ app.use(limiter);
 const isProduction = process.env.NODE_ENV === 'production';
 const allowedOrigins = isProduction
   ? [process.env.CLIENT_URL]
-  : ['http://localhost:5173', 'http://localhost:3000'];
+  : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
@@ -207,6 +207,42 @@ app.get('/api/states', async (req, res) => {
     res.status(503).json({ error: 'Service Unavailable', message: 'Database not connected' });
   } catch (error) {
     console.error('Error in /api/states:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Persist/return runtime configuration for front-end toggles (simple file-backed or env-driven)
+app.get('/api/config', (req, res) => {
+  try {
+    const runtimeConfig = {
+      RISK_TIERING_MODE: process.env.RISK_TIERING_MODE || 'cluster',
+      ABSOLUTE_THRESHOLDS: {
+        MINIMAL: parseFloat(process.env.THRESHOLD_MINIMAL || '0.05'),
+        LOW: parseFloat(process.env.THRESHOLD_LOW || '0.10'),
+        MEDIUM: parseFloat(process.env.THRESHOLD_MEDIUM || '0.20'),
+        HIGH: parseFloat(process.env.THRESHOLD_HIGH || '0.40'),
+        CRITICAL: parseFloat(process.env.THRESHOLD_CRITICAL || '1.0'),
+      }
+    };
+    res.json(runtimeConfig);
+  } catch (err) {
+    console.error('Error in /api/config:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/api/config', requireRole('admin'), express.json(), (req, res) => {
+  try {
+    const { RISK_TIERING_MODE } = req.body;
+    if (RISK_TIERING_MODE && (RISK_TIERING_MODE === 'cluster' || RISK_TIERING_MODE === 'absolute')) {
+      // For now we only set an in-memory env override for the running process
+      process.env.RISK_TIERING_MODE = RISK_TIERING_MODE;
+      res.json({ ok: true, RISK_TIERING_MODE });
+    } else {
+      res.status(400).json({ error: 'Invalid RISK_TIERING_MODE' });
+    }
+  } catch (err) {
+    console.error('Error in POST /api/config:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

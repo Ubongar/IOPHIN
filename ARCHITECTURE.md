@@ -61,6 +61,15 @@ React Dashboard (client/)
 - `store/*`: Zustand stores (`data`, `filters`, `auth`, `alerts`, `map`).
 - `hooks/useWebSocket.ts`: live server updates.
 
+### Risk tiering modes
+
+The system supports two modes for converting numeric poverty scores into human-readable risk tiers:
+
+- **cluster (default)** — the existing pipeline: LGAs are clustered by multiple indicators and clusters are ranked to assign tiers. This yields relative tiers useful for prioritisation within national context.
+- **absolute** — map numeric `composite_poverty_score` (or `MPI`) to tiers using configurable numeric thresholds (`ABSOLUTE_RISK_THRESHOLDS` in `src/config.py` or env vars `THRESHOLD_*`).
+
+The frontend exposes a small toggle to switch modes at runtime (persisted to localStorage and optionally to the running server process via `/api/config`).
+
 ## Frontend Navigation (Current)
 
 - `map`

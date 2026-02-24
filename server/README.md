@@ -39,6 +39,8 @@ Server default URL: `http://localhost:5000`
   - `POST /auth/login`
 - Hotspots and analytics
   - `GET /hotspots`
+
+  Note: Risk tier labels served by the API reflect the model's runtime `RISK_TIERING_MODE` setting (cluster-relative by default). The frontend can toggle mode at runtime and will display the chosen mode in the toolbar.
   - `GET /hotspots/within-radius`
   - `GET /stats`
   - `GET /states`

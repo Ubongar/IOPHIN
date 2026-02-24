@@ -25,6 +25,20 @@ PORT=5000
 REDIS_URL=redis://localhost:6379
 ```
 
+### Optional: Risk tiering mode
+
+By default the model assigns risk tiers using a cluster-relative approach. To use absolute thresholds instead, set:
+
+```env
+RISK_TIERING_MODE=absolute
+# Optional thresholds (composite poverty score scale)
+THRESHOLD_MINIMAL=0.05
+THRESHOLD_LOW=0.10
+THRESHOLD_MEDIUM=0.20
+THRESHOLD_HIGH=0.40
+THRESHOLD_CRITICAL=1.0
+```
+
 ## 3) Build processed outputs
 
 ```bash

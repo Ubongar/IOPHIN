@@ -7,6 +7,7 @@ import logging
 from typing import Optional
 import numpy as np
 import pandas as pd
+import src.config as config
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +153,22 @@ def identify_escalation_candidates(forecasts_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _mpi_to_risk(mpi: float) -> str:
-    """Convert MPI score to risk level."""
+    """Convert MPI score to risk level.
+
+    Honors `config.RISK_TIERING_MODE`: when set to 'absolute', uses
+    `config.ABSOLUTE_RISK_THRESHOLDS` where thresholds are assumed to be
+    upper-bounds for each tier.
+    """
+    mode = getattr(config, 'RISK_TIERING_MODE', 'cluster').lower()
+    if mode == 'absolute':
+        thresholds = config.ABSOLUTE_RISK_THRESHOLDS
+        order = ['Minimal', 'Low', 'Medium', 'High', 'Critical']
+        for tier in order:
+            if mpi <= thresholds.get(tier, float('inf')):
+                return tier
+        return 'Critical'
+
+    # Default historic MPI thresholds
     if mpi >= 0.60:
         return 'Critical'
     elif mpi >= 0.45:

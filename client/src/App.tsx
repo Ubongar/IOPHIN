@@ -125,6 +125,25 @@ function App() {
     }
   };
 
+  // Runtime config for UI toggles (persisted server-side when possible)
+  const tieringMode = useFilterStore((s) => s.tieringMode);
+  const setTieringMode = useFilterStore((s) => s.setTieringMode);
+
+  useEffect(() => {
+    // Load server runtime config if available
+    axios.get(API + '/config').then(res => {
+      const mode = res.data?.RISK_TIERING_MODE || 'cluster';
+      setTieringMode((localStorage.getItem('RISK_TIERING_MODE') as 'cluster' | 'absolute') || mode);
+    }).catch(() => { /* ignore */ });
+  }, []);
+
+  const toggleRiskMode = async () => {
+    const next = tieringMode === 'cluster' ? 'absolute' : 'cluster';
+    setTieringMode(next);
+    // Try to persist to server (admin only; ignore errors)
+    axios.post(API + '/config', { RISK_TIERING_MODE: next }).catch(() => null);
+  };
+
   useEffect(() => {
     fetchData();
     const id = setInterval(() => fetchData(true), 60000);
@@ -247,6 +266,12 @@ function App() {
             </button>
           )}
           <div className="toolbar-spacer" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 8 }}>
+            <label style={{ fontSize: 12, color: 'var(--text-quaternary)' }}>Risk Mode</label>
+            <button data-testid="risk-mode-toggle" onClick={toggleRiskMode} className="risk-mode-btn" title={`Toggle risk tiering mode (current: ${tieringMode})`}>
+              {tieringMode === 'cluster' ? 'Relative' : 'Absolute'}
+            </button>
+          </div>
           {activeView === 'map' && hotspotsData && (
             <button onClick={() => setTourActive(true)}
               className="text-xs bg-purple-700 hover:bg-purple-600 text-white px-3 py-1 rounded mr-2">

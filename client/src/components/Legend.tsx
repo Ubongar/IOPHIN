@@ -3,25 +3,51 @@
  * True-black theme, risk colors are data-viz (multicolor stays).
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { RISK_COLORS } from '../types';
 import type { RiskLevel } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useDataStore, useFilterStore } from '../store';
+import { getDynamicRiskLevel, ABSOLUTE_THRESHOLDS } from '../utils/riskTiers';
 
 const Legend: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { theme } = useTheme();
 
-  const riskLevels: { level: RiskLevel; label: string; mpiRange: string }[] = [
-    { level: 'Critical', label: 'Extreme Deprivation', mpiRange: 'Composite > 0.80' },
-    { level: 'High', label: 'Severe Poverty', mpiRange: 'Composite 0.60–0.80' },
-    { level: 'Medium', label: 'Significant Deprivation', mpiRange: 'Composite 0.40–0.60' },
-    { level: 'Low', label: 'Moderate Vulnerability', mpiRange: 'Composite 0.20–0.40' },
-    { level: 'Minimal', label: 'Relatively Stable', mpiRange: 'Composite < 0.20' },
-  ];
+  const tieringMode = useFilterStore((s) => s.tieringMode);
+  const hotspots = useDataStore((s) => s.hotspotsData);
+
+  const riskLevels = useMemo(() => {
+    if (tieringMode === 'absolute') {
+      return [
+        { level: 'Critical' as RiskLevel, label: 'Extreme Deprivation', mpiRange: `> ${ABSOLUTE_THRESHOLDS.High}` },
+        { level: 'High' as RiskLevel, label: 'Severe Poverty', mpiRange: `${ABSOLUTE_THRESHOLDS.Medium}–${ABSOLUTE_THRESHOLDS.High}` },
+        { level: 'Medium' as RiskLevel, label: 'Significant Deprivation', mpiRange: `${ABSOLUTE_THRESHOLDS.Low}–${ABSOLUTE_THRESHOLDS.Medium}` },
+        { level: 'Low' as RiskLevel, label: 'Moderate Vulnerability', mpiRange: `${ABSOLUTE_THRESHOLDS.Minimal}–${ABSOLUTE_THRESHOLDS.Low}` },
+        { level: 'Minimal' as RiskLevel, label: 'Relatively Stable', mpiRange: `< ${ABSOLUTE_THRESHOLDS.Minimal}` },
+      ];
+    }
+    return [
+      { level: 'Critical' as RiskLevel, label: 'Extreme Deprivation', mpiRange: 'Cluster top-tier' },
+      { level: 'High' as RiskLevel, label: 'Severe Poverty', mpiRange: 'Cluster high-tier' },
+      { level: 'Medium' as RiskLevel, label: 'Significant Deprivation', mpiRange: 'Cluster mid-tier' },
+      { level: 'Low' as RiskLevel, label: 'Moderate Vulnerability', mpiRange: 'Cluster low-tier' },
+      { level: 'Minimal' as RiskLevel, label: 'Relatively Stable', mpiRange: 'Cluster minimal-tier' },
+    ];
+  }, [tieringMode]);
+
+  const distribution = useMemo(() => {
+    const counts: Record<string, number> = { Critical: 0, High: 0, Medium: 0, Low: 0, Minimal: 0 };
+    if (!hotspots || !hotspots.features) return counts;
+    hotspots.features.forEach((f) => {
+      const r = getDynamicRiskLevel(f as any, tieringMode);
+      counts[r] = (counts[r] || 0) + 1;
+    });
+    return counts;
+  }, [hotspots, tieringMode]);
 
   return (
-    <div
+    <div data-testid="legend-container"
       className="absolute bottom-5 right-5 z-[1000] rounded-xl overflow-hidden transition-all duration-300 shadow-xl"
       style={{
         width: collapsed ? '44px' : '250px',
@@ -61,7 +87,7 @@ const Legend: React.FC = () => {
           {/* Header */}
           <div className="mb-3 pb-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
             <h3 className="font-bold text-[11px] tracking-wide" style={{ color: 'var(--text-secondary)' }}>Risk Classification</h3>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-quaternary)' }}>HDBSCAN + Composite scoring</p>
+            <p data-testid="legend-mode-desc" className="text-[10px] mt-0.5" style={{ color: 'var(--text-quaternary)' }}>{tieringMode === 'absolute' ? 'Absolute thresholds' : 'Cluster-relative tiers (HDBSCAN + Composite)'} </p>
           </div>
 
           {/* Risk items */}
@@ -70,7 +96,7 @@ const Legend: React.FC = () => {
               <div key={level} className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded flex-shrink-0" style={{ backgroundColor: RISK_COLORS[level] }} />
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-semibold block" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+                  <span className="text-[10px] font-semibold block" style={{ color: 'var(--text-secondary)' }}>{label} — <span data-testid={`legend-count-${level}`} style={{ opacity: 0.8 }}>{distribution[level] ?? 0} LGAs</span></span>
                   <span className="text-[10px] font-mono block" style={{ color: 'var(--text-quaternary)' }}>{mpiRange}</span>
                 </div>
               </div>

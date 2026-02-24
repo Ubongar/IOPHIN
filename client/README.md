@@ -68,6 +68,15 @@ npm run preview
 npm run lint
 ```
 
+## Risk Tiering Mode (UI toggle)
+
+The client provides a small `Risk Mode` toggle in the top toolbar. It switches between:
+
+- `Relative` (cluster-derived tiers, default)
+- `Absolute` (fixed thresholds on `composite_poverty_score`)
+
+The toggle stores the selection in localStorage and attempts to persist it to the server via `POST /api/config` (requires admin privileges). This allows operators to change how risk labels are presented without re-running the Python pipeline.
+
 ## API Expectation
 
 `App.tsx` points to:

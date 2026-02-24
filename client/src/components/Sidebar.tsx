@@ -6,6 +6,8 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { RISK_COLORS } from '../types';
 import type { HotspotFeature, Stats, RiskLevel } from '../types';
+import { useFilterStore } from '../store';
+import { getDynamicRiskLevel } from '../utils/riskTiers';
 
 interface SidebarProps {
   stats: Stats | null;
@@ -356,7 +358,9 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
     const p = selectedLGA.properties;
     const prob = povertyProb(p.MPI, p.mean_nightlight_intensity);
     const pColor = probColor(prob);
-    const riskColor = RISK_COLORS[p.risk_level as RiskLevel] ?? '#999';
+    const tieringMode = useFilterStore((s) => s.tieringMode);
+    const dynamicRisk = getDynamicRiskLevel(selectedLGA as HotspotFeature, tieringMode);
+    const riskColor = RISK_COLORS[dynamicRisk as RiskLevel] ?? '#999';
 
     return (
       <div className="sidebar-content fade-in-up">
@@ -376,9 +380,18 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
         </div>
 
         {/* Risk badge */}
-        <div className="risk-badge" style={{ background: riskColor + 'cc', boxShadow: '0 4px 14px ' + riskColor + '30' }}>
-          <span className="risk-dot-white" />
-          <span>{p.cluster_label}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="risk-badge" style={{ background: riskColor + 'cc', boxShadow: '0 4px 14px ' + riskColor + '30' }}>
+            <span className="risk-dot-white" />
+            <span>{p.cluster_label} · {dynamicRisk}</span>
+          </div>
+          <span className="risk-tooltip" title={"Risk tiers are relative by default (cluster-ranked using composite poverty score, nightlights and other indicators). You can enable absolute thresholds via config.RISK_TIERING_MODE='absolute'."} style={{ color: '#bbb', fontSize: 12 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg>
+          </span>
         </div>
 
         {/* Conflict alert */}
@@ -501,7 +514,7 @@ const Sidebar: React.FC<SidebarProps> = ({ stats, selectedLGA, onClose }) => {
           <span className="risk-assessment-dot" style={{ background: riskColor }} />
           <div>
             <h4 className="risk-assessment-title">Risk Assessment</h4>
-            <p className="risk-assessment-text">{riskDescription[p.risk_level] || ''}</p>
+            <p className="risk-assessment-text">{riskDescription[dynamicRisk] || ''}</p>
           </div>
         </div>
 

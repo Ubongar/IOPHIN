@@ -74,6 +74,15 @@ NODE_ENV=development
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=change-me
 
+# Optional: Risk tiering mode
+# Set to 'absolute' to use fixed composite score thresholds instead of cluster-relative tiers
+RISK_TIERING_MODE=cluster
+THRESHOLD_MINIMAL=0.05
+THRESHOLD_LOW=0.10
+THRESHOLD_MEDIUM=0.20
+THRESHOLD_HIGH=0.40
+THRESHOLD_CRITICAL=1.0
+
 # Optional external feeds
 ACLED_EMAIL=
 ACLED_API_KEY=

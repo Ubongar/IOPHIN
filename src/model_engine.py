@@ -376,7 +376,38 @@ def assign_cluster_labels(df, feature_columns):
         risk_mapping[cluster_id] = risks_list[tier_idx]
 
     result['cluster_label'] = result['cluster'].map(label_mapping)
-    result['risk_level'] = result['cluster'].map(risk_mapping)
+
+    # Choose risk tiering mode: cluster-relative (existing) or absolute thresholds
+    if getattr(config, 'RISK_TIERING_MODE', 'cluster').lower() == 'absolute':
+        logger.info("Applying absolute thresholds for risk tiering (config.RISK_TIERING_MODE='absolute')")
+
+        # Helper to map a numeric score to a tier using config.ABSOLUTE_RISK_THRESHOLDS
+        def _map_score_to_risk(score: float) -> str:
+            try:
+                if score is None or (isinstance(score, float) and pd.isna(score)):
+                    return 'Minimal'
+            except Exception:
+                pass
+            thresholds = config.ABSOLUTE_RISK_THRESHOLDS
+            # Ordered tiers from least to most severe
+            order = ['Minimal', 'Low', 'Medium', 'High', 'Critical']
+            for tier in order:
+                if score <= thresholds.get(tier, float('inf')):
+                    return tier
+            return 'Critical'
+
+        # Prefer composite_poverty_score if available, else fall back to MPI or cluster mean
+        if 'composite_poverty_score' in result.columns:
+            result['risk_level'] = result['composite_poverty_score'].apply(lambda x: _map_score_to_risk(float(x) if pd.notnull(x) else float('inf')))
+        elif 'MPI' in result.columns:
+            result['risk_level'] = result['MPI'].apply(lambda x: _map_score_to_risk(float(x) if pd.notnull(x) else float('inf')))
+        else:
+            # Fall back to cluster-derived mapping if no suitable score column exists
+            logger.warning('No composite score or MPI column found; falling back to cluster-relative tiers')
+            result['risk_level'] = result['cluster'].map(risk_mapping)
+    else:
+        # Default: cluster-relative mapping (historical behavior)
+        result['risk_level'] = result['cluster'].map(risk_mapping)
 
     label_dist = result['cluster_label'].value_counts()
     logger.info(f"Cluster label distribution:\n{label_dist}")

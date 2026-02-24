@@ -17,6 +17,8 @@ This file shows representative logs for the current system flow.
 
 ```text
 [INFO] Reading data/processed/final_model_output.csv
+
+Note: Risk Tiering Modes — risk labels in the output may be produced by cluster-relative mapping (default) or by absolute thresholds if `RISK_TIERING_MODE=absolute` is set. See `src/config.py` for thresholds and `client` toolbar to toggle at runtime.
 [INFO] Upserting records into poverty_hotspots...
 [INFO] Migration complete.
 ```

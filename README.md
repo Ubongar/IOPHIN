@@ -98,6 +98,15 @@ python -m src.scheduler_service
 
 Open `http://localhost:5173`.
 
+## New: Risk Tiering Modes
+
+The application supports two modes for mapping numeric poverty scores to human-readable risk tiers:
+
+- **cluster (default)**: LGAs are clustered by multiple indicators (composite poverty score, nightlights, etc.) and clusters are ranked to assign tiers (Critical, High, Medium, Low, Minimal). This produces relative, context-aware tiers consistent with historical behavior.
+- **absolute**: LGAs are assigned tiers using fixed numeric thresholds on `composite_poverty_score` (configurable via environment variables). This mode is deterministic and easier to interpret but may change historical distributions.
+
+To switch modes at runtime use the toolbar toggle in the web app (Top-right) or set `RISK_TIERING_MODE` in the environment (`cluster` or `absolute`).
+
 ## Docker (optional)
 
 ```bash

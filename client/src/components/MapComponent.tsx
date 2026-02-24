@@ -5,11 +5,13 @@
  * Features: Zoom controls, 360-degree view, smooth navigation
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import Map, { Source, Layer, NavigationControl, Popup } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { RISK_COLORS } from '../types';
+import { useFilterStore } from '../store';
+import { getDynamicRiskLevel } from '../utils/riskTiers';
 import type { HotspotsGeoJSON, HotspotFeature, RiskLevel } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -20,10 +22,10 @@ interface MapComponentProps {
   filterKey?: string;
 }
 
-/** Map the risk_level string → fill color for MapLibre expression */
+/** Map the risk_level string → fill color for MapLibre expression. Uses dynamic_risk property when present. */
 const RISK_MATCH_EXPR: any = [
   'match',
-  ['get', 'risk_level'],
+  ['coalesce', ['get', 'dynamic_risk'], ['get', 'risk_level']],
   'Critical', RISK_COLORS.Critical,
   'High', RISK_COLORS.High,
   'Medium', RISK_COLORS.Medium,
@@ -35,7 +37,7 @@ const RISK_MATCH_EXPR: any = [
 /** Map risk_level → extrusion height (meters). Higher risk = taller. */
 const RISK_HEIGHT_EXPR: any = [
   'match',
-  ['get', 'risk_level'],
+  ['coalesce', ['get', 'dynamic_risk'], ['get', 'risk_level']],
   'Critical', 45000,
   'High', 35000,
   'Medium', 22000,
@@ -109,15 +111,30 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     bearing: -10,
   });
 
+  const tieringMode = useFilterStore((s) => s.tieringMode);
+
+  const derivedData = useMemo(() => {
+    if (!data) return data;
+    // Clone geojson and add dynamic_risk property per feature when needed
+    const copy: HotspotsGeoJSON = {
+      ...data,
+      features: data.features.map((f) => {
+        const dyn = getDynamicRiskLevel(f, tieringMode);
+        return { ...f, properties: { ...f.properties, dynamic_risk: dyn } };
+      }),
+    };
+    return copy;
+  }, [data, tieringMode]);
+
   useEffect(() => {
-    if (data) setFeatureCount(data.features.length);
-  }, [data]);
+    if (derivedData) setFeatureCount(derivedData.features.length);
+  }, [derivedData]);
 
   /** Fit map to Nigeria bounds on data load */
   useEffect(() => {
-    if (!data || !mapRef.current || !mapLoaded) return;
+    if (!derivedData || !mapRef.current || !mapLoaded) return;
     const map = mapRef.current.getMap();
-    const bbox = computeBBox(data.features);
+    const bbox = computeBBox(derivedData.features);
     if (bbox) {
       map.fitBounds(bbox, { padding: 50, duration: 1000 });
     }
@@ -134,7 +151,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     if (!selectedLGA) {
       // Reset to Nigeria bounds when deselected
       if (wasSelected && data) {
-        const bbox = computeBBox(data.features);
+        const bbox = computeBBox(derivedData!.features);
         if (bbox) {
           map.fitBounds(bbox, { padding: 50, duration: 800 });
         }
@@ -158,6 +175,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     if (features.length > 0) {
       map.getCanvas().style.cursor = 'pointer';
       const f = features[0];
+      // Ensure dynamic risk is present on hovered feature (map source features will have it)
       setHoveredFeature(f as unknown as HotspotFeature);
       setPopupCoords([e.lngLat.lng, e.lngLat.lat]);
 
@@ -286,7 +304,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
       >
         <NavigationControl position="top-right" visualizePitch showCompass />
 
-        <Source id="lga-data" type="geojson" data={data} key={filterKey || 'all'}>
+        <Source id="lga-data" type="geojson" data={derivedData || data} key={(filterKey || 'all') + '|' + tieringMode}>
           {/* 3D extruded fill — the main visual */}
           <Layer
             id="lga-extrusion"
@@ -354,7 +372,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
                   className="tooltip-badge"
                   style={{ background: riskColor, boxShadow: `0 0 8px ${riskColor}88` }}
                 >
-                  {hoveredFeature.properties?.risk_level}
+                  { (hoveredFeature.properties?.dynamic_risk as RiskLevel) || hoveredFeature.properties?.risk_level }
                 </div>
               </div>
               <div className="tooltip-score-line">
