@@ -214,9 +214,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     const currentPitch = map.getPitch();
-    map.easeTo({ 
-      pitch: currentPitch > 0 ? 0 : 45, 
-      duration: 800 
+    map.easeTo({
+      pitch: currentPitch > 0 ? 0 : 45,
+      duration: 800
     });
   }, []);
 
