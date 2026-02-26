@@ -13,6 +13,8 @@ import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import http from 'http';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './swagger.js';
 import * as db from './database.js';
 import { initRedis, getCached, setCache, closeRedis } from './redis.js';
 import { initWebSocket } from './websocket.js';
@@ -117,6 +119,35 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(authMiddleware);
+
+// ══════════════════════════════════════════════════════
+//  SWAGGER API DOCUMENTATION
+// ══════════════════════════════════════════════════════
+
+const swaggerUiOptions = {
+  customSiteTitle: 'IOPHIN API Docs',
+  customCss: `
+    .swagger-ui .topbar { background-color: #1e3a5f; }
+    .swagger-ui .topbar .download-url-wrapper { display: none; }
+    .swagger-ui .info .title { color: #1e3a5f; }
+    .swagger-ui .btn.authorize { background-color: #1e3a5f; border-color: #1e3a5f; }
+    .swagger-ui .btn.authorize svg { fill: #fff; }
+  `,
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    filter: true,
+    tryItOutEnabled: true,
+  },
+};
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+
+// Serve raw OpenAPI JSON spec
+app.get('/api/docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.json(swaggerSpec);
+});
 
 // ══════════════════════════════════════════════════════
 //  EXISTING (backward-compatible) ENDPOINTS
@@ -753,6 +784,8 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 httpServer.listen(PORT, () => {
   console.log(`🚀 IOPHIN API Server running on port ${PORT}`);
   console.log(`📊 Mode: ${USE_DATABASE ? 'DATABASE (Real-Time)' : 'FILE (Static)'}`);
+  console.log(`📖 API Docs: http://localhost:${PORT}/api/docs`);
+  console.log(`📄 OpenAPI JSON: http://localhost:${PORT}/api/docs.json`);
 });
 
 export default app;
