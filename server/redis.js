@@ -23,6 +23,11 @@ const CACHE_TTLS = {
 };
 
 async function initRedis() {
+  // Skip Redis entirely if REDIS_URL is explicitly set to empty string
+  if (process.env.REDIS_URL === '') {
+    console.log('ℹ️  Redis disabled (REDIS_URL is empty)');
+    return;
+  }
   try {
     const mod = await import('ioredis');
     Redis = mod.default || mod;
@@ -30,7 +35,10 @@ async function initRedis() {
       lazyConnect: true,
       connectTimeout: 3000,
       maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
     });
+    // Suppress unhandled error events — we handle them via try/catch on ping()
+    redis.on('error', () => {});
     await redis.ping();
     redisAvailable = true;
     console.log('✅ Redis connected');
