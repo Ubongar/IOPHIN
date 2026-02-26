@@ -29,6 +29,7 @@ export interface HotspotProperties {
   food_price_index?: number;
   senatorial_mpi?: number;
   clustering_method?: string;
+  dynamic_risk?: RiskLevel;
 }
 
 import type { Feature, FeatureCollection, Polygon, MultiPolygon } from 'geojson';
