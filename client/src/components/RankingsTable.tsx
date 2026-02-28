@@ -2,6 +2,7 @@
  * RankingsTable — Top-N worst/best LGAs by composite poverty score
  * Supports search text & state/risk filter props for cross-view filtering.
  * Shows dynamic risk levels based on tiering mode (absolute vs relative)
+ * Uses full hotspots dataset for accurate Most/Least Deprived rankings.
  */
 
 import { useState, useMemo } from 'react';
@@ -47,8 +48,30 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
   const [order, setOrder] = useState<'worst' | 'best'>('worst');
   const tieringMode = useFilterStore((s) => s.tieringMode);
 
+  // Build a complete ranking list from hotspotsData when available
+  // This ensures "Least Deprived" shows truly least deprived LGAs (not just least-worst from top-50)
+  const allRankings = useMemo((): RankingEntry[] => {
+    if (!hotspotsData || hotspotsData.features.length === 0) return rankings;
+
+    return hotspotsData.features
+      .filter(f => f.properties.composite_poverty_score != null)
+      .map((f, i) => ({
+        rank: i + 1,
+        lgaName: f.properties.LGA_Name,
+        state: f.properties.State,
+        mpi: f.properties.MPI ?? 0,
+        nightlight: f.properties.mean_nightlight_intensity ?? 0,
+        compositeScore: f.properties.composite_poverty_score ?? 0,
+        riskLevel: f.properties.risk_level as RiskLevel,
+        clusterLabel: f.properties.cluster_label ?? '',
+        populationDensity: f.properties.population_density ?? 0,
+        healthFacilities: f.properties.health_facility_count ?? 0,
+        schools: f.properties.school_count ?? 0,
+      }));
+  }, [hotspotsData, rankings]);
+
   const sorted = useMemo(() => {
-    let list = [...rankings];
+    let list = [...allRankings];
 
     // Apply search filter
     if (searchQuery.length >= 2) {
@@ -72,7 +95,9 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
       });
     }
 
-    // Sort
+    // Sort by composite score:
+    // Most Deprived (worst) = highest composite score first
+    // Least Deprived (best) = lowest composite score first
     list.sort((a, b) =>
       order === 'best'
         ? a.compositeScore - b.compositeScore
@@ -80,7 +105,9 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
     );
 
     return list;
-  }, [rankings, order, searchQuery, stateFilter, riskFilter, hotspotsData, tieringMode]);
+  }, [allRankings, order, searchQuery, stateFilter, riskFilter, hotspotsData, tieringMode]);
+
+  const totalCount = allRankings.length || rankings.length;
 
   return (
     <div className="rankings-container">
@@ -88,9 +115,9 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
         <div>
           <h2 className="rankings-title">LGA Poverty Rankings</h2>
           <p className="rankings-subtitle">
-            {sorted.length === rankings.length
-              ? `${rankings.length} LGAs ranked by composite poverty score`
-              : `${sorted.length} of ${rankings.length} LGAs — filtered`}
+            {sorted.length === totalCount
+              ? `${totalCount} LGAs ranked by composite poverty score`
+              : `${sorted.length} of ${totalCount} LGAs — filtered`}
           </p>
         </div>
         <div className="rankings-toggle">
@@ -157,13 +184,13 @@ const RankingsTable: React.FC<Props> = ({ rankings, onSelectLGA, searchQuery = '
         </table>
       </div>
 
-      {sorted.length === 0 && rankings.length > 0 && (
+      {sorted.length === 0 && totalCount > 0 && (
         <div className="rankings-empty">
           <p>No LGAs match your search or filters. Try broadening your criteria.</p>
         </div>
       )}
 
-      {rankings.length === 0 && (
+      {totalCount === 0 && (
         <div className="rankings-empty">
           <p>No ranking data available. Rankings require database mode.</p>
         </div>

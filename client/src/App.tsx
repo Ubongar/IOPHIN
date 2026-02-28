@@ -394,7 +394,7 @@ function App() {
         {/* Reports view */}
         {activeView === 'reports' && (
           <div className="view-panel">
-            <ReportBuilder states={stateAgg} searchQuery={searchQuery} />
+            <ReportBuilder states={stateAgg} searchQuery={searchQuery} hotspotsData={hotspotsData} />
           </div>
         )}
 

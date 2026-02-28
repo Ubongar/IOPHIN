@@ -10,7 +10,8 @@ interface Props {
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const ROWS = ['Food Insecurity', 'Flood Risk', 'Drought Risk', 'Conflict Pattern'];
 
-const PATTERNS: Record<string, number[]> = {
+// Base national patterns
+const BASE_PATTERNS: Record<string, number[]> = {
   'Food Insecurity': [0.7, 0.8, 0.9, 0.8, 0.6, 0.4, 0.3, 0.3, 0.4, 0.5, 0.6, 0.7],
   'Flood Risk':      [0.1, 0.1, 0.2, 0.4, 0.6, 0.8, 0.9, 0.9, 0.7, 0.4, 0.2, 0.1],
   'Drought Risk':    [0.8, 0.7, 0.6, 0.4, 0.2, 0.1, 0.1, 0.1, 0.2, 0.3, 0.5, 0.7],
@@ -38,17 +39,62 @@ function heatLevel(val: number): string {
   return 'low';
 }
 
+function clamp(v: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, v));
+}
+
+/**
+ * Derive LGA-specific seasonal patterns from its properties.
+ * Adjusts base national patterns using MPI, NDVI, rainfall, conflict flag, etc.
+ */
+function getLGAPatterns(feature: HotspotFeature): Record<string, number[]> {
+  const p = feature.properties;
+  const mpi = clamp(p.MPI ?? 0.3);
+  const ndvi = clamp(p.ndvi_mean ?? 0.4);
+  const rainfall = clamp((p.rainfall_mm ?? 80) / 200); // normalise ~0-1
+  const conflictHigh = p.conflict_flag === 'HIGH' || p.conflict_flag === 'CRITICAL';
+  const conflictMed = p.conflict_flag === 'MEDIUM';
+  const compositeScore = clamp(p.composite_poverty_score ?? 0.4);
+
+  // Food insecurity: higher MPI → elevated baseline; lower NDVI → worse lean season
+  const foodBase = BASE_PATTERNS['Food Insecurity'];
+  const foodMod = mpi * 0.3 + (1 - ndvi) * 0.2;
+  const food = foodBase.map(v => clamp(v + foodMod - 0.15));
+
+  // Flood risk: driven by rainfall; higher rainfall → higher flood risk in wet months
+  const floodBase = BASE_PATTERNS['Flood Risk'];
+  const floodMod = rainfall * 0.3;
+  const flood = floodBase.map(v => clamp(v + floodMod));
+
+  // Drought risk: inverse of rainfall; low NDVI amplifies
+  const droughtBase = BASE_PATTERNS['Drought Risk'];
+  const droughtMod = (1 - rainfall) * 0.2 + (1 - ndvi) * 0.15;
+  const drought = droughtBase.map(v => clamp(v + droughtMod - 0.1));
+
+  // Conflict: elevated if conflict flag is set; composite score adds baseline
+  const conflictBase = BASE_PATTERNS['Conflict Pattern'];
+  const conflictMod = conflictHigh ? 0.35 : conflictMed ? 0.2 : compositeScore * 0.1;
+  const conflict = conflictBase.map(v => clamp(v + conflictMod));
+
+  return {
+    'Food Insecurity': food,
+    'Flood Risk': flood,
+    'Drought Risk': drought,
+    'Conflict Pattern': conflict,
+  };
+}
+
 export default function SeasonalCalendar({ features, searchQuery = '', stateFilter = '' }: Props) {
   const [selectedLGA, setSelectedLGA] = useState('');
-  
+
   const filteredFeatures = useMemo(() => {
     let list = [...features];
-    
+
     // Apply state filter
     if (stateFilter) {
       list = list.filter(f => f.properties.State === stateFilter);
     }
-    
+
     // Apply search filter
     if (searchQuery.length >= 2) {
       const term = searchQuery.toLowerCase();
@@ -57,13 +103,50 @@ export default function SeasonalCalendar({ features, searchQuery = '', stateFilt
         f.properties.State.toLowerCase().includes(term)
       );
     }
-    
+
     return list;
   }, [features, searchQuery, stateFilter]);
-  
-  const lgaNames = useMemo(() => 
+
+  const lgaNames = useMemo(() =>
     [...new Set(filteredFeatures.map(f => f.properties.LGA_Name))].sort(),
     [filteredFeatures]
+  );
+
+  // Get patterns for selected LGA or aggregate for "All LGAs"
+  const patterns = useMemo((): Record<string, number[]> => {
+    if (!selectedLGA) {
+      // Aggregate: average across all filtered features
+      if (filteredFeatures.length === 0) return BASE_PATTERNS;
+      const sums: Record<string, number[]> = {
+        'Food Insecurity': new Array(12).fill(0),
+        'Flood Risk': new Array(12).fill(0),
+        'Drought Risk': new Array(12).fill(0),
+        'Conflict Pattern': new Array(12).fill(0),
+      };
+      filteredFeatures.forEach(f => {
+        const lgaP = getLGAPatterns(f);
+        ROWS.forEach(row => {
+          lgaP[row].forEach((v, i) => { sums[row][i] += v; });
+        });
+      });
+      const n = filteredFeatures.length;
+      const result: Record<string, number[]> = {};
+      ROWS.forEach(row => {
+        result[row] = sums[row].map(v => clamp(v / n));
+      });
+      return result;
+    }
+
+    // Single LGA
+    const feat = filteredFeatures.find(f => f.properties.LGA_Name === selectedLGA);
+    if (!feat) return BASE_PATTERNS;
+    return getLGAPatterns(feat);
+  }, [selectedLGA, filteredFeatures]);
+
+  // Get selected LGA feature for metadata display
+  const selectedFeature = useMemo(() =>
+    selectedLGA ? filteredFeatures.find(f => f.properties.LGA_Name === selectedLGA) : null,
+    [selectedLGA, filteredFeatures]
   );
 
   const currentMonth = new Date().getMonth();
@@ -74,7 +157,9 @@ export default function SeasonalCalendar({ features, searchQuery = '', stateFilt
         <div>
           <h2 className="rankings-title">Seasonal Vulnerability</h2>
           <p className="rankings-subtitle">
-            Monthly risk patterns across key dimensions
+            {selectedLGA
+              ? `${selectedLGA}${selectedFeature ? ` · ${selectedFeature.properties.State}` : ''} — LGA-specific risk patterns`
+              : `Monthly risk patterns — ${filteredFeatures.length} LGA${filteredFeatures.length !== 1 ? 's' : ''} averaged`}
           </p>
         </div>
         <select
@@ -82,11 +167,37 @@ export default function SeasonalCalendar({ features, searchQuery = '', stateFilt
           aria-label="Filter by LGA"
           value={selectedLGA}
           onChange={e => setSelectedLGA(e.target.value)}
+          style={{ minWidth: 180 }}
         >
-          <option value="">All LGAs (National)</option>
+          <option value="">All LGAs (Aggregated)</option>
           {lgaNames.map(n => <option key={n} value={n}>{n}</option>)}
         </select>
       </div>
+
+      {/* LGA metadata strip when a specific LGA is selected */}
+      {selectedFeature && (
+        <div style={{
+          display: 'flex', gap: 16, flexWrap: 'wrap',
+          padding: '10px 16px', marginBottom: 12,
+          background: 'var(--bg-panel)', border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-sm)', fontSize: 11, color: 'var(--text-tertiary)',
+        }}>
+          <span><strong style={{ color: 'var(--text-primary)' }}>Risk:</strong> {selectedFeature.properties.risk_level}</span>
+          <span><strong style={{ color: 'var(--text-primary)' }}>MPI:</strong> {(selectedFeature.properties.MPI ?? 0).toFixed(4)}</span>
+          {selectedFeature.properties.ndvi_mean != null && (
+            <span><strong style={{ color: 'var(--text-primary)' }}>NDVI:</strong> {selectedFeature.properties.ndvi_mean.toFixed(3)}</span>
+          )}
+          {selectedFeature.properties.rainfall_mm != null && (
+            <span><strong style={{ color: 'var(--text-primary)' }}>Rainfall:</strong> {selectedFeature.properties.rainfall_mm.toFixed(0)} mm/mo</span>
+          )}
+          {selectedFeature.properties.conflict_flag && selectedFeature.properties.conflict_flag !== 'NORMAL' && (
+            <span style={{ color: '#f87171' }}><strong>Conflict:</strong> {selectedFeature.properties.conflict_flag}</span>
+          )}
+          {selectedFeature.properties.composite_poverty_score != null && (
+            <span><strong style={{ color: 'var(--text-primary)' }}>Composite Score:</strong> {selectedFeature.properties.composite_poverty_score.toFixed(4)}</span>
+          )}
+        </div>
+      )}
 
       <div className="rankings-table-wrap">
         <table className="rankings-table">
@@ -109,7 +220,7 @@ export default function SeasonalCalendar({ features, searchQuery = '', stateFilt
             {ROWS.map(row => (
               <tr key={row}>
                 <td className="lga-cell" style={{ fontSize: 12 }}>{row}</td>
-                {PATTERNS[row].map((val, i) => {
+                {patterns[row].map((val, i) => {
                   const level = heatLevel(val);
                   return (
                     <td key={i} style={{ padding: '6px 4px', textAlign: 'center' }}>
@@ -140,7 +251,7 @@ export default function SeasonalCalendar({ features, searchQuery = '', stateFilt
 
       {/* Legend */}
       <div style={{
-        display: 'flex', gap: 16, alignItems: 'center',
+        display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap',
         marginTop: 16, padding: '10px 16px',
         background: 'var(--bg-panel)', border: '1px solid var(--border)',
         borderRadius: 'var(--radius-sm)', fontSize: 11, color: 'var(--text-tertiary)',
@@ -162,7 +273,7 @@ export default function SeasonalCalendar({ features, searchQuery = '', stateFilt
           </span>
         ))}
         <span style={{ marginLeft: 'auto', fontStyle: 'italic', color: 'var(--text-quaternary)' }}>
-          Current month highlighted
+          {selectedLGA ? 'LGA-specific patterns derived from MPI, NDVI, rainfall & conflict data' : 'Aggregated across filtered LGAs · Current month highlighted'}
         </span>
       </div>
     </div>
