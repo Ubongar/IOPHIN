@@ -20,11 +20,56 @@ interface Recommendation {
   riskLevel: string;
 }
 
+const SLIDER_MIN = 100_000;
+const SLIDER_MAX = 50_000_000;
+const SLIDER_STEP = 100_000;
+
+/** Parse a currency string like "$1,200,000", "1.5M", "500K", "2B", "5000000" into a number */
+function parseCurrency(raw: string): number | null {
+  let s = raw.trim().replace(/^\$/, '').replace(/,/g, '').trim();
+  if (!s) return null;
+  const multipliers: Record<string, number> = { k: 1_000, m: 1_000_000, b: 1_000_000_000 };
+  const lastChar = s.slice(-1).toLowerCase();
+  if (multipliers[lastChar]) {
+    const num = parseFloat(s.slice(0, -1));
+    return isNaN(num) ? null : Math.round(num * multipliers[lastChar]);
+  }
+  const num = parseFloat(s);
+  return isNaN(num) ? null : Math.round(num);
+}
+
+/** Format a number as a readable currency string for the input field */
+function formatCurrencyInput(n: number): string {
+  return '$' + n.toLocaleString('en-US');
+}
+
 export default function BudgetOptimizer({ features, onSelectLGA, searchQuery = '', stateFilter = '', riskFilter = '' }: Props) {
   const [budget, setBudget] = useState(1000000);
+  const [budgetInputText, setBudgetInputText] = useState(formatCurrencyInput(1000000));
+  const [budgetInputFocused, setBudgetInputFocused] = useState(false);
   const [selectedLGAs, setSelectedLGAs] = useState<string[]>([]);
   const [lgaSearchTerm, setLgaSearchTerm] = useState('');
   const [showLGASelector, setShowLGASelector] = useState(false);
+
+  /** Called when slider changes — update budget + sync text input */
+  const handleSliderChange = (val: number) => {
+    setBudget(val);
+    if (!budgetInputFocused) setBudgetInputText(formatCurrencyInput(val));
+  };
+
+  /** Called when text input is committed (blur or Enter) */
+  const commitBudgetInput = () => {
+    const parsed = parseCurrency(budgetInputText);
+    if (parsed !== null && parsed > 0) {
+      setBudget(parsed);
+      setBudgetInputText(formatCurrencyInput(parsed));
+    } else {
+      // revert to current budget if invalid
+      setBudgetInputText(formatCurrencyInput(budget));
+    }
+  };
+
+  const isOutsideSliderRange = budget < SLIDER_MIN || budget > SLIDER_MAX;
 
   // First apply filters from the global search/filter
   const filteredFeatures = useMemo(() => {
@@ -281,7 +326,7 @@ export default function BudgetOptimizer({ features, onSelectLGA, searchQuery = '
         )}
       </div>
 
-      {/* Budget Slider */}
+      {/* Budget Slider + Input */}
       <div className="metric-card" style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <span className="metric-label" style={{ margin: 0 }}>Total Budget</span>
@@ -289,13 +334,49 @@ export default function BudgetOptimizer({ features, onSelectLGA, searchQuery = '
             {formatBudget(budget)}
           </span>
         </div>
-        <input type="range" min={100000} max={50000000} step={100000} value={budget}
-          onChange={e => setBudget(Number(e.target.value))}
+
+        {/* Primary: Slider */}
+        <input type="range" min={SLIDER_MIN} max={SLIDER_MAX} step={SLIDER_STEP}
+          value={Math.min(Math.max(budget, SLIDER_MIN), SLIDER_MAX)}
+          onChange={e => handleSliderChange(Number(e.target.value))}
           className="budget-slider"
-          aria-label="Total budget"
-          title="Total budget" />
+          aria-label="Total budget slider"
+          title="Total budget slider" />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--text-quaternary)', marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
           <span>$100K</span><span>$50M</span>
+        </div>
+
+        {/* Secondary: Exact Amount Input */}
+        <div style={{ marginTop: 14 }}>
+          <label style={{ display: 'block', fontSize: 11, color: 'var(--text-quaternary)', marginBottom: 6, fontWeight: 500 }}>
+            Or enter exact amount
+            <span style={{ fontWeight: 400, marginLeft: 4 }}>(e.g. $2,500,000 or 1.5M)</span>
+          </label>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input
+              type="text"
+              value={budgetInputText}
+              onChange={e => setBudgetInputText(e.target.value)}
+              onFocus={() => setBudgetInputFocused(true)}
+              onBlur={() => { setBudgetInputFocused(false); commitBudgetInput(); }}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); commitBudgetInput(); (e.target as HTMLInputElement).blur(); } }}
+              aria-label="Enter exact budget amount"
+              placeholder="$1,000,000"
+              style={{
+                flex: 1, padding: '8px 12px', fontSize: 14, fontWeight: 600,
+                fontFamily: "'JetBrains Mono', monospace",
+                background: 'var(--bg-base)', border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)',
+                outline: 'none', transition: 'border-color .15s',
+                borderColor: budgetInputFocused ? 'var(--blue)' : 'var(--border)',
+              }}
+            />
+          </div>
+          {isOutsideSliderRange && (
+            <p style={{ fontSize: 11, color: 'var(--amber)', marginTop: 6, marginBottom: 0 }}>
+              Amount is outside the slider range ({formatBudget(SLIDER_MIN)} – {formatBudget(SLIDER_MAX)}). The optimizer will use your entered value.
+            </p>
+          )}
         </div>
       </div>
 

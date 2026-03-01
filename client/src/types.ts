@@ -264,4 +264,4 @@ export interface AuditLogEntry {
   target_name?: string;
 }
 
-export type ViewMode = 'map' | 'rankings' | 'states' | 'interventions' | 'conflict' | 'seasonal' | 'budget' | 'reports' | 'alerts' | 'settings' | 'users';
+export type ViewMode = 'map' | 'rankings' | 'states' | 'interventions' | 'conflict' | 'seasonal' | 'budget' | 'reports' | 'alerts' | 'settings' | 'users' | 'profile';

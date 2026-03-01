@@ -23,6 +23,13 @@ import { createSubscription, deleteSubscription, getUserSubscriptions } from './
 import { generateReport } from './reports.js';
 import rbac, { requirePermission, requireSuperAdmin, NIGERIAN_STATES } from './rbac.js';
 import bcrypt from 'bcryptjs';
+import pg from 'pg';
+
+const { Pool: PgPool } = pg;
+const pool = new PgPool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
 // Load environment variables
 dotenv.config();
@@ -328,11 +335,25 @@ v1.post('/auth/register', authLimiter, async (req, res) => {
   try {
     const { email, password, full_name, role, organization } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
-    const result = await registerUser(email, password, full_name, role, organization);
-    res.status(201).json(result);
+    if (!full_name) return res.status(400).json({ error: 'Full name is required' });
+    const result = await registerUser(email, password, full_name, role || 'user', organization);
+    // Auto-login after registration
+    const loginResult = await loginUser(email, password);
+    const permissions = await rbac.getUserPermissions(loginResult.user.id);
+    res.status(201).json({ ...loginResult, user: { ...loginResult.user, permissions } });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+});
+
+// Public roles list for registration form
+v1.get('/auth/roles', async (req, res) => {
+  try {
+    const roles = await rbac.getRoles();
+    // Only return non-system roles for public registration (exclude super_admin)
+    const publicRoles = (roles || []).filter(r => r.name !== 'super_admin');
+    res.json(publicRoles);
+  } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
 });
 
 v1.post('/auth/login', authLimiter, async (req, res) => {
@@ -340,7 +361,9 @@ v1.post('/auth/login', authLimiter, async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
     const result = await loginUser(email, password);
-    res.json(result);
+    // Also fetch permissions for the logged-in user
+    const permissions = await rbac.getUserPermissions(result.user.id);
+    res.json({ ...result, user: { ...result.user, permissions } });
   } catch (err) {
     res.status(401).json({ error: err.message });
   }
@@ -737,7 +760,9 @@ v1.get('/me', requireAuth, async (req, res) => {
   try {
     const user = await rbac.getUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json(user);
+    // Also fetch permissions
+    const permissions = await rbac.getUserPermissions(req.user.id);
+    res.json({ ...user, permissions });
   } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
 });
 
@@ -746,6 +771,87 @@ v1.get('/me/permissions', requireAuth, async (req, res) => {
     const permissions = await rbac.getUserPermissions(req.user.id);
     res.json(permissions);
   } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
+});
+
+// ── Update own profile ────────────────────────────────
+v1.put('/me', requireAuth, async (req, res) => {
+  try {
+    const { fullName, organization, currentPassword, newPassword } = req.body;
+    const updateData = {};
+    if (fullName !== undefined) updateData.fullName = fullName;
+    if (organization !== undefined) updateData.organization = organization;
+
+    // Password change
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ error: 'Current password is required to change password' });
+      }
+      // Validate new password
+      if (newPassword.length < 8 || !/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+        return res.status(400).json({ error: 'New password must be at least 8 characters with at least one letter and one digit' });
+      }
+      // Verify current password
+      const { default: bcryptLib } = await import('bcryptjs');
+      const userRow = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+      if (userRow.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+      const valid = await bcryptLib.compare(currentPassword, userRow.rows[0].password_hash);
+      if (!valid) return res.status(400).json({ error: 'Current password is incorrect' });
+      // Hash and set new password
+      const newHash = await bcryptLib.hash(newPassword, 12);
+      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, req.user.id]);
+    }
+
+    // Update other fields
+    if (Object.keys(updateData).length > 0) {
+      const updated = await rbac.updateUser(req.user.id, updateData, req.user.id);
+      if (!updated) return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return fresh profile
+    const profile = await rbac.getUserById(req.user.id);
+    const permissions = await rbac.getUserPermissions(req.user.id);
+    res.json({ ...profile, permissions });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// ── Promote current logged-in user to super_admin (first-time setup) ──
+v1.post('/me/make-super-admin', requireAuth, async (req, res) => {
+  try {
+    // Only allow if there are no super_admins yet, OR user is already super_admin
+    const adminCheck = await pool.query(
+      `SELECT COUNT(*) as cnt FROM users u JOIN roles r ON u.role_id = r.id WHERE r.name = 'super_admin'`
+    );
+    const superAdminCount = parseInt(adminCheck.rows[0].cnt);
+    
+    if (superAdminCount > 0 && req.user.role !== 'super_admin') {
+      return res.status(403).json({ error: 'Super admin already exists. Only existing super admins can promote users.' });
+    }
+
+    // Get super_admin role ID
+    const roleResult = await pool.query("SELECT id FROM roles WHERE name = 'super_admin'");
+    if (roleResult.rows.length === 0) return res.status(500).json({ error: 'Super admin role not found in database' });
+    const superAdminRoleId = roleResult.rows[0].id;
+
+    // Promote user
+    await pool.query('UPDATE users SET role_id = $1 WHERE id = $2', [superAdminRoleId, req.user.id]);
+
+    // Log action
+    await pool.query(
+      `INSERT INTO user_audit_log (user_id, action, target_user_id, details) VALUES ($1, 'self_promoted_super_admin', $1, '{"reason": "initial_setup"}')`,
+      [req.user.id]
+    );
+
+    // Return fresh profile
+    const profile = await rbac.getUserById(req.user.id);
+    const permissions = await rbac.getUserPermissions(req.user.id);
+    res.json({ ...profile, permissions, message: 'Successfully promoted to Super Administrator' });
+  } catch (error) {
+    console.error('Error promoting to super admin:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.use('/api/v1', v1);

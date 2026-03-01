@@ -22,6 +22,7 @@ import CrisisCorridor from './components/CrisisCorridor';
 import Leaderboard from './components/Leaderboard';
 import DataQualityPanel from './components/DataQualityPanel';
 import UserManagementPanel from './components/UserManagementPanel';
+import ProfilePanel from './components/ProfilePanel';
 import AuthModal from './components/AuthModal';
 import { useTheme } from './contexts/ThemeContext';
 import { useDataStore, useFilterStore, useMapStore, useAlertStore, useAuthStore } from './store';
@@ -44,6 +45,7 @@ const NAV_ITEMS = [
   { id: 'alerts' as ViewMode, label: 'Alerts', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
   { id: 'settings' as ViewMode, label: 'Data Quality', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
   { id: 'users' as ViewMode, label: 'User Management', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+  { id: 'profile' as ViewMode, label: 'My Profile', icon: 'M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
 ];
 
 function App() {
@@ -55,7 +57,7 @@ function App() {
     setStateFilter, setRiskFilter, setSearchQuery, setActiveView, clearFilters } = useFilterStore();
   const { selectedLGA, sidebarOpen, setSelectedLGA, setSidebarOpen } = useMapStore();
   const { unreadCount: alertCount } = useAlertStore();
-  const { isAuthenticated, user, logout: authLogout } = useAuthStore();
+  const { isAuthenticated, user, logout: authLogout, fetchProfile } = useAuthStore();
 
   // Tiering mode - must be declared before filteredData
   const tieringMode = useFilterStore((s) => s.tieringMode);
@@ -71,6 +73,13 @@ function App() {
 
   // WebSocket for real-time alerts
   useWebSocket();
+
+  // Auto-fetch user profile when token exists (on page load/refresh)
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchProfile();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Distinct states for dropdown
   const stateList = useMemo(() => {
@@ -164,11 +173,19 @@ function App() {
     else setSelectedLGA(null);
   };
 
-  const addIntervention = async (data: Partial<Intervention>) => {
+  const addIntervention = async (data: Partial<Intervention>): Promise<{ success: boolean; error?: string }> => {
+    const token = useAuthStore.getState().token;
+    if (!token) return { success: false, error: 'You must be logged in to add interventions.' };
     try {
-      const res = await axios.post(API + '/v1/interventions', data);
+      const res = await axios.post(API + '/v1/interventions', data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setInterventions(prev => [res.data, ...prev]);
-    } catch { /* silent */ }
+      return { success: true };
+    } catch (err: any) {
+      const msg = err?.response?.data?.error || err?.response?.data?.message || 'Failed to save intervention. Check your role permissions.';
+      return { success: false, error: msg };
+    }
   };
 
   const acknowledgeAnomaly = async (id: number) => {
@@ -287,13 +304,28 @@ function App() {
           )}
           <div className="toolbar-status">
             {isAuthenticated ? (
-              <button onClick={authLogout} className="rankings-toggle-btn" style={{ fontSize: 11, padding: '4px 12px' }}
-                title={user?.email || 'Logged in'}>
-                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ marginRight: 4 }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                {user?.full_name?.split(' ')[0] || 'Account'} · Sign Out
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {user?.role && (
+                  <span style={{
+                    padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 600,
+                    background: user.role === 'super_admin' ? '#7C3AED' : user.role === 'admin' ? '#2563EB' : '#6B7280',
+                    color: '#fff',
+                  }}>
+                    {user.role === 'super_admin' ? 'Super Admin' : user.role === 'admin' ? 'Admin' : user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  </span>
+                )}
+                <button onClick={() => { setActiveView('profile' as ViewMode); setSidebarOpen(false); }} className="rankings-toggle-btn" style={{ fontSize: 11, padding: '4px 10px' }}
+                  title="View Profile">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ marginRight: 4 }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  {user?.full_name?.split(' ')[0] || 'Account'}
+                </button>
+                <button onClick={authLogout} className="rankings-toggle-btn" style={{ fontSize: 11, padding: '4px 10px', color: 'var(--text-quaternary)' }}
+                  title="Sign Out">
+                  Sign Out
+                </button>
+              </div>
             ) : (
               <button onClick={() => setShowAuthModal(true)} className="download-btn"
                 style={{ width: 'auto', padding: '5px 14px', fontSize: 11 }}>
@@ -364,6 +396,7 @@ function App() {
           <div className="view-panel">
             <InterventionTracker interventions={interventions} onAdd={addIntervention}
               searchQuery={searchQuery} stateFilter={stateFilter}
+              hotspotsData={hotspotsData}
               onSelectLGA={(name) => {
                 const feat = hotspotsData?.features.find(f => f.properties.LGA_Name === name);
                 if (feat) { setSelectedLGA(feat); setActiveView('map'); setSidebarOpen(true); }
@@ -452,6 +485,13 @@ function App() {
         {activeView === 'users' && (
           <div className="view-panel">
             <UserManagementPanel />
+          </div>
+        )}
+
+        {/* Profile view */}
+        {activeView === 'profile' && (
+          <div className="view-panel">
+            <ProfilePanel />
           </div>
         )}
 

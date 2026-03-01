@@ -19,15 +19,15 @@ const BASE_PATTERNS: Record<string, number[]> = {
 };
 
 const HEAT_STYLES: Record<string, { bg: string; border: string }> = {
-  critical: { bg: 'rgba(239,68,68,.18)', border: 'rgba(239,68,68,.35)' },
-  high:     { bg: 'rgba(245,158,11,.18)', border: 'rgba(245,158,11,.35)' },
+  critical: { bg: 'rgba(239,68,68,.18)',  border: 'rgba(239,68,68,.35)' },
+  high:     { bg: 'rgba(249,115,22,.18)', border: 'rgba(249,115,22,.35)' },
   medium:   { bg: 'rgba(234,179,8,.15)',  border: 'rgba(234,179,8,.3)' },
   low:      { bg: 'rgba(16,185,129,.15)', border: 'rgba(16,185,129,.3)' },
 };
 
 const HEAT_TEXT: Record<string, string> = {
   critical: '#f87171',
-  high: '#fbbf24',
+  high: '#fb923c',
   medium: '#facc15',
   low: '#34d399',
 };
