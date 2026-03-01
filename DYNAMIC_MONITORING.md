@@ -1,155 +1,201 @@
-# IOPHIN — Dynamic Monitoring Guide (v3.0)
+﻿# IOPHIN — Dynamic Monitoring Guide (v4.0)
 
 ## Purpose
 
-Dynamic monitoring keeps poverty risk intelligence fresh by running scheduled data refresh, retraining, and operational analytics jobs.
+Dynamic monitoring keeps poverty risk intelligence fresh by running scheduled data refresh, ML retraining, anomaly detection, forecasting, and real-time event broadcasting.
 
-## Core Runtime Pieces
+## Core Runtime Components
 
-- `src/scheduler_service.py`: schedule and orchestration.
-- `src/config.py`: intervals and external source configuration.
-- `server/index.js`: live API serving + cache + websocket.
-- `server/init.sql`: advanced operational tables used by v1 routes.
+| Component | Role |
+|-----------|------|
+| `src/scheduler_service.py` | Job scheduling and orchestration (12+ periodic tasks) |
+| `src/config.py` | Intervals, API URLs, thresholds, model parameters |
+| `src/anomaly_detection.py` | Nightlight drop detection + Isolation Forest |
+| `src/predictive_model.py` | Prophet / linear forecasting (3 and 6 months) |
+| `src/temporal_analysis.py` | MPI trajectory classification + tier-crossing |
+| `src/spatial_statistics.py` | Moran's I, Getis-Ord Gi*, GWR |
+| `src/model_engine.py` | KNN imputation, PCA, K-Means + HDBSCAN clustering |
+| `src/advanced_model.py` | XGBoost dynamic composite scoring |
+| `src/feature_extraction.py` | VIIRS raster + 8 external API data sources |
+| `server/index.js` | API serving + Redis cache + WebSocket events |
+| `server/init.sql` | All operational tables and materialized views |
 
 ## Scheduler Job Categories
 
 ### Data Refresh Jobs
 
-| Job | Interval | Data Source | Purpose |
-|-----|----------|-------------|---------|
-| conflict | 1h | ACLED API | Conflict incident data |
-| viirs | 24h | Local raster | Nightlight intensity |
-| infrastructure | 6h | OSM Overpass | Health facilities, schools, roads |
-| grid3 | 168h | Shapefile | LGA boundary updates |
-| ndvi | 24h | Google Earth Engine | Vegetation index |
-| rainfall | 24h | Google Earth Engine | Precipitation data |
-| population | 720h | WorldPop API | Population density |
-| idp | 168h | DTM/IOM API | IDP displacement |
-| food_price | 168h | HDX | Food price index |
-| external_enrichment | 24h | Multiple APIs | General enrichment |
-| gee_environmental | 24h | Google Earth Engine | Environmental data |
+| Job | Interval | Data Source | Target |
+|-----|----------|-------------|--------|
+| conflict | 1h | ACLED REST API | `poverty_hotspots.conflict_flag`, `last_conflict_event` |
+| viirs | 24h | GEE / VIIRS raster | `mean_nightlight_intensity` |
+| infrastructure | 6h | OSM Overpass API | `health_facility_count`, `school_count`, `road_density_km` |
+| grid3 | 168h (weekly) | GRID3 shapefile | LGA boundary geometry updates |
+| ndvi | 24h | GEE (MODIS) | `ndvi_mean` |
+| rainfall | 24h | GEE (CHIRPS) | `rainfall_mm` |
+| population | 720h (monthly) | WorldPop API | `population_density` |
+| idp | 168h (weekly) | DTM/IOM API | `idp_count` |
+| food_price | 168h (weekly) | HDX API | `food_price_index` |
+| external_enrichment | 24h | Multiple APIs | Combined enrichment pass |
+| gee_environmental | 24h | Google Earth Engine | Environmental indicators |
 
 ### Analytics Jobs
 
-| Job | Purpose |
-|-----|---------|
-| ml_retrain | Retrain clustering/scoring models |
-| anomaly_detection | Detect unusual patterns in poverty scores |
-| predictive_model | Generate forecasts for risk escalation |
-
-## Risk Tiering Modes
-
-Risk labels used by alerts and dashboards can be derived using cluster-relative ranking (default) or absolute thresholds on `composite_poverty_score`. Configure `RISK_TIERING_MODE` in `src/config.py` or via environment variables.
-
-### Cluster Mode (Default)
-- LGAs clustered by multiple indicators
-- Clusters ranked to assign tiers
-- Relative, context-aware classification
-
-### Absolute Mode
-- Fixed numeric thresholds
-- Configurable via environment:
-  ```env
-  RISK_TIERING_MODE=absolute
-  THRESHOLD_MINIMAL=0.05
-  THRESHOLD_LOW=0.10
-  THRESHOLD_MEDIUM=0.20
-  THRESHOLD_HIGH=0.40
-  THRESHOLD_CRITICAL=1.0
-  ```
+| Job | Interval | Module | Output |
+|-----|----------|--------|--------|
+| ml_retrain | 12h | `model_engine.py`, `advanced_model.py` | Re-cluster, re-score, save history snapshot |
+| anomaly_detection | configurable | `anomaly_detection.py` | Nightlight drop flags, Isolation Forest outliers -> `anomaly_alerts` |
+| predictive_model | configurable | `predictive_model.py` | Prophet/linear forecasts -> `risk_forecasts` |
 
 ## Data Persistence Targets
 
+### Core Tables
+| Table | Updated By | Purpose |
+|-------|-----------|---------|
+| `poverty_hotspots` | scheduler (upsert), pipeline | Current LGA poverty data (30+ columns) |
+| `hotspot_history` | scheduler (snapshot) | Historical records for trend analysis |
+
+### Operational Tables
+| Table | Updated By | Purpose |
+|-------|-----------|---------|
+| `risk_change_log` | scheduler | Risk level transition audit trail |
+| `anomaly_alerts` | anomaly_detection | Detected anomalies with severity + acknowledgment |
+| `risk_forecasts` | predictive_model | 3/6 month risk predictions per LGA |
+| `interventions` | API (user CRUD) | Aid/development program tracking |
+| `alert_subscriptions` | API (user CRUD) | Email + webhook notification preferences |
+| `saved_views` | API (user CRUD) | Shareable dashboard view configurations |
+
+### Auth/RBAC Tables
 | Table | Purpose |
 |-------|---------|
-| `poverty_hotspots` | Current-state hotspot records |
-| `hotspot_history` | Historical snapshots |
-| `risk_change_log` | Recent score/risk transitions |
-| `anomaly_alerts` | Anomaly flags and acknowledgment status |
-| `risk_forecasts` | Forecast outputs |
-| `interventions` | Intervention program tracking |
-| `alert_subscriptions` | User alert preferences |
-| `saved_views` | Shareable dashboard configurations |
+| `users` | Account management (email, role, org, active) |
+| `roles` | super_admin, admin, government, ngo, public, user |
+| `permissions` | 15 granular permissions across 6 domains |
+| `role_permissions` | Role-permission mapping |
+| `user_geographic_scopes` | Per-user state/LGA access restrictions |
+| `user_audit_log` | JSONB audit trail for admin actions |
+
+### Materialized Views
+| View | Refresh | Purpose |
+|------|---------|---------|
+| `mv_state_aggregation` | On demand / after retrain | Per-state averages |
+| `mv_risk_distribution` | On demand / after retrain | Risk tier counts |
+| `mv_rankings` | On demand / after retrain | LGA rank ordering |
+
+Refresh all views: `SELECT refresh_materialized_views();`
+
+## Risk Tiering Modes
+
+### Cluster Mode (Default)
+- LGAs clustered by composite poverty score, nightlights, health/education, infrastructure
+- K-Means (k=5) + optional HDBSCAN with silhouette-score comparison
+- Clusters ranked worst-to-best to assign: Critical, High, Medium, Low, Minimal
+- Relative tiers that adapt to data distribution
+
+### Absolute Mode
+- Fixed thresholds on `composite_poverty_score`:
+  | Tier | Threshold |
+  |------|-----------|
+  | Minimal | < 0.05 |
+  | Low | 0.05 - 0.10 |
+  | Medium | 0.10 - 0.20 |
+  | High | 0.20 - 0.40 |
+  | Critical | > 0.40 |
+- Configurable via `RISK_TIERING_MODE=absolute` + `THRESHOLD_*` env vars
+- Deterministic: same score always maps to same tier
+
+### Configuration
+```env
+RISK_TIERING_MODE=cluster    # or 'absolute'
+THRESHOLD_MINIMAL=0.05
+THRESHOLD_LOW=0.10
+THRESHOLD_MEDIUM=0.20
+THRESHOLD_HIGH=0.40
+THRESHOLD_CRITICAL=1.0
+```
+
+Frontend UI toggle persists to localStorage and optionally syncs to server via `POST /api/config`.
 
 ## API Consumption Pattern
 
-### Frontend Uses:
-- Compatibility routes (`/api/hotspots`, `/api/stats`, `/api/rankings`, `/api/states`)
-- Expanded routes (`/api/v1/anomalies`, `/api/v1/changes`, `/api/v1/forecasts`, etc.)
+### Server Data Sources (priority order)
+1. **Redis cache** — TTL-based, checked first (`X-Data-Source: cache`)
+2. **PostgreSQL** — primary data store (`X-Data-Source: database`)
+3. **GeoJSON file** — fallback for compatible routes (`X-Data-Source: file`)
 
-### Server Uses:
-- Redis cache for hot endpoints
-- PostgreSQL as primary source
-- GeoJSON fallback for compatible endpoints when DB is unavailable
+### Frontend Endpoints Used
+| Route Family | Endpoints |
+|--------------|-----------|
+| Compatibility (`/api/*`) | hotspots, stats, rankings, states, lga, history, config |
+| Expanded (`/api/v1/*`) | anomalies, changes, forecasts, escalations, correlation, interventions, alerts, saved-views, reports, users, roles, permissions |
 
-## Real-Time Updates
+### Redis Cache TTLs
+| Key | TTL |
+|-----|-----|
+| hotspots | 5 min |
+| stats | 2 min |
+| rankings | 5 min |
+| states | 5 min |
+| anomalies | 1 min |
+| forecasts | 10 min |
+| changes | 1 min |
+| correlation | 5 min |
+| interventions | 2 min |
 
-### WebSocket Events
-The system pushes real-time updates via Socket.IO:
+## Real-Time WebSocket Events
 
-| Event | Description |
-|-------|-------------|
-| `risk_change` | LGA risk level changed |
-| `anomaly_detected` | New anomaly detected |
-| `forecast_update` | Forecast data updated |
-| `system_status` | System status change |
+| Event | Trigger | Payload |
+|-------|---------|---------|
+| `alert` | Risk change, anomaly, forecast update | `{ type, lga_name, state, timestamp, ... }` |
+| `lga-update` | LGA data changed | Targeted to `lga:{name}` room |
+| `state-update` | State data changed | Targeted to `state:{name}` room |
 
-### Frontend Integration
-- `useWebSocket` hook manages connection
-- Automatic reconnection on disconnect
-- Updates to Zustand stores on events
+Frontend `useWebSocket` hook:
+- Auto-connects via Socket.IO
+- Subscribes to rooms on LGA/state selection
+- Updates Zustand stores on events
+- Auto-reconnects on disconnect
 
 ## Operational Checklist
 
-1. Confirm DB and Redis connectivity.
-2. Confirm scheduler starts cleanly.
-3. Confirm API health endpoint returns healthy status.
-4. Confirm `/api/v1/anomalies` and `/api/v1/changes` return data structures.
-5. Confirm dashboard alert and anomaly surfaces update.
-6. Verify WebSocket connection in browser console.
+1. Confirm PostgreSQL and Redis connectivity
+2. Confirm scheduler starts cleanly (`python -m src.scheduler_service`)
+3. Confirm API health: `GET /api/health`
+4. Confirm anomalies endpoint: `GET /api/v1/anomalies`
+5. Confirm changes endpoint: `GET /api/v1/changes`
+6. Confirm forecasts endpoint: `GET /api/v1/forecasts`
+7. Verify WebSocket in browser console
+8. Check dashboard Alerts and Data Quality tabs update
+9. Review Swagger docs: `GET /api-docs`
 
 ## Monitoring Commands
 
-### Check API Health
 ```bash
+# API health
 curl http://localhost:5000/api/health
-```
 
-### Check Current Configuration
-```bash
+# Current risk tiering config
 curl http://localhost:5000/api/config
-```
 
-### View Recent Changes
-```bash
-curl http://localhost:5000/api/v1/changes?days=7
-```
+# Recent changes
+curl "http://localhost:5000/api/v1/changes?days=7"
 
-### View Active Anomalies
-```bash
+# Active anomalies
 curl http://localhost:5000/api/v1/anomalies
-```
 
-### View Forecasts
-```bash
+# Forecasts
 curl http://localhost:5000/api/v1/forecasts
+
+# Escalation predictions
 curl http://localhost:5000/api/v1/forecasts/escalations
+
+# Redis status (if redis-cli available)
+redis-cli ping
+redis-cli info memory
 ```
-
-## Recommended Production Controls
-
-- Set strong `JWT_SECRET`
-- Restrict `CORS` origins (`CLIENT_URL` in production)
-- Monitor scheduler logs and API error logs
-- Use managed PostgreSQL/Redis where possible
-- Periodically refresh materialized views if using SQL optimization paths
-- Configure appropriate scheduler intervals for your data freshness requirements
-- Set up alerting for scheduler failures
-- Monitor Redis memory usage
 
 ## External API Configuration
 
-### Required for Full Functionality
+### Required for full enrichment
 
 ```env
 # ACLED Conflict Data
@@ -161,26 +207,30 @@ DTM_API_KEY=your-api-key
 
 # Google Earth Engine
 GEE_PROJECT=your-project-id
-GEE_SERVICE_ACCOUNT=your-service-account@project.iam.gserviceaccount.com
-GEE_KEY_FILE=./gee/key-file.json
+GEE_SERVICE_ACCOUNT=your-sa@project.iam.gserviceaccount.com
+GEE_KEY_FILE=./gee/your-key-file.json
 
-# NASA LAADS (for satellite data)
+# NASA LAADS (satellite data)
 NASA_LAADS_TOKEN=your-token
 ```
 
-## Troubleshooting
+### GEE Service Account Setup
+The project includes a GEE service account key at `gee/gen-lang-client-0206534143-b4d81af822c7.json`. For production, use your own GEE project and service account.
 
-### Scheduler Not Running
-- Check Python dependencies are installed
-- Verify database connectivity
-- Check external API credentials
+## Troubleshooting Dynamic Mode
 
-### No Real-Time Updates
-- Verify Redis is running
-- Check WebSocket connection in browser
-- Verify Socket.IO is initialized on server
+### Scheduler not starting
+- Check Python dependencies: `pip install -r requirements.txt`
+- Verify `DATABASE_URL` in `.env`
+- Check logs for import errors
 
-### Stale Data
-- Check scheduler job logs
-- Verify external API responses
+### No real-time updates
+- Verify Redis is running: `redis-cli ping`
+- Check WebSocket connection in browser console
+- Verify Socket.IO CORS settings in `server/index.js`
+
+### Stale data
+- Check scheduler job logs for errors
+- Verify external API credentials
 - Check database write permissions
+- Force refresh: `python -m src.main && python -m src.migrate_to_db`

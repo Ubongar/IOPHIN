@@ -51,5 +51,30 @@
   "overrides": {
     "ajv": "^8.18.0",
     "minimatch": "^10.2.1"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "PostgreSQL",
+      "properties": {
+        "pgsql.connections": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "host": { "type": "string" },
+              "port": { "type": "number" },
+              "database": { "type": "string" },
+              "user": { "type": "string" }
+            },
+            "required": ["name", "host", "port", "database", "user"]
+          }
+        }
+      }
+    },
+    "configurationDefaults": {
+      "pgsql.connections": []
+    }
   }
 }

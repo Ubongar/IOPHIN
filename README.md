@@ -1,70 +1,106 @@
-# IOPHIN — Poverty Hotspot Intelligence for Nigeria
+﻿# IOPHIN — Poverty Hotspot Intelligence for Nigeria
 
-IOPHIN is a full-stack geospatial intelligence platform for identifying and monitoring poverty risk across Nigeria LGAs.
+**Version 4.0** — March 2026
 
-## System Version
+IOPHIN (Integrated Open Poverty Hotspot Intelligence Network) is a full-stack geospatial intelligence platform for identifying, monitoring, and forecasting poverty risk across all 774 Local Government Areas (LGAs) in Nigeria.
 
-**Current Version:** 3.0 (February 2026)
-
-The current codebase includes:
-- A Python intelligence engine (`src/`) for feature extraction, clustering, forecasting, anomaly detection, and scheduled refresh.
-- A Node.js API (`server/`) with Redis cache, JWT auth, WebSocket broadcast, reporting endpoints, and PostgreSQL-first data access.
-- A React + TypeScript dashboard (`client/`) with multi-view analytics, intervention planning tools, and real-time alert surfaces.
-
-## What's in this version
+## What's New in v4.0
 
 ### Core Features (Original v1.0)
-- Basic Python pipeline for feature extraction and clustering from MPI and nightlight data
-- Simple Node.js API with basic endpoints for hotspots and statistics
-- React dashboard with interactive choropleth map view
-- Static data processing with CSV/GeoJSON output
+- Python pipeline for feature extraction and K-Means clustering from MPI and nightlight data
+- Simple Node.js API for hotspots and statistics
+- React dashboard with interactive choropleth map
+- Static CSV/GeoJSON output
 
 ### Added in v2.0
-- PostgreSQL database integration with PostGIS spatial support
-- Redis caching for improved API performance
-- JWT authentication with role-based access control
+- PostgreSQL + PostGIS database with spatial indexes
+- Redis caching for API performance
+- JWT authentication with role-based access control (RBAC)
 - WebSocket real-time updates via Socket.IO
-- Expanded API routes under `/api/v1/*`
+- Expanded `/api/v1/*` route family
 - Anomaly detection and forecasting modules
 - Intervention tracking system
-- Alert subscription management
+- Alert subscription management (email + webhook)
 
-### Added in v3.0 (Current)
-- **9 Dashboard Views**: Map, Rankings, State Overview, Interventions, Seasonal Calendar, Budget Optimizer, Reports, Alerts, Data Quality
-- **Risk Tiering Modes**: Cluster-relative (default) and absolute threshold modes with UI toggle
-- **Advanced Analytics**: Correlation analysis, crisis corridor identification, leaderboards
-- **Report Generation**: PDF report builder with customizable content
-- **Saved Views**: Share and save dashboard configurations
-- **Theme Support**: Dark and light mode toggle
-- **Scrollytelling Tour**: Interactive onboarding experience
-- **Data Quality Panel**: Monitor data freshness and completeness
-- **Enhanced Scheduler**: Configurable intervals for 12+ data refresh jobs
-- **External API Integration**: ACLED conflict, DTM IDP, Google Earth Engine, HDX, WorldPop
+### Added in v3.0
+- 9 dashboard views (Map, Rankings, State Overview, Interventions, Seasonal, Budget, Reports, Alerts, Data Quality)
+- Risk tiering modes (cluster-relative and absolute thresholds) with UI toggle
+- Advanced analytics (correlation, crisis corridor, leaderboards)
+- PDF report builder with customisable scope (national/state/LGA)
+- Saved views with shareable tokens
+- Dark/light theme toggle
+- Scrollytelling onboarding tour
+- Data quality monitoring panel
+- 12+ configurable scheduler jobs for dynamic data refresh
+- External API integration (ACLED, DTM/IOM, Google Earth Engine, HDX, WorldPop, OSM Overpass)
+
+### Added in v4.0 (Current)
+- **User Management Panel**: Full RBAC UI — manage users, roles, permissions, geographic scopes, and audit logs
+- **Super Admin Role**: Elevated `super_admin` role with system-wide access
+- **Geographic Scoping**: Per-user state/LGA access restrictions via `user_geographic_scopes`
+- **Audit Logging**: JSONB-backed `user_audit_log` for all administrative actions
+- **Enhanced RBAC**: 15 granular permissions across users, data, reports, alerts, interventions, and settings
+- **XGBoost/LightGBM Dynamic Scoring**: ML-trained composite poverty scores replacing static weighted averages when sufficient ground-truth data exists
+- **HDBSCAN Clustering**: Dual clustering (K-Means + HDBSCAN) with silhouette-score comparison
+- **Senatorial MPI Upgrade**: 3x resolution MPI from senatorial districts (109 zones to 774 LGA mapping via fuzzy match)
+- **Spatial Statistics**: Moran's I, Getis-Ord Gi*, and Geographically Weighted Regression
+- **Temporal Analysis**: MPI trajectory classification (deteriorating/stable/improving) with tier-crossing alerts
+- **Comprehensive Name Normalisation**: 60+ LGA name corrections and 3-level matching for GeoJSON merge
+- **Field View, Radar Comparison, Trend Charts, Correlation Scatter, Choropleth Toggle, Time Slider** components
+- **MapLibre GL Integration**: Additional map rendering via `react-map-gl` + `maplibre-gl`
+- **Google Earth Engine Integration**: Service account auth for NDVI, rainfall, and environmental data
+- **Swagger/OpenAPI 3.0**: Full API documentation at `/api-docs`
+- **Comprehensive Docker Compose**: 4-service stack (PostgreSQL/PostGIS, Redis, API, Client)
 
 ## Tech Stack
 
 ### Frontend (`client/`)
-- React 19 + TypeScript + Vite
-- Tailwind CSS 4
-- Leaflet / react-leaflet
-- Recharts + framer-motion
-- Zustand for app state
-- socket.io-client
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| React | 19 | UI framework |
+| TypeScript | 5.8 | Type safety |
+| Vite | 7 | Build tool / dev server |
+| Tailwind CSS | 4 | Utility-first styling |
+| Leaflet / react-leaflet | 1.9 / 5.0 | Choropleth map |
+| MapLibre GL / react-map-gl | 5.18 / 8.1 | Alternative map renderer |
+| Recharts | 3.7 | Charts and visualisations |
+| Framer Motion | 11 | Animations |
+| Zustand | 4.5 | State management |
+| Socket.IO Client | 4.7 | Real-time WebSocket |
+| Turf.js | 7.0 | Client-side geospatial |
+| jsPDF + AutoTable | 4.1 / 5.0 | Client-side PDF export |
 
 ### Backend (`server/`)
-- Node.js + Express 4 (ESM)
-- PostgreSQL (`pg`)
-- Redis (`ioredis`)
-- Socket.IO
-- JWT + bcrypt auth
-- PDF report generation (`pdfkit`)
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| Node.js | 20 | Runtime |
+| Express | 4 (ESM) | HTTP framework |
+| PostgreSQL / pg | 16 / 8.18 | Primary data store |
+| PostGIS | 3.4 | Spatial queries |
+| Redis / ioredis | 7 / 5.3 | Cache layer |
+| Socket.IO | 4.7 | WebSocket server |
+| JWT / bcrypt | 9 / 2.4 | Authentication |
+| PDFKit | 0.17 | Server-side PDF reports |
+| Swagger UI Express | 5.0 | API docs |
+| Helmet / Morgan | 7 / 1.10 | Security / logging |
+| Nodemailer | 8.0 | Email notifications |
 
-### Python Engine (`src/`)
-- pandas / numpy / scikit-learn / hdbscan
-- xgboost / lightgbm / prophet / pyod / shap
-- geopandas / rasterio / shapely / pyproj
-- SQLAlchemy + psycopg2
-- Earth Engine + external API enrichment
+### Python Intelligence Engine (`src/`)
+| Technology | Purpose |
+|-----------|---------|
+| pandas / numpy | Data manipulation |
+| scikit-learn | KNN imputation, PCA, K-Means, StandardScaler |
+| hdbscan | Density-based clustering |
+| xgboost / lightgbm | Dynamic composite poverty scoring |
+| prophet | Time-series forecasting |
+| pyod | Anomaly detection (Isolation Forest) |
+| shap | Model interpretability |
+| geopandas / rasterio / shapely | Geospatial processing |
+| libpysal / esda / mgwr / splot | Spatial statistics |
+| SQLAlchemy / psycopg2 | PostgreSQL ORM |
+| earthengine-api | Google Earth Engine |
+| schedule | Job scheduling |
+| thefuzz / python-Levenshtein | Fuzzy name matching |
 
 ## Quick Start (Local)
 
@@ -75,17 +111,15 @@ The current codebase includes:
 pip install -r requirements.txt
 
 # Backend
-cd server
-npm install
+cd server && npm install && cd ..
 
 # Frontend
-cd ../client
-npm install
+cd client && npm install && cd ..
 ```
 
 ### 2) Configure environment
 
-Create `.env` at project root and/or `server/.env` with at least:
+Create `.env` at project root and `server/.env`:
 
 ```env
 USE_DATABASE=true
@@ -98,164 +132,245 @@ DB_PASSWORD=YOUR_PASSWORD
 PORT=5000
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=change-me
+NODE_ENV=development
+RISK_TIERING_MODE=cluster
 ```
 
-### 3) Generate/update model outputs
+### 3) Start infrastructure
+
+```bash
+# Option A: Docker
+docker compose up -d postgres redis
+
+# Option B: Local PostgreSQL + Redis
+```
+
+### 4) Initialise database
+
+```bash
+psql -U postgres -d iophin_db -f server/init.sql
+```
+
+### 5) Generate model outputs and migrate
 
 ```bash
 python -m src.main
 python -m src.migrate_to_db
 ```
 
-### 4) Run services
+### 6) Run services
 
 ```bash
-# Terminal 1
-cd server
-npm run dev
+# Terminal 1 — API
+cd server && npm run dev
 
-# Terminal 2
-cd client
-npm run dev
+# Terminal 2 — Frontend
+cd client && npm run dev
 
-# Optional Terminal 3 (dynamic monitoring)
+# Terminal 3 (optional) — Dynamic monitoring
 python -m src.scheduler_service
 ```
 
-Open `http://localhost:5173`.
+### 7) Open
 
-## Risk Tiering Modes
+- Dashboard: `http://localhost:5173`
+- API Health: `http://localhost:5000/api/health`
+- Swagger Docs: `http://localhost:5000/api-docs`
 
-The application supports two modes for mapping numeric poverty scores to human-readable risk tiers:
-
-- **cluster (default)**: LGAs are clustered by multiple indicators (composite poverty score, nightlights, etc.) and clusters are ranked to assign tiers (Critical, High, Medium, Low, Minimal). This produces relative, context-aware tiers consistent with historical behavior.
-- **absolute**: LGAs are assigned tiers using fixed numeric thresholds on `composite_poverty_score` (configurable via environment variables). This mode is deterministic and easier to interpret but may change historical distributions.
-
-To switch modes at runtime use the toolbar toggle in the web app (Top-right) or set `RISK_TIERING_MODE` in the environment (`cluster` or `absolute`).
-
-## Docker (optional)
+## Docker Compose (Full Stack)
 
 ```bash
 docker compose up --build
 ```
 
-Services:
-- API: `http://localhost:5000`
-- Client: `http://localhost:5173`
-- PostgreSQL: `localhost:5432`
-- Redis: `localhost:6379`
+| Service | Port | Image |
+|---------|------|-------|
+| PostgreSQL + PostGIS | 5432 | `postgis/postgis:16-3.4` |
+| Redis | 6379 | `redis:7-alpine` |
+| API Server | 5000 | `./server` |
+| Client | 5173 / 80 | `./client` (nginx) |
+
+## Data Flow
+
+```text
+INPUT DATA SOURCES
+  Local Files:
+    data/raw/nga_mpi(3).csv                  (State MPI, 37 states)
+    data/raw/Nigeria MPI by Senatorial District.csv  (109 districts)
+    data/raw/NGA_LGA_Boundaries_2_*/grid3_*.shp      (774 LGA shapes)
+    data/raw/viirs_2024.tif                           (10.8 GB raster)
+  External APIs (scheduler_service.py):
+    ACLED -> conflict incidents
+    DTM/IOM -> IDP displacement
+    Google Earth Engine -> NDVI, rainfall, nightlights
+    HDX -> food prices
+    WorldPop -> population density
+    OSM Overpass -> health facilities, schools, roads
+        |
+        v
+PYTHON INTELLIGENCE ENGINE (src/)
+  Phase 1: Feature Extraction (data_loader, feature_extraction)
+  Phase 2: Data Fusion (model_engine: KNN, composite score, PCA, K-Means + HDBSCAN)
+  Phase 3: Analytics (anomaly_detection, predictive_model, spatial_statistics, temporal_analysis)
+        |
+        v
+OUTPUT ARTIFACTS
+  data/processed/final_model_output.csv
+  data/processed/hotspots.geojson
+  data/processed/hotspots.absolute.geojson
+  models/xgboost_poverty_model.pkl
+        |
+        v
+PostgreSQL + PostGIS (iophin_db)
+  Tables: poverty_hotspots, hotspot_history, risk_change_log, anomaly_alerts,
+          risk_forecasts, interventions, users, roles, permissions, ...
+  Mat. Views: mv_state_aggregation, mv_risk_distribution, mv_rankings
+        |
+        v
+Node.js API (server/) + Redis Cache
+  /api/*     backward-compatible routes
+  /api/v1/*  expanded analytical routes
+  /api-docs  Swagger UI
+  Socket.IO  real-time WebSocket events
+        |
+        v
+React Dashboard (client/)
+  10 views: Map, Rankings, States, Interventions, Seasonal,
+            Budget, Reports, Alerts, Data Quality, User Management
+  Zustand stores + WebSocket + Risk Mode Toggle + Theme
+```
+
+## Risk Tiering Modes
+
+| Mode | Approach | Use Case |
+|------|----------|----------|
+| `cluster` (default) | K-Means/HDBSCAN clustering on multiple indicators; clusters ranked to assign tiers | Relative, context-aware prioritisation |
+| `absolute` | Fixed numeric thresholds on `composite_poverty_score` | Deterministic, easy to interpret |
+
+**Absolute thresholds** (configurable via env):
+| Tier | Score Range |
+|------|------------|
+| Minimal | 0 - 0.05 |
+| Low | 0.05 - 0.10 |
+| Medium | 0.10 - 0.20 |
+| High | 0.20 - 0.40 |
+| Critical | 0.40 - 1.0 |
+
+Toggle at runtime via the UI toolbar or `RISK_TIERING_MODE` environment variable.
 
 ## API Surface
 
-### Backward-compatible endpoints (`/api/*`)
-- `GET /api/health`
-- `GET /api/hotspots`
-- `GET /api/stats`
-- `GET /api/lga/:name`
-- `GET /api/states`
-- `GET /api/rankings`
-- `GET /api/history/:lga`
-- `GET /api/config` - Returns current risk tiering configuration
-- `POST /api/config` - Update risk tiering mode (admin only)
+### Health and Config
+- `GET /api/health` — service health check
+- `GET /api/config` — current risk tiering configuration
+- `POST /api/config` — update tiering mode (admin only)
 
-### V1 expanded endpoints (`/api/v1/*`)
-- Auth: `POST /auth/register`, `POST /auth/login`
-- Hotspots/tools: `GET /hotspots`, `GET /hotspots/within-radius`, `GET /stats`, `GET /states`, `GET /rankings`
-- LGA analytics: `GET /lga/:name`, `GET /lga/:name/trends`, `GET /lga/:name/forecast`, `GET /lga/:name/anomalies`
-- Change/anomaly: `GET /changes`, `GET /anomalies`, `PATCH /anomalies/:id/acknowledge`
-- Forecasts: `GET /forecasts`, `GET /forecasts/escalations`
-- Correlation: `GET /correlation/:metric1/:metric2`
-- Interventions: `GET /interventions`, `POST /interventions`, `PUT /interventions/:id`
-- Alerts: `GET /alerts/my`, `POST /alerts/subscribe`, `DELETE /alerts/:id`
-- Saved views: `GET /saved-views`, `POST /saved-views`, `GET /saved-views/:token`
-- Reports: `POST /reports/generate`
+### Backward-Compatible (`/api/*`)
+- `GET /api/hotspots`, `/api/stats`, `/api/lga/:name`, `/api/states`, `/api/rankings`, `/api/history/:lga`
+
+### Expanded (`/api/v1/*`)
+| Category | Endpoints |
+|----------|-----------|
+| **Auth** | `POST /auth/register`, `POST /auth/login`, `GET /auth/profile` |
+| **Hotspots** | `GET /hotspots`, `GET /hotspots/within-radius`, `GET /stats`, `GET /states`, `GET /rankings` |
+| **LGA Analytics** | `GET /lga/:name`, `GET /lga/:name/trends`, `GET /lga/:name/forecast`, `GET /lga/:name/anomalies` |
+| **Change/Anomaly** | `GET /changes`, `GET /anomalies`, `PATCH /anomalies/:id/acknowledge` |
+| **Forecasts** | `GET /forecasts`, `GET /forecasts/escalations` |
+| **Correlation** | `GET /correlation/:metric1/:metric2` |
+| **Interventions** | `GET /interventions`, `POST /interventions`, `PUT /interventions/:id` |
+| **Alerts** | `GET /alerts/my`, `POST /alerts/subscribe`, `DELETE /alerts/:id` |
+| **Saved Views** | `GET /saved-views`, `POST /saved-views`, `GET /saved-views/:token` |
+| **Reports** | `POST /reports/generate` |
+| **Users/RBAC** | `GET /users`, `PUT /users/:id/role`, `GET /roles`, `GET /permissions`, geographic scopes, audit log |
+
+Swagger UI available at `http://localhost:5000/api-docs`.
 
 ## Frontend Components
 
-### Navigation Views
-| View | Description |
-|------|-------------|
-| Map | Interactive choropleth map with LGA risk visualization |
-| Rankings | Sortable table of LGAs by poverty score |
-| State Overview | Aggregate statistics by state |
-| Interventions | Track and manage intervention programs |
-| Seasonal | Seasonal calendar for planning |
-| Budget Optimizer | Allocate resources based on risk |
-| Reports | Generate PDF reports |
-| Alerts | Manage alert subscriptions |
-| Data Quality | Monitor data freshness and coverage |
+### Navigation Views (10)
+| View | Component | Description |
+|------|-----------|-------------|
+| Map | `MapComponent.tsx` | Interactive choropleth with risk layers |
+| Rankings | `RankingsTable.tsx` | Sortable table of all 774 LGAs |
+| State Overview | `StateOverview.tsx` | Aggregate statistics by state |
+| Interventions | `InterventionTracker.tsx` | CRUD for intervention programs |
+| Seasonal | `SeasonalCalendar.tsx` | Seasonal vulnerability calendar |
+| Budget | `BudgetOptimizer.tsx` | Resource allocation optimisation |
+| Reports | `ReportBuilder.tsx` | PDF report generation |
+| Alerts | `AlertsManager.tsx` | Alert subscription management |
+| Data Quality | `DataQualityPanel.tsx` | Data freshness monitoring |
+| User Management | `UserManagementPanel.tsx` | RBAC: users, roles, permissions, scopes |
 
-### Key Components
-- `MapComponent.tsx` - Main map with choropleth layers
-- `Sidebar.tsx` - LGA detail panel with statistics
-- `RankingsTable.tsx` - Sortable rankings display
-- `AnomalyPanel.tsx` - Anomaly detection results
-- `InterventionTracker.tsx` - Intervention management
-- `BudgetOptimizer.tsx` - Resource allocation tool
-- `ReportBuilder.tsx` - PDF report generation
-- `AlertsManager.tsx` - Alert subscription management
-- `CrisisCorridor.tsx` - Crisis corridor identification
-- `Leaderboard.tsx` - Performance comparisons
-- `DataQualityPanel.tsx` - Data quality metrics
-- `ScrollytellingTour.tsx` - Interactive onboarding
+### Sidebar and Overlay Components
+`Sidebar.tsx`, `AnomalyPanel.tsx`, `CrisisCorridor.tsx`, `Leaderboard.tsx`, `Legend.tsx`, `SearchBar.tsx`, `ChoroplethToggle.tsx`, `TimeSlider.tsx`, `TrendChart.tsx`, `CorrelationScatter.tsx`, `RadarComparison.tsx`, `FieldView.tsx`, `ScrollytellingTour.tsx`, `AuthModal.tsx`
+
+### State Management (Zustand)
+| Store | Purpose |
+|-------|---------|
+| `useDataStore` | Hotspots, stats, rankings, anomalies, forecasts |
+| `useFilterStore` | State filter, risk filter, search, active view, tiering mode |
+| `useMapStore` | Selected LGA, sidebar visibility |
+| `useAuthStore` | Authentication state, user info, role |
+| `useAlertStore` | Unread alert count |
 
 ## Repository Structure
 
 ```text
 IOPHIN/
-├── client/
-│   ├── src/
-│   │   ├── components/         # Map + analytics + advanced planning/reporting views
-│   │   ├── contexts/           # Theme context
-│   │   ├── hooks/              # WebSocket hook
-│   │   ├── store/              # Zustand stores
-│   │   ├── utils/              # Risk tier utilities
-│   │   ├── App.tsx             # Main multi-view shell
-│   │   └── types.ts
-│   └── package.json
-├── server/
-│   ├── index.js                # API server + v1 routes
-│   ├── database.js             # DB access/query layer
-│   ├── auth.js                 # JWT + role checks
-│   ├── alerts.js               # Alert subscriptions
-│   ├── reports.js              # Report generation
-│   ├── redis.js                # Redis cache utilities
-│   ├── websocket.js            # Socket.IO setup
-│   ├── init.sql                # PostGIS + advanced tables/views
-│   └── package.json
-├── src/                        # Python intelligence engine
-│   ├── main.py                 # Static pipeline orchestration
-│   ├── scheduler_service.py    # Dynamic monitoring scheduler
-│   ├── feature_extraction.py   # Raster/API enrichment
-│   ├── model_engine.py         # Clustering and scoring
-│   ├── predictive_model.py     # Forecasting
-│   ├── anomaly_detection.py    # Anomaly detection
-│   ├── advanced_model.py       # Advanced analytics
-│   ├── spatial_statistics.py   # Spatial analysis
-│   ├── temporal_analysis.py    # Temporal analysis
-│   └── migrate_to_db.py        # DB migration
-├── data/
-│   ├── raw/                    # Source datasets
-│   └── processed/              # Model outputs
-├── docs/
-├── scripts/
-├── docker-compose.yml
-└── requirements.txt
++-- client/                          # React + TypeScript dashboard
+|   +-- src/
+|   |   +-- components/              # 26 UI components
+|   |   +-- contexts/ThemeContext.tsx
+|   |   +-- hooks/useWebSocket.ts
+|   |   +-- store/                   # 5 Zustand stores
+|   |   +-- utils/riskTiers.ts
+|   |   +-- App.tsx, main.tsx, types.ts, index.css
+|   +-- Dockerfile, nginx.conf, package.json, vite.config.ts
+|
++-- server/                          # Node.js/Express API
+|   +-- index.js, database.js, auth.js, rbac.js
+|   +-- alerts.js, reports.js, redis.js, websocket.js, swagger.js
+|   +-- init.sql, Dockerfile, package.json
+|
++-- src/                             # Python intelligence engine
+|   +-- main.py, config.py, data_loader.py, feature_extraction.py
+|   +-- model_engine.py, advanced_model.py
+|   +-- anomaly_detection.py, predictive_model.py
+|   +-- spatial_statistics.py, temporal_analysis.py
+|   +-- scheduler_service.py, db_config.py, db_utils.py
+|   +-- migrate_to_db.py, geospatial_env.py
+|
++-- data/raw/                        # Source datasets (MPI CSVs, shapefiles, VIIRS)
++-- data/processed/                  # Model outputs (CSV, GeoJSON)
++-- models/                          # Trained ML models (XGBoost .pkl)
++-- gee/                             # Google Earth Engine credentials
++-- scripts/                         # Utility scripts
++-- docs/                            # Additional documentation
++-- ui designs/                      # Design mockups
++-- docker-compose.yml               # 4-service stack
++-- Dockerfile                       # Python scheduler container
++-- requirements.txt                 # 57 Python packages
 ```
 
 ## Documentation Index
 
-- `SETUP.md` — full installation and environment configuration
-- `QUICKSTART.md` — static/local run workflow
-- `QUICKSTART_DYNAMIC.md` — scheduler + dynamic monitoring workflow
-- `DYNAMIC_MONITORING.md` — scheduler tasks and operational details
-- `ARCHITECTURE.md` — end-to-end architecture and data flow
-- `IMPLEMENTATION_SUMMARY.md` — module-level implementation summary
-- `TROUBLESHOOTING.md` — common issues and fixes
-- `DATA_LICENSE.md` — data attribution and dataset licensing context
+| Document | Purpose |
+|----------|---------|
+| `README.md` | Project overview, quick start, structure (this file) |
+| `ARCHITECTURE.md` | End-to-end architecture, data flow, component interactions |
+| `SETUP.md` | Full installation and environment configuration |
+| `QUICKSTART.md` | Static/local run workflow |
+| `QUICKSTART_DYNAMIC.md` | Scheduler + dynamic monitoring workflow |
+| `DYNAMIC_MONITORING.md` | Scheduler jobs, operational details, monitoring |
+| `IMPLEMENTATION_SUMMARY.md` | Module-level implementation details |
+| `TROUBLESHOOTING.md` | Common issues and solutions |
+| `DATA_LICENSE.md` | Dataset attribution and licensing |
+| `client/README.md` | Frontend-specific documentation |
+| `server/README.md` | Backend-specific documentation |
+| `docs/EXAMPLE_OUTPUT.md` | Representative runtime output examples |
 
 ## License
 
-Software license: MIT (`license.md`)
+Software: MIT (see `license.md`)
 
 Dataset terms vary by provider. See `DATA_LICENSE.md` before production or commercial use.
