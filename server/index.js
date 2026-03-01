@@ -825,7 +825,6 @@ v1.post('/me/make-super-admin', requireAuth, async (req, res) => {
       `SELECT COUNT(*) as cnt FROM users u JOIN roles r ON u.role_id = r.id WHERE r.name = 'super_admin'`
     );
     const superAdminCount = parseInt(adminCheck.rows[0].cnt);
-    
     if (superAdminCount > 0 && req.user.role !== 'super_admin') {
       return res.status(403).json({ error: 'Super admin already exists. Only existing super admins can promote users.' });
     }

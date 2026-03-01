@@ -209,7 +209,7 @@ export default function ProfilePanel() {
                 </label>
                 {editing ? (
                   <input className="intervention-input" type="text" value={fullName}
-                    onChange={e => setFullName(e.target.value)} style={{ width: '100%' }} />
+                    onChange={e => setFullName(e.target.value)} placeholder="Enter your full name" />
                 ) : (
                   <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>{user.full_name || '—'}</p>
                 )}

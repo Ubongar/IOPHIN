@@ -102,7 +102,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
           organization: data.organization
         };
         set({ 
-          user, 
+          user,
           isAuthenticated: true,
           permissions: data.permissions || [],
           profileLoading: false 
