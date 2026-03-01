@@ -280,13 +280,22 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
       // ── Auth ────────────────────────────────────────────
       RegisterInput: {
         type: 'object',
-        required: ['email', 'password'],
+        required: ['email', 'password', 'full_name'],
         properties: {
           email: { type: 'string', format: 'email', example: 'user@example.com' },
-          password: { type: 'string', minLength: 8, example: 'SecurePass1' },
-          full_name: { type: 'string', example: 'Amaka Obi' },
-          role: { type: 'string', enum: ['super_admin', 'admin', 'government', 'ngo', 'public', 'user'], example: 'user' },
-          organization: { type: 'string', nullable: true, example: 'UNICEF Nigeria' },
+          password: { type: 'string', minLength: 8, description: 'At least 8 chars with one letter and one digit', example: 'SecurePass1' },
+          full_name: { type: 'string', description: 'User\'s full name (required)', example: 'Amaka Obi' },
+          role: { type: 'string', enum: ['admin', 'government', 'ngo', 'public', 'user'], default: 'user', description: 'Desired role (super_admin excluded from public registration)', example: 'user' },
+          organization: { type: 'string', nullable: true, description: 'Organization name (relevant for government/NGO roles)', example: 'UNICEF Nigeria' },
+        },
+      },
+      ProfileUpdateInput: {
+        type: 'object',
+        properties: {
+          fullName: { type: 'string', description: 'Updated full name', example: 'Amaka Obi-Updated' },
+          organization: { type: 'string', nullable: true, description: 'Updated organization', example: 'WHO Nigeria' },
+          currentPassword: { type: 'string', description: 'Required when changing password', example: 'OldPass1' },
+          newPassword: { type: 'string', minLength: 8, description: 'New password (min 8 chars, must include a letter and digit)', example: 'NewSecure2' },
         },
       },
       LoginInput: {
@@ -632,7 +641,7 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
       post: {
         tags: ['Config'],
         summary: 'Update runtime configuration',
-        description: 'Updates the risk tiering mode. Requires admin role.',
+        description: 'Updates the risk tiering mode. Requires `super_admin` or `admin` role.',
         operationId: 'updateConfig',
         security: [{ BearerAuth: [] }],
         requestBody: {
@@ -745,7 +754,7 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
       post: {
         tags: ['Auth'],
         summary: 'Register a new user',
-        description: 'Creates a new user account. Password must be at least 8 characters with at least one letter and one digit.',
+        description: 'Creates a new user account with auto-login. Returns a JWT token, user profile, and permissions. Password must be at least 8 characters with at least one letter and one digit. Full name is required.',
         operationId: 'registerUser',
         requestBody: {
           required: true,
@@ -753,17 +762,55 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
         },
         responses: {
           201: {
-            description: 'User registered successfully',
+            description: 'User registered and auto-logged-in',
             content: {
               'application/json': {
                 schema: {
                   type: 'object',
-                  properties: { user: { $ref: '#/components/schemas/UserProfile' } },
+                  properties: {
+                    token: { type: 'string', description: 'JWT token for immediate use', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+                    user: {
+                      allOf: [
+                        { $ref: '#/components/schemas/UserProfile' },
+                        { type: 'object', properties: { permissions: { type: 'array', items: { type: 'string' }, example: ['interventions.view'] } } },
+                      ],
+                    },
+                  },
                 },
               },
             },
           },
-          400: { description: 'Validation error (invalid email, weak password, etc.)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          400: { description: 'Validation error (invalid email, weak password, missing full_name, duplicate email)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+          500: { $ref: '#/components/responses/InternalError' },
+        },
+      },
+    },
+
+    '/api/v1/auth/roles': {
+      get: {
+        tags: ['Auth'],
+        summary: 'Get available registration roles',
+        description: 'Returns all roles available for public registration (excludes super_admin). No authentication required. Useful for populating role dropdowns on registration forms.',
+        operationId: 'getAuthRoles',
+        responses: {
+          200: {
+            description: 'Array of available roles',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Role' },
+                  example: [
+                    { id: 2, name: 'admin', description: 'System administrator' },
+                    { id: 3, name: 'user', description: 'Regular user' },
+                    { id: 4, name: 'government', description: 'Government official' },
+                    { id: 5, name: 'ngo', description: 'NGO representative' },
+                    { id: 6, name: 'public', description: 'Public viewer' },
+                  ],
+                },
+              },
+            },
+          },
           500: { $ref: '#/components/responses/InternalError' },
         },
       },
@@ -773,7 +820,7 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
       post: {
         tags: ['Auth'],
         summary: 'Login and obtain JWT token',
-        description: 'Authenticates a user and returns a JWT token valid for 7 days.',
+        description: 'Authenticates a user and returns a JWT token valid for 7 days. Response includes the user\'s permissions array for client-side RBAC.',
         operationId: 'loginUser',
         requestBody: {
           required: true,
@@ -782,7 +829,22 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
         responses: {
           200: {
             description: 'Login successful',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthResponse' } } },
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+                    user: {
+                      allOf: [
+                        { $ref: '#/components/schemas/UserProfile' },
+                        { type: 'object', properties: { permissions: { type: 'array', items: { type: 'string' }, example: ['users.view', 'interventions.create'] } } },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
           },
           400: { description: 'Missing email or password', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
           401: { description: 'Invalid credentials or deactivated account', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
@@ -1207,7 +1269,7 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
       post: {
         tags: ['Interventions'],
         summary: 'Create a new intervention',
-        description: 'Creates a new aid/development intervention record. Requires admin, government, or NGO role.',
+        description: 'Creates a new aid/development intervention record. Requires `super_admin`, `admin`, `government`, or `ngo` role.',
         operationId: 'createIntervention',
         security: [{ BearerAuth: [] }],
         requestBody: {
@@ -1230,7 +1292,7 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
       put: {
         tags: ['Interventions'],
         summary: 'Update an intervention',
-        description: 'Updates an existing intervention record. Requires admin, government, or NGO role.',
+        description: 'Updates an existing intervention record. Requires `super_admin`, `admin`, `government`, or `ngo` role.',
         operationId: 'updateIntervention',
         security: [{ BearerAuth: [] }],
         parameters: [
@@ -1815,16 +1877,95 @@ Responses include an \`X-Data-Source\` header indicating: \`database\`, \`cache\
       get: {
         tags: ['Profile'],
         summary: 'Get current user profile',
-        description: 'Returns the full profile of the currently authenticated user.',
+        description: 'Returns the full profile of the currently authenticated user, including their permissions array.',
         operationId: 'getMe',
         security: [{ BearerAuth: [] }],
         responses: {
           200: {
-            description: 'Current user profile',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/UserProfile' } } },
+            description: 'Current user profile with permissions',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/UserProfile' },
+                    { type: 'object', properties: { permissions: { type: 'array', items: { type: 'string' }, example: ['users.view', 'interventions.create'] } } },
+                  ],
+                },
+              },
+            },
           },
           401: { $ref: '#/components/responses/Unauthorized' },
           404: { $ref: '#/components/responses/NotFound' },
+          500: { $ref: '#/components/responses/InternalError' },
+        },
+      },
+      put: {
+        tags: ['Profile'],
+        summary: 'Update own profile',
+        description: 'Updates the authenticated user profile (full name, organization). Optionally changes password by providing currentPassword and newPassword. Returns the updated profile with permissions.',
+        operationId: 'updateMe',
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/ProfileUpdateInput' } } },
+        },
+        responses: {
+          200: {
+            description: 'Profile updated successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/UserProfile' },
+                    { type: 'object', properties: { permissions: { type: 'array', items: { type: 'string' } } } },
+                  ],
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Validation error (incorrect current password, weak new password)',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
+          401: { $ref: '#/components/responses/Unauthorized' },
+          404: { $ref: '#/components/responses/NotFound' },
+          500: { $ref: '#/components/responses/InternalError' },
+        },
+      },
+    },
+
+    '/api/v1/me/make-super-admin': {
+      post: {
+        tags: ['Profile'],
+        summary: 'Promote self to super admin (first-time setup)',
+        description: 'Promotes the currently authenticated user to the `super_admin` role. **Only works when no super admin exists in the system yet** (first-time setup). If a super admin already exists, only existing super admins can use this endpoint. Logs the action to the audit trail.',
+        operationId: 'makeMeSuperAdmin',
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Successfully promoted to super admin',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/UserProfile' },
+                    {
+                      type: 'object',
+                      properties: {
+                        permissions: { type: 'array', items: { type: 'string' } },
+                        message: { type: 'string', example: 'Successfully promoted to Super Administrator' },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          401: { $ref: '#/components/responses/Unauthorized' },
+          403: {
+            description: 'Super admin already exists and current user is not a super admin',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } },
+          },
           500: { $ref: '#/components/responses/InternalError' },
         },
       },
