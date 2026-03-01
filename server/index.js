@@ -271,7 +271,7 @@ app.get('/api/config', (req, res) => {
   }
 });
 
-app.post('/api/config', requireRole('admin'), express.json(), (req, res) => {
+app.post('/api/config', requireRole('super_admin', 'admin'), express.json(), (req, res) => {
   try {
     const { RISK_TIERING_MODE } = req.body;
     if (RISK_TIERING_MODE && (RISK_TIERING_MODE === 'cluster' || RISK_TIERING_MODE === 'absolute')) {
@@ -523,7 +523,7 @@ v1.get('/interventions', async (req, res) => {
   } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
 });
 
-v1.post('/interventions', requireAuth, requireRole('admin', 'government', 'ngo'), async (req, res) => {
+v1.post('/interventions', requireAuth, requireRole('super_admin', 'admin', 'government', 'ngo'), async (req, res) => {
   try {
     const data = await db.createIntervention(req.body);
     if (!data) return res.status(500).json({ error: 'Failed to create intervention' });
@@ -531,7 +531,7 @@ v1.post('/interventions', requireAuth, requireRole('admin', 'government', 'ngo')
   } catch (error) { res.status(500).json({ error: 'Internal Server Error' }); }
 });
 
-v1.put('/interventions/:id', requireAuth, requireRole('admin', 'government', 'ngo'), async (req, res) => {
+v1.put('/interventions/:id', requireAuth, requireRole('super_admin', 'admin', 'government', 'ngo'), async (req, res) => {
   try {
     const data = await db.updateIntervention(req.params.id, req.body);
     if (!data) return res.status(404).json({ error: 'Not Found' });
