@@ -590,7 +590,7 @@ body {
   pointer-events: none;
 }
 .top-toolbar > * { pointer-events: auto; }
-.toolbar-search { flex: 1; max-width: 300px; position: relative; }
+.toolbar-search { flex: 1; max-width: 380px; position: relative; }
 .toolbar-spacer { flex: 1; pointer-events: none; }
 .toolbar-status { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
@@ -645,6 +645,34 @@ body {
 .bottom-nav-btn.active { color: var(--blue-light); }
 
 /* ============================================================
+   BRIEFING SIDEBAR PANEL
+   ============================================================ */
+
+.briefing-sidebar-panel {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 380px; max-width: 100vw;
+  z-index: 30;
+  background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+  border-left: 1px solid rgba(99,102,241,0.2);
+  box-shadow: -8px 0 48px rgba(0,0,0,.4);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: slideInFromRight 0.3s ease;
+}
+
+@keyframes slideInFromRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .briefing-sidebar-panel {
+    width: 100%;
+  }
+}
+
+/* ============================================================
    SPINNER
    ============================================================ */
 
@@ -673,15 +701,19 @@ body {
   width: 100%; padding: 10px 40px 10px 40px;
   background: var(--bg-sidebar); border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  color: var(--text-primary); font-size: 13px; font-weight: 500;
+  color: var(--text-primary); font-size: 14px; font-weight: 500;
   outline: none; transition: all .2s ease;
   box-shadow: 0 4px 16px rgba(0,0,0,.12);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  caret-color: var(--blue-light);
+  -webkit-text-fill-color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
-.search-input::placeholder { color: var(--text-quaternary); }
+.search-input::placeholder { color: var(--text-quaternary); -webkit-text-fill-color: var(--text-quaternary); }
 .search-input:focus {
   border-color: var(--blue);
-  box-shadow: 0 4px 20px rgba(79,70,229,.2);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.15), 0 4px 20px rgba(79,70,229,.2);
+  background: var(--bg-sidebar);
 }
 .search-clear-btn {
   position: absolute; right: 12px;

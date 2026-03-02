@@ -465,7 +465,7 @@ function App() {
                   }} />
               )}
               {activeTab === 'subscriptions' && (
-                <AlertsManager features={hotspotsData?.features || []} subscriptions={[]} 
+                <AlertsManager features={hotspotsData?.features || []}
                   searchQuery={searchQuery} stateFilter={stateFilter}
                   onRefresh={() => fetchData(true)} />
               )}
@@ -495,13 +495,16 @@ function App() {
           </div>
         )}
 
-        {/* Scrollytelling tour overlay */}
+        {/* Scrollytelling tour in sidebar panel — not an overlay */}
         {tourActive && hotspotsData && (
-          <ScrollytellingTour
-            features={hotspotsData.features}
-            onSelectLGA={(f) => { setSelectedLGA(f); setSidebarOpen(true); }}
-            onClose={() => setTourActive(false)}
-          />
+          <div className="briefing-sidebar-panel">
+            <ScrollytellingTour
+              features={hotspotsData.features}
+              onSelectLGA={(f) => { setSelectedLGA(f); }}
+              onClose={() => { setTourActive(false); setSelectedLGA(null); }}
+              inSidebar
+            />
+          </div>
         )}
 
         {/* Mobile bottom nav */}

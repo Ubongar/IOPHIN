@@ -349,6 +349,50 @@ const MapComponent: React.FC<MapComponentProps> = ({ data, onFeatureClick, selec
               'line-opacity': 0.9,
             }}
           />
+
+          {/* Persistent selection highlight - solid colored border + glow for clicked LGA */}
+          <Layer
+            id="lga-selected-fill"
+            type="fill"
+            filter={selectedLGA ? [
+              'all',
+              ['==', ['get', 'LGA_Name'], selectedLGA.properties.LGA_Name],
+              ['==', ['get', 'State'], selectedLGA.properties.State],
+            ] : ['==', ['get', 'LGA_Name'], '']}
+            paint={{
+              'fill-color': '#6366f1',
+              'fill-opacity': 0.15,
+            }}
+          />
+          <Layer
+            id="lga-selected-border"
+            type="line"
+            filter={selectedLGA ? [
+              'all',
+              ['==', ['get', 'LGA_Name'], selectedLGA.properties.LGA_Name],
+              ['==', ['get', 'State'], selectedLGA.properties.State],
+            ] : ['==', ['get', 'LGA_Name'], '']}
+            paint={{
+              'line-color': '#818cf8',
+              'line-width': 4,
+              'line-opacity': 1,
+            }}
+          />
+          <Layer
+            id="lga-selected-glow"
+            type="line"
+            filter={selectedLGA ? [
+              'all',
+              ['==', ['get', 'LGA_Name'], selectedLGA.properties.LGA_Name],
+              ['==', ['get', 'State'], selectedLGA.properties.State],
+            ] : ['==', ['get', 'LGA_Name'], '']}
+            paint={{
+              'line-color': '#6366f1',
+              'line-width': 10,
+              'line-opacity': 0.3,
+              'line-blur': 6,
+            }}
+          />
         </Source>
 
         {/* Hover popup */}

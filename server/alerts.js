@@ -60,7 +60,46 @@ export async function createSubscription(userId, lgaName, state, alertType, noti
      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
     [userId, lgaName || null, state || null, alertType || 'risk_change', notifyEmail !== false, notifyWebhook === true, webhookUrl || null]
   );
-  return result.rows[0];
+  const sub = result.rows[0];
+
+  // Send confirmation email to the subscriber
+  if (notifyEmail !== false) {
+    try {
+      const userRes = await pool.query('SELECT email, full_name FROM users WHERE id = $1', [userId]);
+      if (userRes.rows.length > 0 && userRes.rows[0].email) {
+        const { email, full_name } = userRes.rows[0];
+        const name = full_name || email.split('@')[0];
+        const area = lgaName || state || 'All areas';
+        const typeLabel = (alertType || 'risk_change').replace(/_/g, ' ');
+        await sendEmail(email,
+          `IOPHIN: Subscription confirmed for ${area}`,
+          `
+          <div style="font-family:'Inter',Arial,sans-serif;max-width:560px;margin:0 auto;background:#0f172a;color:#e2e8f0;border-radius:12px;overflow:hidden">
+            <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:24px 32px">
+              <h1 style="margin:0;font-size:20px;color:#fff">IOPHIN Alert Subscription</h1>
+            </div>
+            <div style="padding:28px 32px">
+              <p style="margin:0 0 16px">Hi <strong>${name}</strong>,</p>
+              <p style="margin:0 0 16px">You have successfully subscribed to <strong>${typeLabel}</strong> alerts for:</p>
+              <div style="background:#1e293b;border-left:4px solid #6366f1;padding:14px 18px;border-radius:6px;margin:0 0 16px">
+                <p style="margin:0;font-size:18px;font-weight:700;color:#fff">${area}</p>
+              </div>
+              <p style="margin:0 0 16px;color:#94a3b8">You will receive email notifications whenever there are ${typeLabel} events for this area. Updates include risk level changes, anomaly detections, and relevant intelligence.</p>
+              <p style="margin:0;color:#64748b;font-size:13px">You can manage or remove this subscription at any time from the IOPHIN dashboard.</p>
+            </div>
+            <div style="padding:16px 32px;background:#1e1b4b;text-align:center">
+              <p style="margin:0;font-size:11px;color:#6366f1">IOPHIN &mdash; Poverty Hotspot Intelligence System</p>
+            </div>
+          </div>
+          `
+        );
+      }
+    } catch (emailErr) {
+      console.warn('Failed to send subscription confirmation email:', emailErr.message);
+    }
+  }
+
+  return sub;
 }
 
 export async function deleteSubscription(id, userId) {
