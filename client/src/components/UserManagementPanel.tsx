@@ -105,7 +105,12 @@ export function UserManagementPanel() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
-      if (!response.ok) throw new Error('Failed to fetch users');
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        if (response.status === 401) throw new Error('Session expired — please log in again');
+        if (response.status === 403) throw new Error('You do not have permission to view users');
+        throw new Error(errBody.error || `Server error (${response.status})`);
+      }
       
       const data: UsersListResponse = await response.json();
       setUsers(data.users);
@@ -377,8 +382,9 @@ export function UserManagementPanel() {
 
       {/* Error */}
       {error && (
-        <div style={{ marginBottom: 16, padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5', fontSize: 13 }}>
-          ⚠ {error}
+        <div style={{ marginBottom: 16, padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#fca5a5', fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <span>⚠ {error}</span>
+          <button onClick={() => fetchUsers()} style={{ padding: '4px 12px', borderRadius: 6, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#fca5a5', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' as const }}>Retry</button>
         </div>
       )}
 
