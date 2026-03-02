@@ -552,7 +552,9 @@ v1.post('/alerts/subscribe', requireAuth, async (req, res) => {
     const { lga_name, state, alert_type, notify_email, notify_webhook, webhook_url } = req.body;
     if (!lga_name && !state) return res.status(400).json({ error: 'lga_name or state is required' });
     const data = await createSubscription(req.user.id, lga_name, state, alert_type, notify_email, notify_webhook, webhook_url);
-    res.status(201).json(data);
+    const emailSent = data.emailSent || false;
+    delete data.emailSent;
+    res.status(201).json({ ...data, emailSent });
   } catch (error) {
     console.error('Subscribe error:', error.message);
     if (error.code === '23505') return res.status(409).json({ error: 'Already subscribed to this LGA/alert type' });

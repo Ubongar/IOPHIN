@@ -116,11 +116,18 @@ export default function AlertsManager({ features, onRefresh, searchQuery = '', s
     setSaving(true); setSubError(''); setSuccessMsg('');
     try {
       const feat = getFeatureForLga(lgaName);
-      await axios.post(`${API}/v1/alerts/subscribe`,
+      const resp = await axios.post(`${API}/v1/alerts/subscribe`,
         { lga_name: lgaName, state: feat?.properties.State || '', alert_type: alertType, notify_email: notifyEmail },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSuccessMsg(`Subscribed to ${lgaName}! ${notifyEmail ? 'A confirmation email has been sent.' : ''}`);
+      const emailSent = resp.data?.emailSent;
+      if (notifyEmail && emailSent) {
+        setSuccessMsg(`Subscribed to ${lgaName}! Confirmation email sent — check your inbox.`);
+      } else if (notifyEmail && !emailSent) {
+        setSuccessMsg(`Subscribed to ${lgaName}! ⚠ Email could not be delivered — check SMTP settings.`);
+      } else {
+        setSuccessMsg(`Subscribed to ${lgaName}!`);
+      }
       setLgaName(''); setLgaSearch('');
       fetchSubscriptions(); onRefresh?.();
       setTimeout(() => setSuccessMsg(''), 5000);

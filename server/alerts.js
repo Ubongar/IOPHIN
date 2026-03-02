@@ -12,16 +12,28 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL,
 
 async function sendEmail(to, subject, html) {
   try {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.warn('Email skipped: SMTP_USER or SMTP_PASS not configured');
+      return false;
+    }
     const nodemailer = (await import('nodemailer')).default;
+    const smtpPort = parseInt(process.env.SMTP_PORT || '465');
+    const isSecure = smtpPort === 465;
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false,
+      port: smtpPort,
+      secure: isSecure,
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
     });
-    await transporter.sendMail({ from: process.env.SMTP_USER, to, subject, html });
+    const info = await transporter.sendMail({ from: process.env.SMTP_USER, to, subject, html });
+    console.log(`Email sent to ${to}: ${info.messageId}`);
+    return true;
   } catch (err) {
-    console.warn('Email send failed:', err.message);
+    console.error('Email send failed:', err.message, err.code || '');
+    return false;
   }
 }
 
@@ -63,6 +75,7 @@ export async function createSubscription(userId, lgaName, state, alertType, noti
   const sub = result.rows[0];
 
   // Send confirmation email to the subscriber
+  let emailSent = false;
   if (notifyEmail !== false) {
     try {
       const userRes = await pool.query('SELECT email, full_name FROM users WHERE id = $1', [userId]);
@@ -71,7 +84,7 @@ export async function createSubscription(userId, lgaName, state, alertType, noti
         const name = full_name || email.split('@')[0];
         const area = lgaName || state || 'All areas';
         const typeLabel = (alertType || 'risk_change').replace(/_/g, ' ');
-        await sendEmail(email,
+        emailSent = await sendEmail(email,
           `IOPHIN: Subscription confirmed for ${area}`,
           `
           <div style="font-family:'Inter',Arial,sans-serif;max-width:560px;margin:0 auto;background:#0f172a;color:#e2e8f0;border-radius:12px;overflow:hidden">
@@ -95,10 +108,11 @@ export async function createSubscription(userId, lgaName, state, alertType, noti
         );
       }
     } catch (emailErr) {
-      console.warn('Failed to send subscription confirmation email:', emailErr.message);
+      console.error('Failed to send subscription confirmation email:', emailErr.message);
     }
   }
 
+  sub.emailSent = emailSent;
   return sub;
 }
 
