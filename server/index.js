@@ -32,7 +32,7 @@ const pool = new PgPool({
 });
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: join(dirname(fileURLToPath(import.meta.url)), '../.env') });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
