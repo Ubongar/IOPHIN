@@ -18,7 +18,7 @@ import { swaggerSpec } from './swagger.js';
 import * as db from './database.js';
 import { initRedis, getCached, setCache, closeRedis } from './redis.js';
 import { initWebSocket } from './websocket.js';
-import { registerUser, loginUser, authMiddleware, requireAuth, requireRole } from './auth.js';
+import { registerUser, loginUser, authMiddleware, requireAuth, requireRole, refreshAccessToken } from './auth.js';
 import { createSubscription, deleteSubscription, getUserSubscriptions } from './alerts.js';
 import { generateReport } from './reports.js';
 import rbac, { requirePermission, requireSuperAdmin, NIGERIAN_STATES } from './rbac.js';
@@ -28,7 +28,11 @@ import pg from 'pg';
 const { Pool: PgPool } = pg;
 const pool = new PgPool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: (() => {
+    if (process.env.NODE_ENV !== 'production') return false;
+    if (process.env.DB_CA_CERT) return { rejectUnauthorized: true, ca: process.env.DB_CA_CERT };
+    return { rejectUnauthorized: false };
+  })()
 });
 
 // Load environment variables
@@ -366,6 +370,19 @@ v1.post('/auth/login', authLimiter, async (req, res) => {
     res.json({ ...result, user: { ...result.user, permissions } });
   } catch (err) {
     res.status(401).json({ error: err.message });
+  }
+});
+
+// Refresh an expired access token using a valid refresh token
+v1.post('/auth/refresh', authLimiter, async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(400).json({ error: 'Refresh token required' });
+    const result = await refreshAccessToken(refreshToken);
+    const permissions = await rbac.getUserPermissions(result.user.id);
+    res.json({ ...result, user: { ...result.user, permissions } });
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid or expired refresh token' });
   }
 });
 
