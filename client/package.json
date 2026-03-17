@@ -16,7 +16,7 @@
     "date-fns": "^3.6.0",
     "framer-motion": "^11.0.0",
     "html2canvas": "^1.4.0",
-    "jspdf": "^4.1.0",
+    "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
     "maplibre-gl": "^5.18.0",
