@@ -424,7 +424,7 @@ def build_analytical_model(df, use_pca=True):
         2. Composite poverty score
         3. Standardisation
         4. PCA
-        5. K-Means *and* HDBSCAN (pick best silhouette)
+        5. HDBSCAN primary clustering (K-Means emergency fallback)
         6. Label assignment
 
     Returns:
@@ -489,31 +489,38 @@ def build_analytical_model(df, use_pca=True):
     except Exception as _xgb_err:
         logger.info(f"XGBoost model skipped (falling back to weighted composite): {_xgb_err}")
 
-    # ── Phase 3.2: Clustering — K-Means ──────────────────────────────────
-    km_result, kmeans, km_silhouette = perform_kmeans_clustering(
-        result, clustering_features, n_clusters=config.K_CLUSTERS
-    )
-    models['kmeans'] = kmeans
-    models['kmeans_silhouette'] = km_silhouette
+    # ── Phase 3.2: Clustering — HDBSCAN primary, K-Means fallback ────────
+    best_result = None
+    best_silhouette = -1.0
+    best_method = None
 
-    best_result = km_result
-    best_silhouette = km_silhouette
-    best_method = 'kmeans'
-
-    # ── Phase 3.3: Clustering — HDBSCAN (if enabled) ────────────────────
     if config.USE_HDBSCAN and HDBSCAN_AVAILABLE:
         hdb_result, hdb_model, hdb_silhouette = perform_hdbscan_clustering(
             result, clustering_features, min_cluster_size=config.HDBSCAN_MIN_CLUSTER_SIZE
         )
-        if hdb_result is not None and hdb_silhouette > best_silhouette:
-            logger.info(f"HDBSCAN wins: {hdb_silhouette:.4f} vs K-Means {km_silhouette:.4f}")
+        if hdb_result is not None:
             best_result = hdb_result
             best_silhouette = hdb_silhouette
             best_method = 'hdbscan'
             models['hdbscan'] = hdb_model
             models['hdbscan_silhouette'] = hdb_silhouette
+            logger.info(f"Using HDBSCAN as primary clustering method (silhouette={hdb_silhouette:.4f})")
         else:
-            logger.info(f"K-Means wins: {km_silhouette:.4f} vs HDBSCAN {hdb_silhouette:.4f}")
+            logger.warning("HDBSCAN produced unusable clusters; falling back to K-Means")
+    elif config.USE_HDBSCAN and not HDBSCAN_AVAILABLE:
+        logger.warning("USE_HDBSCAN=True but hdbscan package is unavailable; falling back to K-Means")
+
+    # Emergency fallback to K-Means for resilience
+    if best_result is None:
+        km_result, kmeans, km_silhouette = perform_kmeans_clustering(
+            result, clustering_features, n_clusters=config.K_CLUSTERS
+        )
+        models['kmeans'] = kmeans
+        models['kmeans_silhouette'] = km_silhouette
+        best_result = km_result
+        best_silhouette = km_silhouette
+        best_method = 'kmeans'
+        logger.info(f"Using K-Means fallback clustering (silhouette={km_silhouette:.4f})")
 
     # ── Phase 3.4: Label assignment ──────────────────────────────────────
     result = assign_cluster_labels(best_result, clustering_features)

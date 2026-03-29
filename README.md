@@ -41,7 +41,7 @@ IOPHIN (Integrated Open Poverty Hotspot Intelligence Network) is a full-stack ge
 - **Audit Logging**: JSONB-backed `user_audit_log` for all administrative actions
 - **Enhanced RBAC**: 15 granular permissions across users, data, reports, alerts, interventions, and settings
 - **XGBoost/LightGBM Dynamic Scoring**: ML-trained composite poverty scores replacing static weighted averages when sufficient ground-truth data exists
-- **HDBSCAN Clustering**: Dual clustering (K-Means + HDBSCAN) with silhouette-score comparison
+- **HDBSCAN Clustering**: HDBSCAN-first clustering with automatic K-Means fallback for resilience
 - **Senatorial MPI Upgrade**: 3x resolution MPI from senatorial districts (109 zones to 774 LGA mapping via fuzzy match)
 - **Spatial Statistics**: Moran's I, Getis-Ord Gi*, and Geographically Weighted Regression
 - **Temporal Analysis**: MPI trajectory classification (deteriorating/stable/improving) with tier-crossing alerts
@@ -210,7 +210,7 @@ INPUT DATA SOURCES
         v
 PYTHON INTELLIGENCE ENGINE (src/)
   Phase 1: Feature Extraction (data_loader, feature_extraction)
-  Phase 2: Data Fusion (model_engine: KNN, composite score, PCA, K-Means + HDBSCAN)
+  Phase 2: Data Fusion (model_engine: KNN, composite score, PCA, HDBSCAN-first + K-Means fallback)
   Phase 3: Analytics (anomaly_detection, predictive_model, spatial_statistics, temporal_analysis)
         |
         v
@@ -242,10 +242,10 @@ React Dashboard (client/)
 
 ## Risk Tiering Modes
 
-| Mode | Approach | Use Case |
-|------|----------|----------|
-| `cluster` (default) | K-Means/HDBSCAN clustering on multiple indicators; clusters ranked to assign tiers | Relative, context-aware prioritisation |
-| `absolute` | Fixed numeric thresholds on `composite_poverty_score` | Deterministic, easy to interpret |
+|Mode|Approach|Use Case|
+|---|---|---|
+|`cluster` (default)|HDBSCAN-first clustering (K-Means fallback only when needed); clusters ranked into tiers|Relative, context-aware prioritisation|
+|`absolute`|Fixed numeric thresholds on `composite_poverty_score`|Deterministic, easy to interpret|
 
 **Absolute thresholds** (configurable via env):
 | Tier | Score Range |

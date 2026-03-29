@@ -32,7 +32,7 @@ GEOJSON_OUTPUT = PROCESSED_DATA_DIR / "hotspots.geojson"
 K_CLUSTERS = 5  # Critical, High, Medium, Low, Minimal
 PCA_VARIANCE = 0.95  # Keep 95% of variance
 KNN_NEIGHBORS = 5  # For imputation
-USE_HDBSCAN = True  # Try HDBSCAN alongside K-Means, pick best silhouette
+USE_HDBSCAN = True  # Use HDBSCAN as primary clustering; fallback to K-Means if needed
 HDBSCAN_MIN_CLUSTER_SIZE = 30  # Minimum cluster size for HDBSCAN
 
 # Weighted composite poverty score weights
