@@ -32,10 +32,12 @@ async function initRedis() {
     const mod = await import('ioredis');
     Redis = mod.default || mod;
     redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-      lazyConnect: true,
       connectTimeout: 3000,
       maxRetriesPerRequest: 1,
-      enableOfflineQueue: false,
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        return delay;
+      },
     });
     // Suppress unhandled error events — we handle them via try/catch on ping()
     redis.on('error', () => {});

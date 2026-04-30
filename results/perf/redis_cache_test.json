@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-04-30T23:03:26.561864",
+  "endpoints": [
+    {
+      "endpoint": "/api/stats",
+      "test_name": "Global Statistics",
+      "calls": 5,
+      "first_call_ms": 66.28,
+      "avg_subsequent_ms": 9.52,
+      "speedup_factor": 7.0,
+      "cache_hits": 4,
+      "cache_misses": 1,
+      "keys_added": 1,
+      "total_time_ms": 104.36
+    },
+    {
+      "endpoint": "/api/rankings?limit=20",
+      "test_name": "Top 20 LGA Rankings",
+      "calls": 5,
+      "first_call_ms": 39.11,
+      "avg_subsequent_ms": 15.94,
+      "speedup_factor": 2.5,
+      "cache_hits": 2,
+      "cache_misses": 3,
+      "keys_added": 1,
+      "total_time_ms": 102.88
+    },
+    {
+      "endpoint": "/api/hotspots?type=critical",
+      "test_name": "Critical Hotspots",
+      "calls": 3,
+      "first_call_ms": 805.39,
+      "avg_subsequent_ms": 568.18,
+      "speedup_factor": 1.4,
+      "cache_hits": 0,
+      "cache_misses": 3,
+      "keys_added": 1,
+      "total_time_ms": 1941.75
+    },
+    {
+      "endpoint": "/api/health",
+      "test_name": "API Health Check",
+      "calls": 3,
+      "first_call_ms": 3.04,
+      "avg_subsequent_ms": 3.6,
+      "speedup_factor": 0.8,
+      "cache_hits": 0,
+      "cache_misses": 3,
+      "keys_added": 0,
+      "total_time_ms": 10.25
+    }
+  ]
+}
