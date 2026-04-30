@@ -32,6 +32,6 @@
     "socket.io": "^4.7.0",
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.0",
-    "yaml": "^2.3.0"
+    "yaml": "^2.8.3"
   }
 }
