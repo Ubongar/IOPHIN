@@ -120,7 +120,7 @@ const limiter = rateLimit({
   standardHeaders: true, legacyHeaders: false,
 });
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
-//app.use(limiter);
+app.use(limiter);
 
 const isProduction = process.env.NODE_ENV === 'production';
 const allowedOrigins = isProduction
