@@ -1,0 +1,6 @@
+IOPHIN Performance Summary
+Retrain runs: 6
+Retrain average (s): 7.444
+Node memory samples: 270
+Node avg private MB: 153.529
+Dashboard image: results\perf\split_performance_dashboard.png

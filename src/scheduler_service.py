@@ -11,12 +11,10 @@ Tasks:
   6. NDVI + Rainfall         – GEE MODIS/CHIRPS        (configurable, default 24 h)
 """
 import os
-import sys
 import time
 import json
 import logging
 import schedule
-import numpy as np
 import pandas as pd
 import requests
 from pathlib import Path
@@ -26,6 +24,8 @@ from dotenv import load_dotenv
 from src.db_utils import (
     upsert_conflict_flag,
     upsert_hotspots_from_dataframe,
+    save_anomaly_alerts,
+    upsert_risk_forecasts,
     get_all_hotspots,
     get_all_history,
     save_history_snapshot,
@@ -407,13 +407,29 @@ class IOPHINScheduler:
                 logger.warning("No data — skipping anomaly detection")
                 return
             current_df = pd.DataFrame(hotspots)
+            if 'LGA_Name' in current_df.columns and 'lga_name' not in current_df.columns:
+                current_df = current_df.rename(columns={'LGA_Name': 'lga_name'})
+            if 'State' in current_df.columns and 'state' not in current_df.columns:
+                current_df = current_df.rename(columns={'State': 'state'})
+            if 'MPI' in current_df.columns and 'mpi' not in current_df.columns:
+                current_df = current_df.rename(columns={'MPI': 'mpi'})
+
+            history_df = get_all_history()
             from src.anomaly_detection import detect_nightlight_anomalies, detect_multivariate_anomalies
-            # detect_nightlight_anomalies needs a history baseline; use current data as both
-            # (a rolling baseline will be built once history table is populated)
-            nl_anomalies = detect_nightlight_anomalies(current_df, current_df)
+
+            if history_df is None or history_df.empty:
+                logger.warning("No history baseline — skipping nightlight anomaly detection")
+                nl_anomalies = pd.DataFrame()
+            else:
+                nl_anomalies = detect_nightlight_anomalies(current_df, history_df)
+
             mv_anomalies = detect_multivariate_anomalies(current_df)
-            total = len(nl_anomalies) + len(mv_anomalies)
+            combined = pd.concat([nl_anomalies, mv_anomalies], ignore_index=True)
+            total = len(combined)
+            saved = save_anomaly_alerts(combined) if total > 0 else 0
             logger.info(f"✅ Anomaly detection complete: {len(nl_anomalies)} nightlight, {len(mv_anomalies)} multivariate")
+            if total > 0:
+                logger.info(f"Persisted anomaly alerts: {saved}")
         except Exception as e:
             logger.error(f"Anomaly Detection Error: {e}", exc_info=True)
 
@@ -431,7 +447,8 @@ class IOPHINScheduler:
             from src.predictive_model import forecast_all_lgas
             forecasts = forecast_all_lgas(history_df=history_df)
             if not forecasts.empty:
-                logger.info(f"✅ Predictive model: {len(forecasts)} forecasts generated")
+                saved = upsert_risk_forecasts(forecasts)
+                logger.info(f"✅ Predictive model: {len(forecasts)} forecasts generated, {saved} persisted")
             else:
                 logger.info("Predictive model: no forecasts produced (insufficient history)")
         except Exception as e:
@@ -481,9 +498,9 @@ class IOPHINScheduler:
         schedule.every(intervals['ml_retrain']).hours.do(self.retrain_ml_model)
         schedule.every(intervals['external_enrichment']).hours.do(self.fetch_external_enrichment)
         schedule.every(intervals['gee_environmental']).hours.do(self.fetch_gee_environmental)
-        schedule.every(6).hours.do(self.run_anomaly_detection)
-        schedule.every(24).hours.do(self.run_predictive_model)
-        schedule.every(12).hours.do(self.run_temporal_analysis)
+        schedule.every(intervals['anomaly_detection']).hours.do(self.run_anomaly_detection)
+        schedule.every(intervals['predictive_model']).hours.do(self.run_predictive_model)
+        schedule.every(intervals['temporal_analysis']).hours.do(self.run_temporal_analysis)
 
         logger.info("All tasks scheduled:")
         logger.info(f"  Conflict Listener       – every {intervals['conflict']} h")
@@ -492,9 +509,9 @@ class IOPHINScheduler:
         logger.info(f"  ML Retrain + Snapshot   – every {intervals['ml_retrain']} h")
         logger.info(f"  External Enrichment     – every {intervals['external_enrichment']} h")
         logger.info(f"  GEE Environmental       – every {intervals['gee_environmental']} h")
-        logger.info(f"  Anomaly Detection       – every 6 h")
-        logger.info(f"  Predictive Model        – every 24 h")
-        logger.info(f"  Temporal Analysis       – every 12 h")
+        logger.info(f"  Anomaly Detection       – every {intervals['anomaly_detection']} h")
+        logger.info(f"  Predictive Model        – every {intervals['predictive_model']} h")
+        logger.info(f"  Temporal Analysis       – every {intervals['temporal_analysis']} h")
 
         while True:
             schedule.run_pending()

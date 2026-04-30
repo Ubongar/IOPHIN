@@ -168,6 +168,7 @@ REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
 # New scheduler intervals
 SCHEDULER_INTERVALS['anomaly_detection'] = int(os.getenv('SCHEDULER_ANOMALY_DETECTION_INTERVAL', 6))
 SCHEDULER_INTERVALS['predictive_model'] = int(os.getenv('SCHEDULER_PREDICTIVE_MODEL_INTERVAL', 24))
+SCHEDULER_INTERVALS['temporal_analysis'] = int(os.getenv('SCHEDULER_TEMPORAL_ANALYSIS_INTERVAL', 12))
 
 # Ensure directories exist
 PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)

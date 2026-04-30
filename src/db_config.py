@@ -3,10 +3,12 @@ Database configuration for the IOPHIN system.
 Handles PostgreSQL/PostGIS connection and table schema.
 """
 import os
+import warnings
 from pathlib import Path
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime, Text, Index, text
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.exc import SAWarning
 from datetime import datetime, timezone
 import logging
 
@@ -205,7 +207,13 @@ def init_database():
     for table_name, table_obj in Base.metadata.tables.items():
         if not inspector.has_table(table_name):
             continue
-        existing_cols = {c['name'] for c in inspector.get_columns(table_name)}
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                'ignore',
+                message="Did not recognize type 'geometry' of column 'geom'",
+                category=SAWarning,
+            )
+            existing_cols = {c['name'] for c in inspector.get_columns(table_name)}
         for col in table_obj.columns:
             if col.name not in existing_cols:
                 col_type = col.type.compile(engine.dialect)

@@ -542,13 +542,12 @@ def build_analytical_model(df, use_pca=True):
         logger.info(f"Getis-Ord skipped: {_gs_err}")
 
     # ── Phase 4.2: Temporal trend analysis (optional) ────────────────────
-    # Requires historical snapshots — fetch from DB and merge trend indicators
+    # Requires historical snapshots — fetch from hotspot_history
     try:
         from .temporal_analysis import compute_temporal_trends
-        from .db_utils import get_all_hotspots
-        _hist_raw = get_all_hotspots()
-        if _hist_raw:
-            _hist_df = pd.DataFrame(_hist_raw)
+        from .db_utils import get_all_history
+        _hist_df = get_all_history()
+        if _hist_df is not None and not _hist_df.empty:
             _trends = compute_temporal_trends(_hist_df)
             if not _trends.empty and 'lga_name' in _trends.columns:
                 _trend_cols = ['lga_name', 'trend_slope', 'trend_class', 'trend_acceleration', 'trend_volatility']
@@ -561,13 +560,12 @@ def build_analytical_model(df, use_pca=True):
         logger.info(f"Temporal trends skipped: {_tt_err}")
 
     # ── Phase 4.3: Nightlight anomaly detection (optional) ───────────────
-    # Requires both current data and historical baseline
+    # Requires both current data and hotspot_history baseline
     try:
         from .anomaly_detection import detect_nightlight_anomalies
-        from .db_utils import get_all_hotspots
-        _hist_raw = get_all_hotspots()
-        if _hist_raw:
-            _hist_df = pd.DataFrame(_hist_raw)
+        from .db_utils import get_all_history
+        _hist_df = get_all_history()
+        if _hist_df is not None and not _hist_df.empty:
             _anomalies = detect_nightlight_anomalies(result, _hist_df)
             if not _anomalies.empty:
                 result['nightlight_anomaly'] = result['lga_name'].isin(

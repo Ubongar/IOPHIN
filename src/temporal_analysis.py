@@ -28,17 +28,32 @@ def compute_temporal_trends(history_df: pd.DataFrame) -> pd.DataFrame:
     history_df = history_df.copy()
     # Normalize column names
     col_map = {
-        'snapshot_date': 'date', 'lga_name': 'lga_name', 'state': 'state',
-        'mpi': 'mpi', 'composite_poverty_score': 'composite_score',
+        'snapshot_date': 'date',
+        'Snapshot_Date': 'date',
+        'snapshotDate': 'date',
+        'SnapshotDate': 'date',
+        'lga_name': 'lga_name',
+        'LGA_Name': 'lga_name',
+        'state': 'state',
+        'State': 'state',
+        'mpi': 'mpi',
+        'MPI': 'mpi',
+        'composite_poverty_score': 'composite_score',
         'risk_level': 'risk_level',
+        'Risk_Level': 'risk_level',
     }
     for src, dst in col_map.items():
         if src in history_df.columns and dst not in history_df.columns:
             history_df[dst] = history_df[src]
 
     if 'date' not in history_df.columns:
-        logger.warning("No date column found in history data")
-        return pd.DataFrame()
+        # Fallback: pick any column containing 'date' in case of schema drift.
+        date_like = [c for c in history_df.columns if 'date' in c.lower()]
+        if date_like:
+            history_df['date'] = history_df[date_like[0]]
+        else:
+            logger.warning("No date column found in history data")
+            return pd.DataFrame()
 
     history_df['date'] = pd.to_datetime(history_df['date'])
     history_df = history_df.sort_values('date')

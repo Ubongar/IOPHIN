@@ -209,6 +209,160 @@ def upsert_conflict_flag(lga_name, conflict_flag='CRITICAL', last_conflict_event
         session.close()
 
 
+def save_anomaly_alerts(anomalies_df: pd.DataFrame) -> int:
+    """
+    Persist anomaly alerts into anomaly_alerts table.
+
+    Args:
+        anomalies_df: DataFrame with anomaly rows
+
+    Returns:
+        int: Number of inserted alerts
+    """
+    if anomalies_df is None or anomalies_df.empty:
+        return 0
+
+    required_cols = [
+        'lga_name', 'state', 'anomaly_type', 'severity', 'description',
+        'metric_name', 'expected_value', 'actual_value', 'deviation_pct',
+    ]
+    for col in required_cols:
+        if col not in anomalies_df.columns:
+            anomalies_df[col] = None
+
+    session = SessionLocal()
+    inserted = 0
+    try:
+        for _, row in anomalies_df.iterrows():
+            lga_name = row.get('lga_name')
+            if not lga_name:
+                continue
+
+            session.execute(
+                text(
+                    """
+                    INSERT INTO anomaly_alerts (
+                        lga_name, state, anomaly_type, severity, description,
+                        metric_name, expected_value, actual_value, deviation_pct
+                    ) VALUES (
+                        :lga_name, :state, :anomaly_type, :severity, :description,
+                        :metric_name, :expected_value, :actual_value, :deviation_pct
+                    )
+                    """
+                ),
+                {
+                    'lga_name': lga_name,
+                    'state': row.get('state'),
+                    'anomaly_type': row.get('anomaly_type'),
+                    'severity': row.get('severity'),
+                    'description': row.get('description'),
+                    'metric_name': row.get('metric_name'),
+                    'expected_value': float(row.get('expected_value')) if pd.notnull(row.get('expected_value')) else None,
+                    'actual_value': float(row.get('actual_value')) if pd.notnull(row.get('actual_value')) else None,
+                    'deviation_pct': float(row.get('deviation_pct')) if pd.notnull(row.get('deviation_pct')) else None,
+                },
+            )
+            inserted += 1
+
+        session.commit()
+        logger.info(f"Saved {inserted} anomaly alerts")
+        return inserted
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error saving anomaly alerts: {e}", exc_info=True)
+        return 0
+    finally:
+        session.close()
+
+
+def upsert_risk_forecasts(forecasts_df: pd.DataFrame) -> int:
+    """
+    Persist forecast rows into risk_forecasts table.
+    Replaces existing rows for the same (lga_name, forecast_date, horizon, model_version).
+
+    Args:
+        forecasts_df: DataFrame returned by predictive model
+
+    Returns:
+        int: Number of upserted rows
+    """
+    if forecasts_df is None or forecasts_df.empty:
+        return 0
+
+    required_cols = [
+        'lga_name', 'state', 'forecast_date', 'current_risk_level', 'predicted_risk_level',
+        'confidence', 'predicted_composite_score', 'forecast_horizon_months', 'model_version',
+    ]
+    for col in required_cols:
+        if col not in forecasts_df.columns:
+            forecasts_df[col] = None
+
+    session = SessionLocal()
+    upserted = 0
+    try:
+        for _, row in forecasts_df.iterrows():
+            lga_name = row.get('lga_name')
+            forecast_date = row.get('forecast_date')
+            horizon = row.get('forecast_horizon_months')
+            model_version = row.get('model_version') or 'unknown'
+            if not lga_name or not forecast_date or horizon is None:
+                continue
+
+            session.execute(
+                text(
+                    """
+                    DELETE FROM risk_forecasts
+                    WHERE lga_name = :lga_name
+                      AND forecast_date = :forecast_date
+                      AND forecast_horizon_months = :forecast_horizon_months
+                      AND model_version = :model_version
+                    """
+                ),
+                {
+                    'lga_name': lga_name,
+                    'forecast_date': forecast_date,
+                    'forecast_horizon_months': int(horizon),
+                    'model_version': model_version,
+                },
+            )
+
+            session.execute(
+                text(
+                    """
+                    INSERT INTO risk_forecasts (
+                        lga_name, state, forecast_date, current_risk_level, predicted_risk_level,
+                        confidence, predicted_composite_score, forecast_horizon_months, model_version
+                    ) VALUES (
+                        :lga_name, :state, :forecast_date, :current_risk_level, :predicted_risk_level,
+                        :confidence, :predicted_composite_score, :forecast_horizon_months, :model_version
+                    )
+                    """
+                ),
+                {
+                    'lga_name': lga_name,
+                    'state': row.get('state'),
+                    'forecast_date': forecast_date,
+                    'current_risk_level': row.get('current_risk_level'),
+                    'predicted_risk_level': row.get('predicted_risk_level'),
+                    'confidence': float(row.get('confidence')) if pd.notnull(row.get('confidence')) else None,
+                    'predicted_composite_score': float(row.get('predicted_composite_score')) if pd.notnull(row.get('predicted_composite_score')) else None,
+                    'forecast_horizon_months': int(horizon),
+                    'model_version': model_version,
+                },
+            )
+            upserted += 1
+
+        session.commit()
+        logger.info(f"Upserted {upserted} risk forecasts")
+        return upserted
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error upserting risk forecasts: {e}", exc_info=True)
+        return 0
+    finally:
+        session.close()
+
+
 # ─── Queries ──────────────────────────────────────────────────────────────────
 
 def get_all_hotspots():
