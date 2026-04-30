@@ -353,3 +353,16 @@ Intermediate file with processed features before final model scoring.
 [2024-01-15 12:00:39] Materialized views refreshed
 [2024-01-15 12:00:39] Pipeline complete in 39.2 seconds
 ```
+
+---
+
+## Recent test results & artifacts
+
+For sample outputs and performance evidence, see the caching validation artifacts produced during testing:
+
+- [CACHING_VALIDATION_REPORT.md](../CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](../CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](../POSTGIS_REDIS_TESTING_GUIDE.md)
+- Results/images: `../results/perf/` (e.g. [../results/perf/cache_stats.png](../results/perf/cache_stats.png), [../results/perf/jmeter_html_short/index.html](../results/perf/jmeter_html_short/index.html))
+
+These artifacts include example screenshots, JSON outputs, and guidance to reproduce the performance tests.

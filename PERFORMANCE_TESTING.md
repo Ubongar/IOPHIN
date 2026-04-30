@@ -155,3 +155,21 @@ Ensure these files exist before finalizing your report:
 - `results/perf/jmeter_peak_100_users.png`
 - `results/perf/jmeter_results.jtl` (optional)
 - `results/perf/jmeter_html/` (optional)
+
+---
+
+## Recent test results & artifacts
+
+We produced comprehensive test artifacts validating PostGIS + Redis caching. See:
+
+- [CACHING_VALIDATION_REPORT.md](CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](POSTGIS_REDIS_TESTING_GUIDE.md)
+- JMeter HTML report: [results/perf/jmeter_html_short/index.html](results/perf/jmeter_html_short/index.html)
+- Generated chart: [results/perf/cache_stats.png](results/perf/cache_stats.png)
+
+Regenerate the stats image with:
+
+```bash
+python scripts/generate_stats_image.py --input results/perf/redis_cache_test.json --output results/perf/cache_stats.png
+```

@@ -327,3 +327,16 @@ services:
 | HDX | REST API | Weekly | Food price index |
 | WorldPop | REST API | Monthly | Population density estimates |
 | OpenStreetMap | Overpass API | 6-hourly | Health facilities, schools, road networks |
+
+---
+
+## Recent test results & artifacts
+
+Architecture and operations notes were validated during PostGIS + Redis performance testing. Key artifacts:
+
+- [CACHING_VALIDATION_REPORT.md](CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](POSTGIS_REDIS_TESTING_GUIDE.md)
+- Raw results/images: [results/perf/cache_stats.png](results/perf/cache_stats.png), [results/perf/jmeter_html_short/index.html](results/perf/jmeter_html_short/index.html)
+
+These artifacts provide evidence for the system performance claims and recommended deployment configuration.

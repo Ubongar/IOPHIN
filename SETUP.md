@@ -198,6 +198,23 @@ open http://localhost:5000/api-docs
 
 - Dashboard: `http://localhost:5173`
 - API: `http://localhost:5000`
+
+---
+
+## Recent test results & artifacts
+
+We validated the PostGIS + Redis caching strategy and produced test artifacts. Helpful links:
+
+- [CACHING_VALIDATION_REPORT.md](CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](POSTGIS_REDIS_TESTING_GUIDE.md)
+- Raw results and images: `results/perf/` (e.g. [results/perf/cache_stats.png](results/perf/cache_stats.png), [results/perf/jmeter_html_short/index.html](results/perf/jmeter_html_short/index.html))
+
+Run the quick image generation locally:
+
+```bash
+python scripts/generate_stats_image.py --input results/perf/redis_cache_test.json --output results/perf/cache_stats.png
+```
 - Swagger: `http://localhost:5000/api-docs`
 
 ## Full Docker Startup (Alternative)

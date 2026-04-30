@@ -239,3 +239,16 @@ CMD ["node", "index.js"]
 - Redis graceful degradation (falls back to DB-only on Redis failure)
 - JWT expiry returns 401 with descriptive message
 - Permission denied returns 403 with required permission name
+
+---
+
+## Recent test results & artifacts
+
+The server was part of PostGIS + Redis performance testing. Relevant artifacts:
+
+- [CACHING_VALIDATION_REPORT.md](../CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](../CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](../POSTGIS_REDIS_TESTING_GUIDE.md)
+- Raw results and images: `../results/perf/` (e.g. [../results/perf/cache_stats.png](../results/perf/cache_stats.png), [../results/perf/jmeter_html_short/index.html](../results/perf/jmeter_html_short/index.html))
+
+No server code changes are required to reproduce the tests; ensure `REDIS_URL` and `DATABASE_URL` are set and reachable.

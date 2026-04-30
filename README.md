@@ -1,6 +1,6 @@
 ﻿# IOPHIN — Poverty Hotspot Intelligence for Nigeria
 
-**Version 4.0** — March 2026
+**Version 5.0** — April 2026
 
 IOPHIN (Integrated Open Poverty Hotspot Intelligence Network) is a full-stack geospatial intelligence platform for identifying, monitoring, and forecasting poverty risk across all 774 Local Government Areas (LGAs) in Nigeria.
 
@@ -11,6 +11,31 @@ IOPHIN (Integrated Open Poverty Hotspot Intelligence Network) is a full-stack ge
 - Simple Node.js API for hotspots and statistics
 - React dashboard with interactive choropleth map
 - Static CSV/GeoJSON output
+
+---
+
+## Recent test results & artifacts
+
+We recently validated the PostGIS + Redis caching strategy and captured test artifacts. Key files and artifacts:
+
+- **Caching validation report**: [CACHING_VALIDATION_REPORT.md](CACHING_VALIDATION_REPORT.md)
+- **Quick reference**: [CACHING_QUICK_REFERENCE.md](CACHING_QUICK_REFERENCE.md)
+- **Detailed testing guide**: [POSTGIS_REDIS_TESTING_GUIDE.md](POSTGIS_REDIS_TESTING_GUIDE.md)
+- **Raw results & images**: `results/perf/` (example: [results/perf/cache_stats.png](results/perf/cache_stats.png), JMeter HTML: [results/perf/jmeter_html_short/index.html](results/perf/jmeter_html_short/index.html))
+
+To regenerate the stats image locally:
+
+```bash
+python scripts/generate_stats_image.py --input results/perf/redis_cache_test.json --output results/perf/cache_stats.png
+```
+
+Notes:
+- If you run tests locally, ensure `REDIS_URL` and `DATABASE_URL` (or `POSTGRES_URL`) are set in your environment or `server/.env`.
+- No code modifications are required to reproduce the tests; only service endpoints must be reachable.
+
+Embedded chart (generated):
+
+![Cache vs DB response times](results/perf/cache_stats.png)
 
 ### Added in v2.0
 - PostgreSQL + PostGIS database with spatial indexes
@@ -34,7 +59,7 @@ IOPHIN (Integrated Open Poverty Hotspot Intelligence Network) is a full-stack ge
 - 12+ configurable scheduler jobs for dynamic data refresh
 - External API integration (ACLED, DTM/IOM, Google Earth Engine, HDX, WorldPop, OSM Overpass)
 
-### Added in v4.0 (Current)
+### Added in v5.0 (Current)
 - **User Management Panel**: Full RBAC UI — manage users, roles, permissions, geographic scopes, and audit logs
 - **Super Admin Role**: Elevated `super_admin` role with system-wide access
 - **Geographic Scoping**: Per-user state/LGA access restrictions via `user_geographic_scopes`

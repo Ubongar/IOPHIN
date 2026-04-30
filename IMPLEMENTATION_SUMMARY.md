@@ -198,6 +198,19 @@ Phase 5: Export
 | React | 19 | UI framework |
 | TypeScript | 5.8 | Type safety |
 | Vite | 7 | Build tooling |
+
+---
+
+## Recent test results & artifacts
+
+We performed and documented PostGIS + Redis performance testing. Important artifacts to reference from implementation and operations:
+
+- [CACHING_VALIDATION_REPORT.md](CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](POSTGIS_REDIS_TESTING_GUIDE.md)
+- Results and images: `results/perf/` (e.g. [results/perf/cache_stats.png](results/perf/cache_stats.png), [results/perf/jmeter_html_short/index.html](results/perf/jmeter_html_short/index.html))
+
+These files include run commands, expected outputs, and troubleshooting steps for reproducing test evidence.
 | Tailwind CSS | 4 | Utility styling |
 | Leaflet | 1.9 | Choropleth map |
 | MapLibre GL | 5.x | 3D/WebGL map rendering |

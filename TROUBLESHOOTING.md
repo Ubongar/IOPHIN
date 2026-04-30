@@ -344,3 +344,20 @@ FROM poverty_hotspots GROUP BY risk_level;
 - Reduce GeoJSON feature count for map rendering
 - Use MapLibre GL for better performance with large datasets
 - Limit Recharts data points in temporal views
+
+---
+
+## Recent test results & artifacts
+
+We validated PostGIS + Redis caching and saved artifacts you can use for troubleshooting and evidence. Key items:
+
+- [CACHING_VALIDATION_REPORT.md](CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](POSTGIS_REDIS_TESTING_GUIDE.md)
+- Results and images: `results/perf/` (e.g. [results/perf/cache_stats.png](results/perf/cache_stats.png), [results/perf/jmeter_html_short/index.html](results/perf/jmeter_html_short/index.html))
+
+If you're troubleshooting performance regressions, regenerate the cache image locally with:
+
+```bash
+python scripts/generate_stats_image.py --input results/perf/redis_cache_test.json --output results/perf/cache_stats.png
+```

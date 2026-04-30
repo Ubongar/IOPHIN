@@ -200,3 +200,20 @@ The `nginx.conf` handles SPA routing (fallback to `index.html`) and API proxying
 npm run lint       # ESLint
 npx tsc --noEmit   # TypeScript check
 ```
+
+---
+
+## Recent test results & artifacts
+
+The frontend can use the generated test artifacts for report screenshots and evidence. Key items:
+
+- [CACHING_VALIDATION_REPORT.md](../CACHING_VALIDATION_REPORT.md)
+- [CACHING_QUICK_REFERENCE.md](../CACHING_QUICK_REFERENCE.md)
+- [POSTGIS_REDIS_TESTING_GUIDE.md](../POSTGIS_REDIS_TESTING_GUIDE.md)
+- Results/images: `../results/perf/` (e.g. [../results/perf/cache_stats.png](../results/perf/cache_stats.png), [../results/perf/jmeter_html_short/index.html](../results/perf/jmeter_html_short/index.html))
+
+Use the quick image generator to regenerate charts locally:
+
+```bash
+python scripts/generate_stats_image.py --input results/perf/redis_cache_test.json --output results/perf/cache_stats.png
+```
